@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="file" id="fileId" name="fileId" hidefocus="true">
+<script type="text/javascript" src="../../public/frame/self.js"></script>
+<script>
+    $('#fileId').change(function () {
+        var files = $(this)[0].files;
+        var f = files[0];
+        var filename = "test"
+        var extname = f.name.split('.')[1];
+        console.log(extname);
+        var url = ''
+        var reader = new FileReader();
+        reader.readAsDataURL(f);
+        reader.onload =function(e){
+            url = e.target.result;
+            console.log(url)
+            formData = new FormData();
+            formData.append("src",url);
+            //console.log(formData.get("src"))
+            $.ajax({
+                url: "http://192.168.1.140:8080/FY_APP_SVR/servlet/Base64UploadPic?filename="+filename+"&extname="+extname,
+                type: "POST",
+                data: formData,
+                processData: false,  // 告诉jQuery不要去处理发送的数据
+                contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+                success: function(xhr){
+                    console.log(xhr);
+                    console.log('cheng')
+                }
+            });
+        }
+    })
+//    $.ajax({
+//        type: 'GET',
+//        url: 'http://123.56.64.16:8002/sale/getBi',
+//        contentType: 'jsonp',
+//        async: true,
+//        data: [''],
+//        success: function (msg) {
+//           console.logo(msg)
+//        },
+//        error: function (info) {
+//            wfy.alert("cuo");
+//        }
+//    });
+</script>
+</body>
+</html>
