@@ -15,7 +15,6 @@ document.write('<script type="text/javascript" src="../../public/frame/public.js
 document.write('<script type="text/javascript" src="../../public/frame/iconfont.js"></script>');
 document.write('<script type="text/javascript" src="../../public/frame/components.js"></script>');
 
-// document.write('<style></style>')
 document.title = '小驹';
 // localStorage.color = 'rgba(0,159,93,1)'
 // document.write('<style>.main_color{color:'+localStorage.color+'}.main_bgcolor{background-color:'+localStorage.color+'}.border_bot{border-bottom:'+localStorage.color+' solid 1px}</style>');
