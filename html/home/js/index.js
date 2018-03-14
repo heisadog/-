@@ -39,12 +39,18 @@ var menuListArr=[
 var wxArr=['msa020_0700','msa020_1300','msa040_0400','msa030_0800','msa030_1000','msa020_1200','msa020_1600','msa030_0600','msa030_1200','msa040_0100','msa020_1500','msa030_0400','msa030_0500','msa030_1100','msa040_0300','msa020_0900','msa040_0200','msa010_0400','msa030_0700','msa020_1800'];
 var canvasHeight = 0.35;
 var client = document.body.clientWidth;
+var clihei = document.body.clientHeight;
 if(client == '375'){
-    var canvasHeight = 0.35;
+    canvasHeight = 0.35;
+}else if(client == '414'){
+    canvasHeight = 0.45;
+}else if(client == '375' && clihei == '812' ){
+    canvasHeight = 0.52;
+}else {
+    canvasHeight = 0.35;
 }
-if(client == '414'){
-    var canvasHeight = 0.45;
-}
+
+alert(screen.height)
 var storeArr=[];//门店 信息
 var daySaleNum,weekSaleNum ;//日畅销数量 和 周畅销数量
 var menuDom='';//添加的菜单 dom元素内容
