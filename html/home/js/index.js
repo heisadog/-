@@ -50,7 +50,7 @@ if(client == '375'){
     canvasHeight = 0.35;
 }
 
-alert(screen.height)
+//alert(screen.height)
 var storeArr=[];//门店 信息
 var daySaleNum,weekSaleNum ;//日畅销数量 和 周畅销数量
 var menuDom='';//添加的菜单 dom元素内容
