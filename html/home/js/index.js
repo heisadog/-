@@ -237,7 +237,7 @@ $(function () {
                 },function () {
                 })
             } else if(url == 'wallet'){
-                window.location.href='http://foals-wx-merchant.ebatech.cn/#/my-coupons?tenantrycode='+LoginName;
+                window.location.href='https://foals-wx-merchant.imixpark.com/#/my-coupons?tenantrycode='+LoginName;
             }
             else{
                 wfy.alert("功能未开放");
