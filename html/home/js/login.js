@@ -113,7 +113,7 @@ function getShop(uid, pwd, init) {
                 checkLogin();
             } else {
                 wfy.hideload();
-                wfy.alert("sss"+msg.errorMessage);
+                wfy.alert(msg.errorMessage);
             }
         },
         error: function (info) {

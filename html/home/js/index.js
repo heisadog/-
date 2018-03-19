@@ -929,26 +929,26 @@ function indexSearchDtl(AS_XTWPKS) {
             var res_stock=vOpr1.getResult(d, 'AC_STOCK').rows || [];
 
             var html ='';
+            var url = wfy.empty(res[0].xtwplj) ? "../../public/img/onerror.png":_wfy_pic_ip+res[0].xtwplj;
             html +='<div class="gx_list_1_cont_another">'+
                 '<div class="gx_list_1_cont_img">' +
-                '<img src="'+_wfy_pic_ip+res[0].xtwplj+'" alt=""/>'+
-                '</div>'+
-                '<div class="gx_list_1_cont_item">';
-
-
-
-
+                '<img src="'+url+'" alt=""/>'+
+                '</div>'
+            html +='</div>';
             html +='<div style="line-height: 34px;text-align: left;text-indent: 12px;font-size:15px;color: blue;">商品信息</div> ';
             html +='<div class="wfyitem_list">' +
                 '<div class="wfyitem_line">'+
-                '<span class="fl tl" style="width: 50%;">商品款式：'+res[0].xtwpks+'</span> ' +
+                '<span class="fl tl">商品款式：'+res[0].xtwpks+'</span> ' +
                 '</div> ' +
                 '<div class="wfyitem_line tl"> ' +
-                '<span class="" style="width: 10%">名称：'+wfy.cutstr(res[0].xtwpmc,10)+'</span>' +
-                '<span class="fr" style="width: 50%;">零售价：￥'+res[0].wpxsdj+'</span>' +
+                '<span>名称：'+wfy.cutstr(res[0].xtwpmc,50)+'</span>' +
+                '</div>' +
+                '<div class="wfyitem_line tl"> ' +
+                '<span>零售价：￥'+res[0].wpxsdj+'</span>' +
                 '</div>' +
                 '</div>';
-            html +='</div></div>';
+
+
             html +='<div style="line-height: 34px;text-align: left;text-indent: 12px;font-size:15px;color: blue;">销售明细</div> ';
             html +='<div class="wfyitem_list">' +
                 '<div class="wfyitem_line tl">'+
