@@ -88,10 +88,15 @@ $(function () {
         if(saveObj.original==""){
             wfy.alert("密码不能为空");
             return;
-        }else{
-            changePassStatus("encrypt",$("#password").val(),function (record) {
-                saveObj.password=record;//密文
-            });
+        }else {
+            if(!checkPass(saveObj.original)){
+                wfy.alert("密码长度6-8位");
+                return;
+            }else {
+                changePassStatus("encrypt",$("#password").val(),function (record) {
+                    saveObj.password=record;//密文
+                });
+            }
         }
 
         if(saveObj.shop==""){
@@ -236,6 +241,15 @@ function mobilephoneVali(mobile) {
 
     var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
     if (myreg.test(mobile)) {
+        return true;
+    }else{
+        return false;
+    };
+}
+//验证密码长度
+function checkPass(pass) {
+    var reg = /^\S{6,8}$/;
+    if (reg.test(pass)) {
         return true;
     }else{
         return false;

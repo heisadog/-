@@ -325,10 +325,23 @@ $(function () {
         if(saveObj.girard==""){
             wfy.alert("款号不能为空");
             return;
+        }else {
+            var flag=checkkshi(saveObj.girard);
+            if(!flag){
+                wfy.alert("只能输入字母和数字");
+                return;
+            }
         }
+
         if(saveObj.name==""){
             wfy.alert("名称不能为空");
             return;
+        }else {
+            var flag=saveObj.name.length;
+            if(flag>10){
+                wfy.alert("最多输入10位");
+                return;
+            }
         }
         if(saveObj.price==""){
             wfy.alert("进价不能为空");
@@ -607,6 +620,15 @@ function priceVali(price) {
         return false;
     };
 }
+//  款式验证
+function checkkshi(style) {
+    var reg = /^[A-Za-z0-9]+$/;
+    if (reg.test(style)) {
+        return true;
+    }else{
+        return false;
+    };
+}
 
 //新增保存
 function addData_save(type,code,name) {
@@ -623,6 +645,10 @@ function addData_save(type,code,name) {
 
 //新增保存之 颜色
 function save_color(code,name) {
+    if(name.length>5){
+        wfy.alert("颜色不宜超过5个汉字");
+        return;
+    }
     var vBiz = new FYBusiness("biz.ctlitem.color.save");
 
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.color.save", false);

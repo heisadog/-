@@ -197,14 +197,14 @@ $(function () {
     getDatalist();
 
     //退款
-    $('body').hammer().on('tap','.payBankOrder',function (event) {
-        event.stopPropagation();
-        var xphm = $(this).attr('data-xphm');
-        var lshm = $(this).attr('data-lshm');
-        var je = $(this).attr('data-je');
-        //alert(xphm+'-'+lshm+'-'+je)
-        refundOrder(lshm,xphm,je)
-    });
+    // $('body').hammer().on('tap','.payBankOrder',function (event) {
+    //     event.stopPropagation();
+    //     var xphm = $(this).attr('data-xphm');
+    //     var lshm = $(this).attr('data-lshm');
+    //     var je = $(this).attr('data-je');
+    //     //alert(xphm+'-'+lshm+'-'+je)
+    //     refundOrder(lshm,xphm,je)
+    // });
 
 });
 

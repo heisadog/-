@@ -736,15 +736,15 @@ function orderCreateDtl(type,page,rows){
                 '<span>' + temp.colornameDtl[j] + '</span>' ;
 
             if (page == "msa020_0100" || page == "msa020_0400") {
-                htmlStr +='<span>' + temp.colorcodeDtl[j] + '</span>'+
+                htmlStr +='<span style="padding-left: 10px">' + temp.colorcodeDtl[j] + '</span>'+
                     '<span>' + temp.numDtl[j] + '*' + temp.priceDtl[j] + '=' + temp.moneyDtl[j] + '</span>'+
-                    '<span style="padding-left: 30px;">发货数:<span class="send_num">' + temp.numDtl[j] + '</span></span>' +
-                    '<span style="padding-left: 30px;">确认数:<span class="confirm_num">0</span></span></div></li>';
+                    '<span style="padding-left: 10px;">发货数:<span class="send_num">' + temp.numDtl[j] + '</span></span>' +
+                    '<span style="padding-left: 10px;">确认数:<span class="confirm_num">0</span></span></div></li>';
             }else if(page == "msa020_1600"){
                 htmlStr +='<span style="padding-left: 15px;">' + temp.colorcodeDtl[j] + '</span>'+
                     '<span>' + (Number(temp.numDtl[j])-Number(temp.serialnumDtl[j])) + '*' + temp.priceDtl[j] + '=' + (Number(temp.numDtl[j])-Number(temp.serialnumDtl[j]))*Number(temp.priceDtl[j]) + '</span>'+
-                    '<span style="padding-left: 20px;">盘点数:<span>' + temp.numDtl[j] + '</span></span>' +
-                    '<span style="padding-left: 30px;">账面数:<span>'+temp.serialnumDtl[j]+'</span></span>' +
+                    '<span style="padding-left:10px;">盘点数:<span>' + temp.numDtl[j] + '</span></span>' +
+                    '<span style="padding-left:10px;">账面数:<span>'+temp.serialnumDtl[j]+'</span></span>' +
                     //'<span style="padding-left: 30px;">差异数:<span class="confirm_num">'+(Number(temp.serialnumDtl[j])-Number(temp.numDtl[j]))+'</span></span>' +
                     '</div></li>';
             }else{
@@ -1635,7 +1635,7 @@ function checkSave() {
     dataDetail.setValue("AS_TOKEN", str);//商品明细
 
     var ip = new InvokeProc();
-    ip.addBusiness(vBiz);
+    ip.addBusiness(biz);
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             var res = svcMain.getOutputPermeterMap(d, 'AS_KCCZHMO');

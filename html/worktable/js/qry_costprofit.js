@@ -273,7 +273,7 @@ function getDatalist() {
 //构建页面
 function createPage(result,num,money) {
     var html = "";
-    if (result.length == 0) {
+    if (result.length == 0 && pageNum == 1) {
         html = wfy.zero();
     }
 

@@ -158,7 +158,7 @@ $(function () {
         var jage = 0;
         for(var x = 0; x<cont.length; x++){
             cont[x].price = pr_val;
-            jage += (cont[x].num)*pr_val;
+            jage =accAdd(jage, accMul((cont[x].num),pr_val));
         }
         $('#sum_money').html('￥'+jage);
     });
@@ -511,7 +511,7 @@ function showDataDtl() {
                         '<div class="bill_item thd ts200" data-code="'+cont[m].sku+'" data-barcode="'+cont[m].txhm+'">'+
                         '<span>'+cont[m].color+'</span>'+
                         '<span>'+cont[m].style+'</span>'+
-                        '<span>'+cont[m].num+'*'+cont[m].price+'='+((cont[m].num)*(cont[m].price))+'</span>'+
+                        '<span>'+cont[m].num+'*'+cont[m].price+'='+accMul(cont[m].num,cont[m].price)+'</span>'+
                         '</div>'+
                         '<div class="bill_drop" data-index ="'+m+'">'+
                         '<span class="mxdtl_add">&#xe6b9</span>'+
@@ -548,7 +548,7 @@ function showContDtl(dataindex,cont,contindex) {
         html+= '<li class="list_swiper">'+div+
                         '<span>'+cont[m].color+'</span>'+
                         '<span>'+cont[m].style+'</span>'+
-                        '<span>'+cont[m].num+'*'+cont[m].price+'='+((cont[m].num)*(cont[m].price))+'</span>'+
+                        '<span>'+cont[m].num+'*'+cont[m].price+'='+accMul(cont[m].num,cont[m].price)+'</span>'+
                     '</div>'+
                     '<div class="bill_drop" data-index ="'+m+'">'+
                         '<span class="mxdtl_add">&#xe6b9</span>'+
@@ -601,10 +601,22 @@ function getTotalNumAndMoney() {
         }else {
             totalNum += Number(cont[m].num);
         }
-        totalMoney += (Number(cont[m].num))*(Number(cont[m].price));
+        //totalMoney += (Number(cont[m].num))*(Number(cont[m].price));
+        totalMoney = accAdd(totalMoney,accMul(Number(cont[m].num),Number(cont[m].price)));
     }
-    $('#totalMoney').html(totalMoney);
-    $('#totalNum').html(totalNum);
+    if(totalMoney.toString().length>6){
+        $('#totalMoney').parent().css({
+            'line-height':'25px'
+        })
+        $('#totalNum').parent().css({
+            'line-height':'25px'
+        })
+        $('#totalMoney').html('<br>'+totalMoney);
+        $('#totalNum').html('<br>'+totalNum);
+    }else {
+        $('#totalMoney').html(totalMoney);
+        $('#totalNum').html(totalNum);
+    }
     $('#numtotal').html(totalNum); //左上角 sku总数
 }
 
@@ -780,7 +792,8 @@ var doProdDtl = function (res) {
             }else {
                 s += Number(cont[m].num);
             }
-            js += (Number(cont[m].num))*(Number(cont[m].price));
+            //js += (Number(cont[m].num))*(Number(cont[m].price));
+            js = accAdd(js,accMul(Number(cont[m].num),Number(cont[m].price)));
         }
         $('#sum_money').html('￥'+js);
     }
