@@ -242,8 +242,8 @@ $(function () {
                     }
                 }
                 if((orderAmount - pay_check_je_total) != 0){
-                    tipCont +='支付金额与订单金额相差'+(orderAmount - pay_check_je_total)+
-                        '元,抹掉'+(orderAmount - pay_check_je_total)+'元';
+                    tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
+                        '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
                 }
 
 
@@ -431,8 +431,8 @@ $(function () {
             }
         }
         if((orderAmount - pay_check_je_total) != 0){
-            tipCont +='支付金额与订单金额相差'+(orderAmount - pay_check_je_total)+
-                '元,如果确认付款，相当于抹掉'+(orderAmount - pay_check_je_total)+'元';
+            tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
+                '元,如果确认付款，相当于抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
         }
         wfy.confirm(tipCont,function () {
             if(mainPayType == ''){
