@@ -90,7 +90,7 @@ $(function () {
             return;
         }else {
             if(!checkPass(saveObj.original)){
-                wfy.alert("密码6-8位汉字和字母");
+                wfy.alert("密码6-8位数字和字母");
                 return;
             }else {
                 changePassStatus("encrypt",$("#password").val(),function (record) {
