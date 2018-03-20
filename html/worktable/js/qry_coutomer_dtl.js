@@ -197,7 +197,14 @@ function saveData() {
     data.area = $('#area input').eq(1).val() || '';
     data.address = $('#vipAddress').val() || '';
     data.bz = $('#vipbz').val() || '';
-    data.viped = $('#viped').val() || '';
+    data.viped = $('#viped').val() || 0;
+    if(data.viped){
+        if(!(/^[0-9]*$/).test(data.viped)){
+            wfy.alert('授信额度请输入数字');
+            $('#viped').focus();
+            return;
+        }
+    }
     wfy.showload();
     var vBiz = new FYBusiness("biz.crm.crminfo.save");
     var vOpr1 = vBiz.addCreateService("svc.crm.crminfo.save", false);
