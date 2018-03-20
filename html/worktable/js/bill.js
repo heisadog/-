@@ -740,7 +740,7 @@ var doProdDtl = function (res) {
         $('#sku_color').html(colorstr);//-----------------------颜色-----------------
         var domwidth = 0;
         $('#sku_color li').each(function () {
-            domwidth += ($(this).width()+35);
+            domwidth += ($(this).width()+44);
         })
         $('#sku_color').width(domwidth);
         $('#sku_color').html(colorstr);
