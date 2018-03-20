@@ -121,7 +121,7 @@ $(function () {
         ksmc = $(this).attr('data-ksmc');
         jldw = $(this).attr('data-jldw');
         proimg = $(this).attr('data-img');
-        $('#b011_img').attr('src',_wfy_pic_ip+proimg);
+        $('#b011_img').attr('src',(wfy.empty(proimg)? "../../public/img/onerror.png" : _wfy_pic_ip+proimg));
         $('#b011_mc').html(ksmc);
         getProdDtl(ksdm,function (res) {
             var objdata = {};
@@ -743,6 +743,7 @@ var doProdDtl = function (res) {
             domwidth += ($(this).width()+35);
         })
         $('#sku_color').width(domwidth);
+        $('#sku_color').html(colorstr);
         $('#sku_price').val(wpdj);//--------------价格-----------------------
         //依据颜色 显示 型号。默认展示 第一个颜色 的型号 。（这里应该将颜色作为参数，封装成一个可以公用的。切换颜色也需要用）
         var cont = fromDataGetCont();

@@ -709,10 +709,10 @@ function orderCreateDtl(type,page,rows){
         for(var j=0;j<temp.colorcodeDtl.length;j++) {
             if(page != "msa020_1600"){
                 total_num += Number(temp.numDtl[j]);
-                total_money += Number(temp.moneyDtl[j]);
+                total_money = accAdd(total_money,Number(temp.moneyDtl[j]));
             }else{
                 total_num += Number(temp.numDtl[j])-Number(temp.serialnumDtl[j]);
-                total_money += (Number(temp.numDtl[j])-Number(temp.serialnumDtl[j]))*Number(temp.priceDtl[j]);
+                total_money = accAdd( total_money, Components.sub( (Number(temp.numDtl[j]), accMul(Number(temp.serialnumDtl[j])),Number(temp.priceDtl[j])) ) );
             }
 
 

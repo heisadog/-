@@ -90,7 +90,7 @@ $(function () {
             return;
         }else {
             if(!checkPass(saveObj.original)){
-                wfy.alert("密码长度6-8位");
+                wfy.alert("密码6-8位汉字和字母");
                 return;
             }else {
                 changePassStatus("encrypt",$("#password").val(),function (record) {
@@ -248,7 +248,7 @@ function mobilephoneVali(mobile) {
 }
 //验证密码长度
 function checkPass(pass) {
-    var reg = /^\S{6,8}$/;
+    var reg = /^[A-Za-z0-9]{6,8}$/;
     if (reg.test(pass)) {
         return true;
     }else{
