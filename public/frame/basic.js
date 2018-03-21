@@ -254,15 +254,23 @@
     }
     part1.visiname = function (str) {//名字
         var strlen = str.length;
-        if(strlen == 3){
-            return str;
-        }
-        if(strlen == 2){
-            var strarr = str.split("");
-            return strarr[0]+part1.half+part1.half+strarr[1];
-        }
-        if(strlen == 1){
-            return str;
+        switch (strlen){
+            case 4:
+                return str;
+                break;
+            case 3:
+                return str;
+                break;
+            case 2:
+                var strarr = str.split("");
+                return strarr[0]+part1.half+part1.half+strarr[1];
+                break;
+            case 1:
+                return str;
+                break;
+            default:
+                return str;
+                break;
         }
     }
     /**
