@@ -712,7 +712,7 @@ function orderCreateDtl(type,page,rows){
                 total_money = accAdd(total_money,Number(temp.moneyDtl[j]));
             }else{
                 total_num += Number(temp.numDtl[j])-Number(temp.serialnumDtl[j]);
-                total_money = accAdd( total_money, Components.sub( (Number(temp.numDtl[j]), accMul(Number(temp.serialnumDtl[j])),Number(temp.priceDtl[j])) ) );
+                total_money = accAdd(total_money,Components.sub(temp.numDtl[j], accMul(temp.serialnumDtl[j],temp.priceDtl[j])));
             }
 
 
@@ -776,119 +776,75 @@ function orderCreateDtl(type,page,rows){
 }
 
 function saveDataDeal(){
+    // console.error(data)
+    // console.error(tempArr)
     var remark=getValidStr($("#remark").val())
-    if(data.length==0&&remark==""&&!scanflag){
-        auditflag=true;
-        $("#oper_save").addClass("cabsdot_bosdt");
-        wfy.alert("商品信息未做编辑，无需保存");
+    if(data.length==0){
+        wfy.alert("商品信息为空！无法保存");
         return;
     }
-
+    /*
+     * 这三个变量  目前  整个款式删除的 集合 insertArr 整个款式增加的集合  updateArr 只要有变化 就往这里边放！！！
+     * 目前修改bug，要沿用之前的代码 ----- 页面如何操作 data数据 是 最新的最全的  tempArr 是页面最初始的 数据
+     * 比较 tempArr 和 打他  然后将 比较结果放入  delArr insertArr updateArr 三个中！！ 才能呢个
+     * 看来 需要写个处理 两个数组对象的比较了
+     *    思路：遍历  data 的对象。如果 不存在 tempArr 中 ，那么就是删除了----进入 delArrdelArr
+     *                                               如果存在 则要遍历每条数据 是否相等 ，如果 不想等  ---进入   updateArr
+     tempArr 中  没有被遍历的数据 则 进入  insertArr 中 -----
+     *
+     * */
     delArr=[];//删除商品数组
     insertArr=[];//插入商品数组
     updateArr=[];//更新商品数组
 
     auditflag=false;
     $("#oper_save").removeClass("cabsdot_bosdt");
-
-    updOuter:
-        for(var i=0;i<data.length;i++){
-            for(var j=0;j<tempArr.length;j++){
-                if(data[i].ksdm==tempArr[j].ksdm){
-                    dealArr(data[i].cont,tempArr[j].cont);
-                    continue updOuter;
-                }
-            }
-
-            for(var m=0;m<data[i].cont.length;m++){
-                insertArr.push(data[i].cont[m]);
-            }
-        }
-
-    function dealArr(outArr,inArr) {
-
-        var numArr=[];
-        outer:
-            for(var i=0;i<outArr.length;i++){
-                var flag=false;
-                var calnum=0;
-                var outSku=outArr[i].sku;
-                for(var j=0;j<inArr.length;j++){
-                    if(outSku==inArr[j].sku){
-                        flag=true;
-                        if(outArr[i].num!=inArr[j].num){
-                            updateArr.push(outArr[i]);
-
-                            continue;
-                        }
-
-                    }
-                    calnum++;
-                }
-
-                if(!flag&&calnum==inArr.length){
-                    insertArr.push(outArr[i]);
-                }
-            }
-
-
-
-
-
-        /*updInner:
-         for(var z=0;z<data[i].cont.length;z++){
-         for (var k=0;k<tempArr[j].cont.length;k++) {
-         if(data[i].cont[z].sku==tempArr[j].cont[k].sku){
-         if(data[i].cont[z].num!=tempArr[j].cont[k].num){
-         updateArr.push(data[i].cont[z]);
-         }
-         continue updInner;
-         }
-         //insertArr.push(data[i].cont[z]);
-         }
-         insertArr.push(data[i].cont[z]);
-         }*/
+    // 开始 比较 tempArr 和 data
+    var tempArr_cont = [];
+    var data_cont = [];
+    for(var a = 0 ;a < tempArr.length;a++){
+        tempArr_cont =tempArr_cont.concat(tempArr[a].cont);
+    }
+    for(var b = 0 ;b < data.length;b++){
+        data_cont =data_cont.concat(data[b].cont);
+    }
+    // console.log(data_cont)
+    // console.log(tempArr_cont)
+    var tempArr_cont_sku = [];
+    var data_cont_sku = [];
+    for(var c =0; c<tempArr_cont.length;c++){
+        tempArr_cont_sku.push(tempArr_cont[c].sku);
+    }
+    for(var d =0; d<data_cont.length;d++){
+        data_cont_sku.push(data_cont[d].sku);
     }
 
-    delOuter:
-        for(var i=0;i<tempArr.length;i++){
-            for(var j=0;j<data.length;j++){
-                if(tempArr[i].ksdm==data[j].ksdm){
-                    deldealArr(tempArr[i].cont,data[j].cont);
-                    continue delOuter;
+    for(var m = 0; m < data_cont.length; m++){//遍历新数据
+        var sku_data = data_cont[m].sku;
+        if(!tempArr_cont_sku.val_in_array(sku_data)){
+            // 新的数据  和 任意一条都不想等 那么 这个是 新增的
+            insertArr.push(data_cont[m])
+        }else {
+            for(var n =0 ;n < tempArr_cont.length; n++){
+                if(sku_data == tempArr_cont[n].sku){
+                    //相等的话  判断两者是不是 一样
+                    if( JSON.stringify(data_cont[m])!= JSON.stringify(tempArr_cont[n])){
+                        updateArr.push(data_cont[m])
+                    }
                 }
-            }
-
-            for(var m=0;m<tempArr[i].cont.length;m++){
-                delArr.push(data[i].cont[m]);
             }
         }
-
-    function deldealArr(outArr,inArr) {
-
-        var numArr = [];
-        outer:
-            for (var i = 0; i < outArr.length; i++) {
-                var flag = false;
-                var calnum = 0;
-                var outSku = outArr[i].sku;
-                for (var j = 0; j < inArr.length; j++) {
-                    if (outSku == inArr[j].sku) {
-                        flag = true;
-
-                        continue outer;
-
-
-                    }
-                    calnum++;
-                }
-
-                if (!flag && calnum == inArr.length) {
-                    delArr.push(outArr[i]);
-                }
-            }
+    }
+    for(var x = 0; x<tempArr_cont.length;x++ ){//遍历 旧数据 获取删除的
+        if(!data_cont_sku.val_in_array(tempArr_cont[x].sku)){
+            //原始数据中 有的 而没在新的 数据中 ，那么 就是呗删掉了
+            delArr.push(tempArr_cont[x])
+        }
     }
 
+    // console.error(delArr)
+    // console.error(insertArr)
+    // console.error(updateArr)
     requireOper();
 }
 
@@ -948,14 +904,6 @@ function scannerOper(page,record){
 
                 orderDtlDataDeal("scan");
 
-                /*for(var i=0;i<data.length;i++){
-                 for(var j=0;j<data[i].cont.length;j++){
-                 if(sku==data[i].cont[j].sku){
-                 data[i].cont[j].num++;
-                 }
-                 }
-                 }*/
-
                 scanflag=true;
                 auditflag=false;
                 $("#oper_save").removeClass("cabsdot_bosdt");
@@ -998,30 +946,6 @@ function scannerOper(page,record){
                     var rows=[];
                     rows.push({"productcode":res[0].xtwpks,"productname":res[0].xtwpmc,"colorcode":res[0].xtwpxh,"colorname":res[0].xtysmc,"num":1,"price":res[0].wpxsdj,"money":res[0].wpxsdj,"unit":res[0].xtjldw,'sku':res[0].xtwpdm,'barcode':res[0].xttxhm,"serialnum":0})
 
-
-                    /*if(data.length==0){
-                     data.push(obj);
-                     }else{
-                     inOuter:
-                     for(var i=0;i<data.length;i++){
-                     if(data[i].ksdm==obj.ksdm){
-                     for(var j=0;j<data[i].cont.length;j++){
-                     if(obj.cont[0].sku==data[i].cont[j].sku){
-                     data[i].cont[j].num++;
-
-                     continue inOuter;
-                     }
-
-                     data[i].cont.push(obj.cont[0]);
-                     }
-
-                     continue inOuter;
-                     }
-
-                     data.push(obj);
-                     }
-                     }*/
-
                     orderDtlDataDeal("scan");
 
                     orderCreateDtl("scan",pageName,rows);
@@ -1054,7 +978,7 @@ function requireOper() {
 
     if(delArr.length>0&&insertArr.length==0&&updateArr.length==0){//只做删除操作
         if(pageName=="msa020_1200"){
-            storageDel(false);//入库单删除
+            storageDel(false,'RK');//入库单删除
         }else if(pageName=="msa020_1300"){
             storageDel(false, 'HZRK');//出库单删除
         }else if(pageName=="msa010_0100"){
@@ -1441,6 +1365,7 @@ function storageDel(flag,orderType) {
 
     var ipDel = new InvokeProc();
     ipDel.addBusiness(vBizDel);
+    //console.log(JSON.stringify(ipDel))
     ipDel.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
 

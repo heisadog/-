@@ -392,8 +392,13 @@ $(function () {
             }
         }
         data.splice(index,1);
+        if(dtlFlag){
+            auditflag=false;
+            $("#oper_save").removeClass("cabsdot_bosdt");
+        }
         //显示内容
         showDataDtl();
+
     })
     // 滑动出现的 sku 删除 添加 减少-----换个思路，不遍历data，从dom中读取该款式的位置，变换成data的索引，然后找到要操作的数据，
     // 执行操作 是直接操作data的数据，showDataDtl()方法是显示全部的data数据，如果操作一次，执行一次showDataDtl的话，会慢。
@@ -524,10 +529,6 @@ function showDataDtl() {
                     '</div>';
             }
         }
-    }
-
-    if(dtlFlag){
-        dtlPageDeal();
     }
 
     $('#bill_sku_box').html(html);
@@ -1591,65 +1592,11 @@ function getcontNum(sku,arr) {
     return num;
 }
 
-//明细页面数据处理
-function dtlPageDeal() {
-    //console.info(tempDtlArr);
-
-    var tempinsertArr=[];
-    var tempupdateArr=[];
-    updOuter:
-        for(var i=0;i<data.length;i++){
-            for(var j=0;j<tempArr.length;j++){
-                if(data[i].ksdm==tempArr[j].ksdm){
-                    dealArr(data[i].cont,tempArr[j].cont);
-                    continue updOuter;
-                }
-            }
-
-            for(var m=0;m<data[i].cont.length;m++){
-                tempinsertArr.push(data[i].cont[m]);
-            }
-        }
-
-    function dealArr(outArr,inArr) {
-        outer:
-            for(var i=0;i<outArr.length;i++){
-                var flag=false;
-                var calnum=0;
-                var outSku=outArr[i].sku;
-                for(var j=0;j<inArr.length;j++){
-
-                    if(outSku==inArr[j].sku){
-                        flag=true;
-                        if(outArr[i].num!=inArr[j].num){
-                            tempupdateArr.push(outArr[i]);
-
-                            continue;
-                        }
-
-                    }
-                    calnum++;
-                }
-
-                if(!flag&&calnum==inArr.length){
-                    tempinsertArr.push(outArr[i]);
-                }
-            }
-    }
-    if(tempinsertArr.length>0||tempupdateArr.length>0){
-    }else{
-        auditflag=true;
-        $("#oper_save").addClass("cabsdot_bosdt");
-    }
-
-}
-
-
 //要货单、调入单、调出单、收货单、入库单 明细页面添加明细数据处理
 function orderDtlDataDeal(type){
     try{
-        console.error(type);
-        console.error(data);
+        // console.error(type);
+        // console.error(data);
         //var cloneData=deepClone(data);
         if(type=="scan"){
             outOuter:
@@ -1684,7 +1631,7 @@ function orderDtlDataDeal(type){
                     data.push(tempDtlArr[i]);
                 }
             }
-            console.error(data);
+            //console.error(data);
         }
 
     }catch (e){
