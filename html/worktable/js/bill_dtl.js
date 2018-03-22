@@ -682,7 +682,7 @@ function orderCreateDtl(type,page,rows){
         }else{
             if(page!="msa020_0500"&&page!="msa020_1600"){
                 if(showFlag=="Y"){
-                    htmlStr+='<span class="bill_sku_delete" data-code="'+temp.productcode+'">&#xe69d</span></div>';
+                    htmlStr+='<span class="bill_sku_delete" data-code="'+temp.productcode+'" data-ksdm="'+temp.productcode+'">&#xe69d</span></div>';
                 }else{
                     htmlStr+='</div>';
                 }
@@ -690,7 +690,7 @@ function orderCreateDtl(type,page,rows){
                 if(page=="msa020_0500"){
                     //盘点单 单独处理
                     if(pdStatus=="00"){//录入待提交
-                        htmlStr+='<span class="bill_sku_delete" data-code="'+temp.productcode+'">&#xe69d</span></div>';
+                        htmlStr+='<span class="bill_sku_delete" data-code="'+temp.productcode+'" data-ksdm="'+temp.productcode+'">&#xe69d</span></div>';
                     }else{
                         htmlStr+='</div>';
                     }
