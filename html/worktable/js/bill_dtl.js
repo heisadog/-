@@ -21,7 +21,7 @@ var pandian='<li><span>仓/店</span><input class="createTime"  readonly="readon
 var dateoper='<li><span>日期</span><input class="createTime" readonly="readonly" id="operdate" placeholder="-&#45;&#45;"></li>' +
     '<li><span>操作员</span><input class="createTime"  readonly="readonly"  id="opername" placeholder="-&#45;&#45;"></li>';
 var ischeck= '<li><span>是否检验</span><div class="mui-switch" id="mui-switch"><div class="mui-switch-handle"></div></div></li>';
-var remark='<li><span>备注</span><input class="createTime" type="text"  id="remark" placeholder="" onchange="dataChangeVali(this.value)"></li>';
+var remark='<li><span>备注</span><input class="createTime" type="text"  id="remark" placeholder=""></li>';
 
 var save='<div class="pub_num pub_btn cabsdot_bosdt" id="oper_save">保存</div>';
 var audit='<div class="pub_num pub_btn" id="oper_audit">审核</div>';
@@ -59,13 +59,9 @@ var delArr=[];//删除商品数组
 var insertArr=[];//插入商品数组
 var updateArr=[];//更新商品数组
 
-var remark="";//备注
-
 $(function () {
     wfy.showload();
-
     dtlFlag=true;
-
     //页面入口
     pageinit(function (obj) {
         pageName = obj.page;//msa020_1200
@@ -77,25 +73,14 @@ $(function () {
             }else{
                 $("#page").html("出库单");
             }
-
             opercode=localStorage.entrycode;
-
             getRUKUdtl(opercode,function (resList,resDtl) {
                 createPage(pageName,resList,resDtl);
             });
             break;
-            /*case 'msa020_1300'://---------------------出库单----------------------------
-             $("#page").html("出库单");
-             opercode=localStorage.entrycode;
-
-             getRUKUdtl(opercode,function (resList,resDtl) {
-             createPage('msa020_1200',resList,resDtl);
-             });
-             break;*/
             case 'msa010_0100'://------------------------要货单-------------------------
                 $("#page").html("要货单");
                 opercode=localStorage.entrycode;
-
                 getYAOHUODtl(opercode,function (resList,resDtl) {
                     createPage(pageName,resList,resDtl);
                 });
@@ -103,7 +88,6 @@ $(function () {
             case 'msa010_0300'://------------------------调出单-------------------------
                 $("#page").html("调出单");
                 opercode=localStorage.entrycode;
-
                 getDIAOCHUDtl(opercode,function (resList,resDtl) {
                     createPage(pageName,resList,resDtl);
                 })
@@ -111,7 +95,6 @@ $(function () {
             case 'msa020_0400'://------------------------调入单-------------------------
                 $("#page").html("调入单");
                 opercode=localStorage.opercode;
-
                 getDIAORUDtl(opercode,function (resList,resDtl) {
                     createPage(pageName,resList,resDtl);
                 });
@@ -119,7 +102,6 @@ $(function () {
             case 'msa020_0100'://------------------------收货单-------------------------
                 $("#page").html("收货单");
                 opercode=localStorage.opercode;
-
                 getSHOUHUODtl(opercode,function (resList,resDtl) {
                     createPage(pageName,resList,resDtl);
                 });
@@ -128,7 +110,6 @@ $(function () {
                 $("#page").html("盘点单");
                 opercode=localStorage.entrycode;
                 pdStatus=localStorage.strcode.split(";")[1];//盘点单进入状态 00录入未提交 01录入已提交 10审核未审核 11审核已审核
-
                 var type="";
                 if(pdStatus.substring(0,1)=="0"){
                     areacode=localStorage.strcode.split(";")[0];
@@ -136,17 +117,14 @@ $(function () {
                 }else{
                     type="S";//审核
                 }
-
                 getPandianDtl(opercode,areacode,type,function (resList,resDtl) {
                     createPage(pageName,resList,resDtl);
                 });
-
                 break;
             case 'msa020_1600'://------------------------盘点单确认-------------------------
                 $("#page").html("盘点单确认");
                 opercode=localStorage.opercode;
                 pdStatus=localStorage.strcode;
-
                 getPandianDtl(opercode,"","Q",function (resList,resDtl) {
                     if(pdStatus=="00"){
                         getorder("PD",function (res) {
@@ -154,10 +132,8 @@ $(function () {
                             pd_orderid=res[0].orderid;
                         });
                     }
-
                     createPage(pageName,resList,resDtl);
                 });
-
                 break;
         }
     });
@@ -165,7 +141,6 @@ $(function () {
     $('body').hammer().on('tap','#back',function (event) {
         event.stopPropagation();
         localStorage.page=pageName;
-
         if(pageName=="msa020_1200"||pageName=="msa020_1300"||pageName=="msa010_0100"||pageName=="msa010_0300"||pageName=="msa020_0500"){
             wfy.goto("bill_entry");
         }else{
@@ -173,33 +148,10 @@ $(function () {
         }
 
     });
-
-    $('body').hammer().on('tap','#remark',function (event) {
-        event.stopPropagation();
-
-        remark=getValidStr($(this).val());
-    });
-
-    $('body').hammer().on('tap','#add_url',function (event) {
-        event.stopPropagation();
-
-        /*if(click_num==0){
-         $(this).attr("data-type","dtl");
-         }else{
-         $(this).attr("data-type","");
-         }*/
-
-        auditflag=false;
-        $("#oper_save").removeClass("cabsdot_bosdt");
-        //click_num++;
-    });
-
     //收货单 调入单 检验方式切换
     $('body').hammer().on("tap",'#mui-switch',function( event){
         event.stopPropagation();
-
         var style=$(this).attr("class");
-
         if(style.indexOf("mui-active")<0){
             //不检验
             var num=0;
@@ -209,7 +161,6 @@ $(function () {
                     num++;
                 }
             });
-
             if(checkFlag&&num>0){
                 wfy.confirm("已扫码，是否确认切换收获方式？",function(){
                     $(".confirm_num").each(function () {
@@ -226,15 +177,12 @@ $(function () {
                     $(this).html(send_node[0].innerText);
                 });
             }
-
             checkFlag=false;
         }else{
             //检验
             $(".confirm_num").html(0);
-
             checkFlag=true;
         }
-
     });
 
     //扫码
@@ -242,14 +190,12 @@ $(function () {
         //要货单：msa010_0100 A0SEF0111
         //收货单：msa020_0100 A0SEF0211
         checkFlag=true;
-
         //大明细A0SEF080110 小明细A0SEF080112
         //scannerOper("msa010_0100","A0SEF090111");
         app.scanner(function (code) {
             scannerOper(pageName,code);
         });
     });
-
     //提交
     $('body').hammer().on("tap","#oper_sub",function () {
         event.stopPropagation();
@@ -257,21 +203,17 @@ $(function () {
         if(pageName!="msa020_0500"){
             $(".confirm_num").each(function () {
                 var send_node= $(this).parent().prev().children();
-
                 var confirm_num=Number($(this).html());
                 var send_num=Number(send_node[0].innerText);
-
                 if(confirm_num!=send_num){
                     wfy.alert("校验失败");
                     return;
                 }
-
                 if(pageName=="msa020_0100"){
                     recieveSubmit();//收货单提交
                 }else if(pageName=="msa020_0400"){
                     callinSubmit();//调入单提交
                 }
-
             });
         }else{
             if(auditflag){
@@ -280,20 +222,15 @@ $(function () {
                 wfy.alert("单据未保存，不能进行提交！");
                 return;
             }
-
         }
     });
-
     //保存
     $('body').hammer().on("tap","#oper_save",function () {
         event.stopPropagation();
-
         if(!auditflag){
             saveDataDeal();
         }
-
     });
-
     //审核
     $('body').hammer().on("tap","#oper_audit",function () {
         event.stopPropagation();
@@ -321,7 +258,6 @@ $(function () {
             }else{
                 checkAudit();
             }
-
         }
 
     });
@@ -329,9 +265,7 @@ $(function () {
     //盘点单确认 确认
     $('body').hammer().on("tap","#oper_confirm",function () {
         event.stopPropagation();
-
         checkConfirm();
-
     });
 
 });
@@ -342,122 +276,72 @@ function createPage(page,rowsList,rowsDtl){
     var dtlArr=[];
     var htmlStr="";
     var bottom_oper="";
-
     for (var i=0;i<pageCodeArr.length;i++){
         if(page==pageCodeArr[i].page){
             var tempObj=pageCodeArr[i].body;
             if(getValidStr(tempObj.center_down)==""){
                 htmlStr+=tempObj.north+tempObj.center_up+tempObj.south;
-
             }else{
                 htmlStr+=tempObj.north+tempObj.center_up+tempObj.center_down+tempObj.south;
 
             }
-
             bottom_oper=pageCodeArr[i].bottom;
 
         }
     }
-
     switch (pageName){
         case 'msa020_1200':case 'msa020_1300'://------------------------入库单(出库单与入库单页面相同)-------------------------
-        //czrymc: "店长"kcckdm: "A010001"kcckmc: "首尔府大融汇店"kcczlx: "030"kcczrq: "2017-11-04"kcczry: "A0001"xtwldm: "A0"xtwlmc: "首尔府"
-        //kcczlx: "030"kcczsl: 1kcxsdj: 88kcxsje: 88xtksmc: "外套"xtpzgg: "01"xttxhm: "A0SEF010110"xtwpdm: "A0SEF010110"xtwpks: "A0SEF01"xtwpxh: "M"xtysmc: "白色"
         listObj.operout=rowsList[0].kcckmc;
         listObj.operin=rowsList[0].xtwlmc;
         listObj.operdate=rowsList[0].kcczrq;
         listObj.opername=rowsList[0].kcczry;
         listObj.remark=rowsList[0].kcdjbz;
-
         listObj.operoutcode=rowsList[0].kcckdm;
         listObj.operincode=rowsList[0].xtwldm;
         listObj.ordercode=rowsList[0].kcpdhm;
         listObj.ordertype=rowsList[0].kcczlx;
         listObj.contactcode=rowsList[0].xtwldm;
-
         for(var i=0;i<rowsDtl.length;i++){
             dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtksmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].kcczsl,"price":rowsDtl[i].kcxsdj,"money":rowsDtl[i].kcxsje,"unit":"",'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":rowsDtl[i].kcczhh})
         }
-
         $("#scanner").addClass("none");
-
         if(showFlag=="Y"){
             $(".bill_part_butn").removeClass("none");
         }else{
             $(".bill_part_butn").addClass("none");
         }
-
         break;
-        /*case 'msa020_1300'://------------------------出库单-------------------------
-         //czrymc: "店长"kcckdm: "A010001"kcckmc: "首尔府大融汇店"kcczlx: "030"kcczrq: "2017-11-04"kcczry: "A0001"xtwldm: "A0"xtwlmc: "首尔府"
-         //kcczlx: "030"kcczsl: 1kcxsdj: 88kcxsje: 88xtksmc: "外套"xtpzgg: "01"xttxhm: "A0SEF010110"xtwpdm: "A0SEF010110"xtwpks: "A0SEF01"xtwpxh: "M"xtysmc: "白色"
-         listObj.operout=rowsList[0].kcckmc;
-         listObj.operin=rowsList[0].xtwlmc;
-         listObj.operdate=rowsList[0].kcczrq;
-         listObj.opername=rowsList[0].kcczry;
-         listObj.remark=rowsList[0].kcdjbz;
-
-         listObj.operoutcode=rowsList[0].kcckdm;
-         listObj.operincode=rowsList[0].xtwldm;
-         listObj.ordercode=rowsList[0].kcpdhm;
-         listObj.ordertype=rowsList[0].kcczlx;
-         listObj.contactcode=rowsList[0].xtwldm;
-
-         for(var i=0;i<rowsDtl.length;i++){
-         dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtksmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].kcczsl,"price":rowsDtl[i].kcxsdj,"money":rowsDtl[i].kcxsje,"unit":"",'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":rowsDtl[i].kcczhh})
-         }
-
-         $("#scanner").addClass("none");
-
-         if(showFlag=="Y"){
-         $(".bill_part_butn").removeClass("none");
-         }else{
-         $(".bill_part_butn").addClass("none");
-         }
-
-         break;*/
         case 'msa010_0100'://------------------------要货单-------------------------
-            //kcckmc: "首尔府大融汇店"kcyhck: "A010001"lrrymc: "张三"xsczhm: "00171100012116"xslrrq: "2017-11-07"xslrry: "A0001"xsyhbz: "sdsds"xsyhdh: "M171100012117"xsyhkh: "A01001"xsyhlx: "1"xtwldm: "A01001"xtwlmc: "首尔府大融汇店"
-            //kcczbz: "sdsds"xsczhm: "00171100012116"xsxqrq: 1510042050000xsydhh: 0xsyhdj: 249xsyhje: 249xsyhlx: "1"xsyhsl: 1xtjldw: nullxtksmc: "牛仔裤"xtpzgg: "01"xttxhm: "A0SEF090110"xtwldm: "A01001"xtwpdm: "A0SEF090110"xtwpks: "A0SEF09"xtwpxh: "M"xtysmc: "白色"
             listObj.operout=rowsList[0].kcckmc;
             listObj.operin=rowsList[0].dhdwmc;
             listObj.operdate=rowsList[0].xslrrq;
             listObj.opername=rowsList[0].xslrry;
             listObj.remark=rowsList[0].xsyhbz;
-
             listObj.operoutcode=rowsList[0].kcyhck;
             listObj.operincode=rowsList[0].xtdhdw;
             listObj.ordercode=rowsList[0].xsyhdh;
             listObj.ordertype=rowsList[0].xsyhlx;
             listObj.contactcode=rowsList[0].xtwldm;
-
             for(var i=0;i<rowsDtl.length;i++){
                 dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtksmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].xsyhsl,"price":rowsDtl[i].xsyhdj,"money":rowsDtl[i].xsyhje,"unit":rowsDtl[i].xtjldw,'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":rowsDtl[i].xsydhh})
             }
-
             $("#scanner").addClass("none");
-
             if(showFlag=="Y"){
                 $(".bill_part_butn").removeClass("none");
             }else{
                 $(".bill_part_butn").addClass("none");
             }
-
             break;
         case 'msa010_0300'://------------------------调出单-------------------------
-            //fhckdm: "A010001"fhckmc: "首尔府大融汇店"lrrymc: "店长"shckdm: "A01002"shckmc: "首尔府测试店"shwldm: "A01002"shwlmc: "首尔府测试店"xslrrq: "2017-11-06"xslrry: "A0001"xsphbz: null
-            //xsphdj: 188xsphje: 376xsphsl: 2xtksmc: "大衣"xtpzgg: "02"xttxhm: "A0SEF0210"xtwpdm: "A0SEF0210"xtwpks: "A0SEF"xtwpxh: "M"xtysmc: "黑色"
             listObj.operout=rowsList[0].fhckmc;
             listObj.operin=rowsList[0].shckmc;
             listObj.operdate=rowsList[0].xslrrq;
             listObj.opername=rowsList[0].xslrry;
             listObj.remark=rowsList[0].xsphbz;
-
             listObj.operoutcode=rowsList[0].fhckdm;
             listObj.operincode=rowsList[0].shckdm;
             listObj.ordercode=rowsList[0].xsphdh;
             listObj.contactcode=rowsList[0].shwldm;
-
             listObj.province=rowsList[0].xtkhsf;//AS_XTKHSF  VARCHAR2, --收货省份
             listObj.city=rowsList[0].xtkhcs;//AS_XTKHCS  VARCHAR2, --收货城市
             listObj.area=rowsList[0].xskhdq;//AS_XSKHDQ  VARCHAR2, --收货地区
@@ -466,48 +350,35 @@ function createPage(page,rowsList,rowsDtl){
             listObj.person=rowsList[0].xtshry;//AS_XTSHRY  VARCHAR2, --收货人员
             listObj.phone=rowsList[0].xssjhm;//AS_XSSJHM  VARCHAR2, --手机号码
             listObj.mobile=rowsList[0].xtdhhm;//AS_XTDHHM  VARCHAR2, --电话号
-
             for(var i=0;i<rowsDtl.length;i++){
                 dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtksmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].xsphsl,"price":rowsDtl[i].xsphdj,"money":rowsDtl[i].xsphje,"unit":rowsDtl[i].xtjldw,'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":rowsDtl[i].xsphhh})
             }
-
             $("#scanner").addClass("none");
             $(".bill_part_butn").removeClass("none");
-
             break;
         case 'msa020_0400'://------------------------调入单-------------------------
-            //czrymc: "店长"fhckdm: "A01002"fhckmc: "首尔府测试店"kcczlx: "049"kcczry: "A0001"shckdm: "A010001"shckmc: "首尔府大融汇店"xsfhbz: nullxsfhrq: "2017-11-06"xtwldm: "A01001"xtwlmc: "首尔府大融汇店"            listObj.operout=rowsList[0].fhckmc;
-            //dj: 88je: 176kcczlx: "049"kcshck: "A010001"sl: 2xtksmc: "外套"xtpzgg: "02"xttxhm: "A0SEF010210"xtwpdm: "A0SEF010210"xtwpks: "A0SEF01"xtwpxh: "M"xtysmc: "黑色"
             listObj.operout=rowsList[0].fhckmc;
             listObj.operin=rowsList[0].shckmc;
             listObj.operdate=rowsList[0].xsfhrq;
             listObj.opername=rowsList[0].kcczry;
             listObj.remark="";
-
             for(var i=0;i<rowsDtl.length;i++){
                 dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtksmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].sl,"price":rowsDtl[i].dj,"money":rowsDtl[i].je,"unit":rowsDtl[i].xtjldw,'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":""})
             }
-
             $("#scanner").removeClass("none");
             $(".bill_part_butn").addClass("none");
-
             break;
         case 'msa020_0100'://------------------------收货单-------------------------
-            //czrymc:"店长";fhckdm:"A0";fhckmc:"首尔府总仓";kcczlx:"040";kcczry:"A0001";shckdm:"A010001";shckmc:"首尔府大融汇店";xsczrq:"2017-11-06";xtwldm:"A01001";xtwlmc:"首尔府大融汇店"
-            //dj: 188je: 376kcczlx: "040"kcshck: "A010001"sl: 2xtksmc: "大衣"xtpzgg: "02"xttxhm: "A0SEF0211"xtwpdm: "A0SEF0211"xtwpks: "A0SEF"xtwpxh: "S"xtysmc: "黑色"
             listObj.operout=rowsList[0].fhckmc;
             listObj.operin=rowsList[0].shckmc;
             listObj.operdate=rowsList[0].xsczrq;
             listObj.opername=rowsList[0].kcczry;
             listObj.remark="";
-
             for(var i=0;i<rowsDtl.length;i++){
                 dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtksmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].sl,"price":rowsDtl[i].dj,"money":rowsDtl[i].je,"unit":rowsDtl[i].xtjldw,'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":""})
             }
-
             $("#scanner").removeClass("none");
             $(".bill_part_butn").addClass("none");
-
             break;
         case 'msa020_0500'://------------------------盘点单-------------------------
             //jldwmc: "件"kcckqy: "11"kcczhm: "00171200016578"kcjldw: "01"kcspje: 300kcspsl: 2kczmje: 0kczmsl: 0wpxsdj: 150xtpzgg: "01"xttxhm: "A0SEF040110"xtwpdm: "A0SEF040110"xtwpks: "A0SEF04"xtwpmc: "连衣裙"xtwpxh: "M"xtwpys: "A0SEF0401"xtxhxh: 10xtysmc: "白色"
@@ -516,17 +387,12 @@ function createPage(page,rowsList,rowsDtl){
             listObj.operdate=rowsList[0].kcczrq;
             listObj.opername=rowsList[0].kcczxm;
             listObj.remark="";
-
             listObj.operoutcode=rowsList[0].kcckdm;
             listObj.operincode=rowsList[0].kcpdfs;
-
             auditnum=rowsList[0].ztddsl;
-
             for(var i=0;i<rowsDtl.length;i++){
                 dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtwpmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].kcspsl,"price":rowsDtl[i].wpxsdj,"money":rowsDtl[i].kcspje,"unit":rowsDtl[i].jldwmc,'sku':rowsDtl[i].xtwpdm,'barcode':rowsDtl[i].xttxhm,"serialnum":rowsDtl[i].kczmsl});//此处serialnum为账面数量
             }
-
-
             if(pdStatus=="00"){//录入待提交
                 $("#scanner").addClass("none");
                 $(".bill_part_butn").removeClass("none");
@@ -534,7 +400,6 @@ function createPage(page,rowsList,rowsDtl){
                 $("#scanner").addClass("none");
                 $(".bill_part_butn").addClass("none");
             }
-
             break;
         case 'msa020_1600'://------------------------盘点单确认-------------------------
             //jldwmc: "件"kcckqy: "11"kcczhm: "00171200016578"kcjldw: "01"kcspje: 300kcspsl: 2kczmje: 0kczmsl: 0wpxsdj: 150xtpzgg: "01"xttxhm: "A0SEF040110"xtwpdm: "A0SEF040110"xtwpks: "A0SEF04"xtwpmc: "连衣裙"xtwpxh: "M"xtwpys: "A0SEF0401"xtxhxh: 10xtysmc: "白色"
@@ -543,34 +408,30 @@ function createPage(page,rowsList,rowsDtl){
             listObj.operdate=rowsList[0].kcczrq;
             listObj.opername=rowsList[0].kcczxm;
             listObj.remark="";
-
             listObj.operoutcode=rowsList[0].kcckdm;
             listObj.operincode=rowsList[0].kcpdfs;
-
             for(var i=0;i<rowsDtl.length;i++){
                 dtlArr.push({"productcode":rowsDtl[i].xtwpks,"productname":rowsDtl[i].xtwpmc,"colorcode":rowsDtl[i].xtwpxh,"colorname":rowsDtl[i].xtysmc,"num":rowsDtl[i].kcspsl,"price":rowsDtl[i].wpxsdj,"money":rowsDtl[i].kcspje,"unit":rowsDtl[i].kcjldw,'sku':rowsDtl[i].xtwpdm,'barcode':"","serialnum":rowsDtl[i].kczmsl});//此处serialnum为账面数量
             }
-
             $("#scanner").addClass("none");
             $(".bill_part_butn").addClass("none");
-
             break;
     }
 
     $("#page_main").html(htmlStr);
+    $('#remark').bind('input propertychange', function() {
+        auditflag=false;
+        $("#oper_save").removeClass("cabsdot_bosdt");
+    });
 
     if(pageName!="msa020_0500"&&pageName!="msa020_1600"){
         if(showFlag=="N"){
             $("#page_bottom div").attr("style","width:50%;");
-
             $("#remark").attr("readonly","readonly");
-
         }else{
             $("#page_bottom div").removeAttr("style");
-
             $("#page_bottom").append(bottom_oper);
             $("#remark").removeAttr("readonly");
-
         }
     }else{
         //盘点单 单独处理
@@ -587,15 +448,11 @@ function createPage(page,rowsList,rowsDtl){
         }
     }
 
-
     $("#operout").val(listObj.operout);
     $("#operin").val(listObj.operin);
     $("#operdate").val(listObj.operdate);
     $("#opername").val(listObj.opername);
     $("#remark").val(listObj.remark);
-
-
-
     orderCreateDtl("create",page,dtlArr);
 }
 
@@ -960,22 +817,8 @@ function scannerOper(page,record){
     }
 }
 
-//校验备注是否改变
-function dataChangeVali(record) {
-    if(remark!=record){
-        auditflag=false;
-        $("#oper_save").removeClass("cabsdot_bosdt");
-    }
-}
-
 function requireOper() {
     var remark=getValidStr($("#remark").val());
-
-    if(remark==""&&delArr.length==0&&insertArr.length==0&&updateArr.length==0){
-        wfy.alert("数据未做修改，无需保存");
-        return;
-    }
-
     if(delArr.length>0&&insertArr.length==0&&updateArr.length==0){//只做删除操作
         if(pageName=="msa020_1200"){
             storageDel(false,'RK');//入库单删除
@@ -988,9 +831,7 @@ function requireOper() {
         }else if(pageName=="msa020_0500"){
             checkDel(false);//盘点单删除
         }
-
     }
-
     if(delArr.length==0&&(remark!=""||insertArr.length>0||updateArr.length>0)){//只做保存操作
         if(pageName=="msa020_1200") {
             storageSave('RK');//入库单保存
