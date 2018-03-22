@@ -172,7 +172,7 @@ $(function () {
                     pay_check_dm.push(dm);
                     pay_check_mc.push(mc);
                     pay_check_je.push(je);
-                    pay_check_je_total += je;
+                    pay_check_je_total = Components.add(pay_check_je_total,je);
                 }
 
             })
@@ -378,7 +378,7 @@ $(function () {
                 pay_check_dm.push(dm);
                 pay_check_mc.push(mc);
                 pay_check_je.push(je);
-                pay_check_je_total += je;
+                pay_check_je_total = Components.add(pay_check_je_total,je);
             }
         })
         var pay = [];

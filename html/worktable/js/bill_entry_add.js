@@ -351,10 +351,10 @@ $(function () {
                 //此处开始 区分哪种单据
                 switch (pageName){
                     case 'msa020_1200'://入库单
-                        saveHead();
+                        save_ruku();
                         break;
                     case 'msa020_1300'://出库单
-                        saveHead();
+                        save_ruku();
                         break;
                     case 'msa010_0100'://要货单
                         saveYaoDingDan();
@@ -463,8 +463,86 @@ function resToArr(res,type) {
     return arr;
 }
 
+//入库单保存
+function save_ruku() {
+    //先获取保存的信息  直接从 data 中获取
+    var dtl = {};
+    dtl.AN_KCCZHH = [];
+    dtl.AS_XTWPDM = [];
+    dtl.AN_KCXSDJ = [];
+    dtl.AN_KCCZSL = [];
+    var cont =[];//不分款式，都处理到cont中统一计算
+    for(var i = 0 ;i<data.length;i++){
+        cont = cont.concat(data[i].cont);
+    }
+    for(var m=0;m<cont.length;m++){
+        dtl.AN_KCCZHH.push(m);
+        dtl.AS_XTWPDM.push(cont[m].sku);
+        dtl.AN_KCXSDJ.push(cont[m].price);
+        dtl.AN_KCCZSL.push(cont[m].num);
+    }
+    var vBiz = new FYBusiness("biz.invopr.invopr.save");
+    var vOpr1 = vBiz.addCreateService("svc.invopr.invopr.save.head", false);
+    var vOpr1Data = vOpr1.addCreateData();
+    vOpr1Data.setValue("AS_USERID", LoginName);
+    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr1Data.setValue("AS_FUNC", "svc.invopr.invopr.save.head");
+    vOpr1Data.setValue("AS_KCCZHM", head.operid );//操作号码
+    vOpr1Data.setValue("AS_KCPDHM", head.orderid);//单号
+    vOpr1Data.setValue("AS_KCCZLX", head.czdm);//操作类型
+    vOpr1Data.setValue("AS_KCCKDM", head.ckdm);//仓库代码 ---对应  仓/店
+    vOpr1Data.setValue("AS_KCCZRQ", $('#createTime').val());//操作日期
+    vOpr1Data.setValue("AS_XTWLDM", (head.wldm ||""));//往来单位 ---对应厂商
+    vOpr1Data.setValue("AS_KCDFCK", '');//对方仓库
+    vOpr1Data.setValue("AS_KCYSPD", '');//原始单号
+    vOpr1Data.setValue("AS_KCDJBZ",$('#createBZ').val() == '---' ? '': $('#createBZ').val());//备注-
+    vOpr1Data.setValue("AS_DJLX", head.djlx);//单据类型 RK\HZRK
+    vOpr1Data.setValue("AS_KCCZHM2", "");//对方操作号码---此处传空
+    var vOpr2 = vBiz.addCreateService("svc.invopr.invopr.save.datail", false);
+    var vOpr2Data =[];
+    for(var i = 0 ; i<dtl.AN_KCCZHH.length; i++ ){
+        var obj={};
+        obj.AS_USERID = LoginName;
+        obj.AS_WLDM = DepartmentCode;
+        obj.AS_FUNC = "svc.invopr.invopr.save.datail";
+        obj.AS_KCCZHM = head.operid;//操作号码
+        obj.AS_KCCZHM2 = '';//对方操作号码
+        obj.AS_KCPDHM = head.orderid;//单号
+        obj.AN_KCCZHH = Number(dtl.AN_KCCZHH[i]);//行号------------------
+        obj.AS_KCCZLX = head.czdm;//操作类型
+        obj.AS_XTWPDM = dtl.AS_XTWPDM[i];//商品编码--------------------------------sku
+        obj.AS_KCCKDM = head.ckdm;//仓库代码
+        obj.AS_KCDFCK = '';//对方仓库
+        obj.AS_KCCZRQ = $('#createTime').val();
+        obj.AS_XTWLDM = head.wldm;//往来单位
+        obj.AN_KCXSDJ = Number(dtl.AN_KCXSDJ[i]);//销售单价-------------------
+        obj.AN_KCCZSL = Number(dtl.AN_KCCZSL[i]);//操作数量-----------------
+        obj.AN_KCSSJE = '';//实收金额
+        obj.AN_KCWPJE = '';//成本金额
+        obj.AN_KCJSJE = '';//结算金额
+        obj.AS_KCDJBZ = $('#createBZ').val() ;//备注
+        obj.AS_DJLX = head.djlx;//单据类型
+        vOpr2Data.push(obj);
+    }
+    vOpr2.addDataArray(vOpr2Data);
+    var ip = new InvokeProc();
+    ip.addBusiness(vBiz);
+    ip.invoke(function(d){
+        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+            // todo...
+            wfy.alert("保存数据成功！");
+            $('#save').addClass('cabsdot_bosdt');
+            issave = true;
+            ischanege = true;
+        } else {
+            // todo...[d.errorMessage]
+            wfy.alert(d.errorMessage);
+        }
+    }) ;
+}
+
 /*
- * 库存操作保存表头 -----入库单
+ * 库存操作保存表头 -----入库单   ----------18.3.22 修改 作废-------
  * */
 function saveHead() {
     var vBiz = new FYBusiness("biz.invopr.invopr.save.head");

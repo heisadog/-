@@ -175,6 +175,10 @@ $(function () {
         //console.log(result)
         $(this).prev().html(num);
         countMoney(num,style,txhm,xthh);
+        if(dtlFlag){
+            auditflag=false;
+            $("#oper_save").removeClass("cabsdot_bosdt");
+        }
     });
     //数量 -
     $('body').hammer().on("tap",'.b0061 .reduce',function( event){
@@ -194,6 +198,10 @@ $(function () {
         }
         $(this).next().html(num);
         countMoney(num,style,txhm,xthh);
+        if(dtlFlag){
+            auditflag=false;
+            $("#oper_save").removeClass("cabsdot_bosdt");
+        }
     });
     //直接编辑数量
     $('body').hammer().on("tap",'.b0061 .num',function( event){
@@ -225,6 +233,10 @@ $(function () {
             input: _this.html(),
             type:'tel'
         });
+        if(dtlFlag){
+            auditflag=false;
+            $("#oper_save").removeClass("cabsdot_bosdt");
+        }
     });
     function countMoney(num,style,txhm,xthh){//num 仅做生成一条数据用。计算总价需要计算 加值！！！
         //计算 金额 并 实时 统计sku 数据！
@@ -1174,7 +1186,7 @@ var listDel = function (AS_KCCZHM,AS_DJLX,call) {
         } else {
             // todo...[d.errorMessage]
             //wfy.alert(d.errorMessage);
-            console.log(d.errorMessage)
+            wfy.alert('操作失败：'+d.errorMessage)
         }
     }) ;
 }
@@ -1201,7 +1213,7 @@ var dolistYaoHuo = function (AS_CZHM,AS_XTWLDM,type,callback) {
             }
         } else {
             // todo...[d.errorMessage]
-            wfy.alert(d.errorMessage);
+            wfy.alert('操作失败：'+d.errorMessage)
         }
     }) ;
 }
