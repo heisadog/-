@@ -80,6 +80,7 @@ function savePass(pass) {
     var encryptPass="";
     changePassStatus("encrypt",pass,function (record) {
         encryptPass=record;//密文
+        console.log(encryptPass)
     });
 
     var vBiz = new FYBusiness("biz.emp.pwdmodify.save");
