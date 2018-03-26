@@ -712,9 +712,9 @@
             html +='</div><p class="weui_toast_content">'+ (cont || "数据加载中") +'</p></div></div>';
             $(""+html).appendTo(document.body);
             $("#loadingBg").show();
-            setTimeout(function () {
-                $("#loadingBg").remove();
-            },10000)
+            // setTimeout(function () {
+            //     $("#loadingBg").remove();
+            // },10000)
         },
         "hideload":function(){
             $("#loadingBg").remove();
