@@ -27,7 +27,7 @@
             reader.readAsDataURL(f);
             reader.onload =function(e){
                 url = e.target.result;
-                console.log(url)
+                //console.log(url)
                 var imgss = new Image();
                 imgss.src = url;
                 agoimg.src=url;
