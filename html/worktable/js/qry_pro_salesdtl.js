@@ -322,6 +322,8 @@ $(function () {
         saveObj.season=getValidStr($("#season").attr("data-code"));
         saveObj.category=getValidStr($("#category").attr("data-code"));
         saveObj.unit=getValidStr($("#unit").attr("data-code"));
+
+
         if(saveObj.girard==""){
             wfy.alert("款号不能为空");
             return;
@@ -330,45 +332,75 @@ $(function () {
             if(!flag){
                 wfy.alert("只能输入字母和数字");
                 return;
+            }else {
+                if(pageFlag =="add"){
+                    var vBiz = new FYBusiness("biz.ctlitem.item.save.kscheck");
+                    var vOpr1 = vBiz.addCreateService("svc.ctlitem.item.save.kscheck", false);
+                    var vOpr1Data = vOpr1.addCreateData();
+                    vOpr1Data.setValue("AS_USERID",LoginName);
+                    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+                    vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.item.save.kscheck");
+                    vOpr1Data.setValue("AS_XTWPKS", saveObj.girard);
+                    var ip = new InvokeProc();
+                    ip.addBusiness(vBiz);
+                    //console.error(JSON.stringify(ip))
+                    ip.invoke(function(d){
+                        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+                            // todo...
+                            var res = vOpr1.getOutputPermeterMapValue(d, 'AS_CKRELT');
+                            //console.error(res)
+                            if(res == 'N'){
+                                wfy.alert('此款商品已存在,请通过原商品修改');
+                                return;
+                            }else {
+                                if(saveObj.name==""){
+                                    wfy.alert("名称不能为空");
+                                    return;
+                                }else {
+                                    var flag=saveObj.name.length;
+                                    if(flag>10){
+                                        wfy.alert("最多输入10位");
+                                        return;
+                                    }
+                                }
+                                if(saveObj.price==""){
+                                    wfy.alert("进价不能为空");
+                                    return;
+                                }else{
+                                    var flag=priceVali(saveObj.price);
+                                    if(!flag){
+                                        wfy.alert("请填写有效的进价");
+                                        return;
+                                    }
+                                }
+                                if(saveObj.saleprice==""){
+                                    wfy.alert("售价不能为空");
+                                    return;
+                                }else{
+                                    var flag=priceVali(saveObj.saleprice);
+                                    if(!flag){
+                                        wfy.alert("请填写有效的售价");
+                                        return;
+                                    }
+                                }
+                                //如果 换过图片 就执行 图片上传
+                                if(localStorage.isupdataImg == 'Y'){
+                                    imgupdate();
+                                }else {
+                                    dataSave();
+                                }
+                            }
+                        } else {
+                            // todo...[d.errorMessage]
+                            wfy.alert(d.errorMessage);
+                            return;
+                        }
+                    })
+                }
             }
         }
 
-        if(saveObj.name==""){
-            wfy.alert("名称不能为空");
-            return;
-        }else {
-            var flag=saveObj.name.length;
-            if(flag>10){
-                wfy.alert("最多输入10位");
-                return;
-            }
-        }
-        if(saveObj.price==""){
-            wfy.alert("进价不能为空");
-            return;
-        }else{
-            var flag=priceVali(saveObj.price);
-            if(!flag){
-                wfy.alert("请填写有效的进价");
-                return;
-            }
-        }
-        if(saveObj.saleprice==""){
-            wfy.alert("售价不能为空");
-            return;
-        }else{
-            var flag=priceVali(saveObj.saleprice);
-            if(!flag){
-                wfy.alert("请填写有效的售价");
-                return;
-            }
-        }
-        //如果 换过图片 就执行 图片上传
-        if(localStorage.isupdataImg == 'Y'){
-            imgupdate();
-        }else {
-            dataSave();
-        }
+
 
     });
 
@@ -622,7 +654,8 @@ function priceVali(price) {
 }
 //  款式验证
 function checkkshi(style) {
-    var reg = /^[A-Za-z0-9]+$/;
+    //var reg = /^[A-Za-z0-9]+$/;
+    var reg = /^[A-Za-z0-9\-]+$/;
     if (reg.test(style)) {
         return true;
     }else{
