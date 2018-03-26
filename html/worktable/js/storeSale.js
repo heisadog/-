@@ -74,7 +74,7 @@ $(function () {
                 guidearr.push(ress[i].xtyhxm);
             }
             if(guidearr.val_in_array(localStorage.czry)){
-                var ind = guidearr.valueOf(localStorage.czry);
+                var ind = guidearr.indexOf(localStorage.czry);
                 guidedm = ress[ind].xtyhdm;
                 $("#createGuide").val(localStorage.czry);
             }else {
