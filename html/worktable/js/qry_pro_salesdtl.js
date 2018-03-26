@@ -198,7 +198,6 @@ $(function () {
     //点击 新增按钮 弹出窗口
     $('body').hammer().on('tap', '.comboadd', function (event) {
         event.stopPropagation();
-
         var typdcode=$(this).parent().find('input')[0].name;
         var typeid=$(this).parent().find('input')[0].id;
 
@@ -262,31 +261,13 @@ $(function () {
         var type=$("#addwindow").attr("data-type");
         var code=getValidStr($("#field_code").val());
         var name=getValidStr($("#field_name").val());
-
-        /*if(code==""){
-            wfy.alert("代码不能为空");
-            return;
-        }
-
-        if(type!="size"&&name==""){
-            wfy.alert("名称不能为空");
-            return;
-        }*/
-
         if(name==""){
             wfy.alert("名称不能为空");
             return;
         }
-
-
-        /*$("#"+type).val(name);
-        $("#"+type).attr("data-code",code);*/
-
         addData_save(type,code,name);
-
         addWindowReset();
         getComboList();
-
         wfy.closeWin("addwindow");
         $('#addwindow').css("bottom","-270px");
 
@@ -301,6 +282,23 @@ $(function () {
         wfy.closeWin("addwindow");
         $('#addwindow').css("bottom","-270px");
     });
+    //查询明细信息
+    if(recordcode==""){
+        pageFlag="add";
+        $("#unit").val("件");
+        $("#unit").attr("data-code","01");
+        $("#girard").removeAttr("readonly");
+        $("#name").removeAttr("readonly");
+        $("#price").removeAttr("readonly");
+        $("#saleprice").removeAttr("readonly");
+    }else{
+        pageFlag="edit";
+        getDataDtl(recordcode);
+        $("#name").removeAttr("readonly");
+        $("#price").removeAttr("readonly");
+        $("#saleprice").removeAttr("readonly");
+    }
+
 
     //点击保存按钮
     //onkeyup="this.value=this.value.replace(/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/g,'')"
@@ -323,7 +321,6 @@ $(function () {
         saveObj.category=getValidStr($("#category").attr("data-code"));
         saveObj.unit=getValidStr($("#unit").attr("data-code"));
 
-
         if(saveObj.girard==""){
             wfy.alert("款号不能为空");
             return;
@@ -332,96 +329,98 @@ $(function () {
             if(!flag){
                 wfy.alert("只能输入字母和数字");
                 return;
-            }else {
-                if(pageFlag =="add"){
-                    var vBiz = new FYBusiness("biz.ctlitem.item.save.kscheck");
-                    var vOpr1 = vBiz.addCreateService("svc.ctlitem.item.save.kscheck", false);
-                    var vOpr1Data = vOpr1.addCreateData();
-                    vOpr1Data.setValue("AS_USERID",LoginName);
-                    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
-                    vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.item.save.kscheck");
-                    vOpr1Data.setValue("AS_XTWPKS", saveObj.girard);
-                    var ip = new InvokeProc();
-                    ip.addBusiness(vBiz);
-                    //console.error(JSON.stringify(ip))
-                    ip.invoke(function(d){
-                        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
-                            // todo...
-                            var res = vOpr1.getOutputPermeterMapValue(d, 'AS_CKRELT');
-                            //console.error(res)
-                            if(res == 'N'){
-                                wfy.alert('此款商品已存在,请通过原商品修改');
-                                return;
-                            }else {
-                                if(saveObj.name==""){
-                                    wfy.alert("名称不能为空");
-                                    return;
-                                }else {
-                                    var flag=saveObj.name.length;
-                                    if(flag>10){
-                                        wfy.alert("最多输入10位");
-                                        return;
-                                    }
-                                }
-                                if(saveObj.price==""){
-                                    wfy.alert("进价不能为空");
-                                    return;
-                                }else{
-                                    var flag=priceVali(saveObj.price);
-                                    if(!flag){
-                                        wfy.alert("请填写有效的进价");
-                                        return;
-                                    }
-                                }
-                                if(saveObj.saleprice==""){
-                                    wfy.alert("售价不能为空");
-                                    return;
-                                }else{
-                                    var flag=priceVali(saveObj.saleprice);
-                                    if(!flag){
-                                        wfy.alert("请填写有效的售价");
-                                        return;
-                                    }
-                                }
-                                //如果 换过图片 就执行 图片上传
-                                if(localStorage.isupdataImg == 'Y'){
-                                    imgupdate();
-                                }else {
-                                    dataSave();
-                                }
-                            }
-                        } else {
-                            // todo...[d.errorMessage]
-                            wfy.alert(d.errorMessage);
-                            return;
-                        }
-                    })
-                }
             }
         }
+        if(saveObj.name==""){
+            wfy.alert("名称不能为空");
+            return;
+        }else {
+            var flag=saveObj.name.length;
+            if(flag>10){
+                wfy.alert("最多输入10位");
+                return;
+            }
+        }
+        if(saveObj.price==""){
+            wfy.alert("进价不能为空");
+            return;
+        }else{
+            var flag=priceVali(saveObj.price);
+            if(!flag){
+                wfy.alert("请填写有效的进价");
+                return;
+            }
+        }
+        if(saveObj.saleprice==""){
+            wfy.alert("售价不能为空");
+            return;
+        }else{
+            var flag=priceVali(saveObj.saleprice);
+            if(!flag){
+                wfy.alert("请填写有效的售价");
+                return;
+            }
+        }
+        if(pageFlag == "add"){
+            checkKS(function (res) {
+                console.log(res)
+                if(res == 'N'){
+                    wfy.alert('此款商品已存在,请通过原商品修改');
+                    return;
+                }
+                if(localStorage.isupdataImg == 'Y'){
+                    imgupdate();
+                }else {
+                    dataSave();
+                }
 
+            })
+        }else {
+            if(localStorage.isupdataImg == 'Y'){
+                imgupdate();
+            }else {
+                dataSave();
+            }
 
+        }
+        //如果 换过图片 就执行 图片上传
 
     });
-
-    //查询明细信息
-    if(recordcode==""){
-        pageFlag="add";
-        $("#unit").val("件");
-        $("#unit").attr("data-code","01");
-        $("#girard").removeAttr("readonly");
-        $("#name").removeAttr("readonly");
-        $("#price").removeAttr("readonly");
-        $("#saleprice").removeAttr("readonly");
-    }else{
-        pageFlag="edit";
-        getDataDtl(recordcode);
-        $("#name").removeAttr("readonly");
-        $("#price").removeAttr("readonly");
-        $("#saleprice").removeAttr("readonly");
-    }
-
 });
+//验证 款式是否存在
+var checkKS = function (callback) {
+    var vBiz = new FYBusiness("biz.ctlitem.item.save.kscheck");
+    var vOpr1 = vBiz.addCreateService("svc.ctlitem.item.save.kscheck", false);
+    var vOpr1Data = vOpr1.addCreateData();
+    vOpr1Data.setValue("AS_USERID",LoginName);
+    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.item.save.kscheck");
+    vOpr1Data.setValue("AS_XTWPKS", saveObj.girard);
+    var ip = new InvokeProc();
+    ip.addBusiness(vBiz);
+    //console.error(JSON.stringify(ip))
+    ip.invoke(function(d){
+        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+            // todo...
+            var res = vOpr1.getOutputPermeterMapValue(d, 'AS_CKRELT');
+            //console.error(res)
+            if(typeof callback === 'function'){
+                callback(res);
+            }
+        } else {
+            // todo...[d.errorMessage]
+            wfy.alert(d.errorMessage);
+            return;
+        }
+    })
+}
+
+
+
+
+
+
+
 function imgname() {
     var time = new Date();
     var name = 'upload'+time.getTime();
@@ -833,7 +832,7 @@ function imgupdate() {
         processData: false,  // 告诉jQuery不要去处理发送的数据
         contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
         success: function(xhr){
-            console.log(xhr);
+            //console.log(xhr);
             dataSave();
             wfy.hideload();
         }
