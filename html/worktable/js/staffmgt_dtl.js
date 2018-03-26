@@ -239,7 +239,8 @@ function changePassStatus(type,record,callback) {
 function mobilephoneVali(mobile) {
     var reg = /^1[0-9]\d{9}$/;
 
-    var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+    //var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+    var myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (myreg.test(mobile)) {
         return true;
     }else{
