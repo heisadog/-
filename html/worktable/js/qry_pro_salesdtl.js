@@ -44,6 +44,65 @@ var flag="list";//颜色尺码新增点击页面的类型，默认为列表点�
 var img = '';
 var extname = ''
 $(function () {
+    $('body').hammer().on('tap','#check_img',function (event) {
+        event.stopPropagation();
+        var src = $(this).attr('src');
+        var clih = document.body.clientHeight;
+        var cliw = document.body.clientWidth;
+        var top = (clih-cliw-50)/2;
+        $('.iosalert').removeClass('none');
+        $('#iosImg').attr('src',src).css({
+            'margin-top':top
+        })
+        setTimeout(function () {
+            $('#iosImg').css({
+                'transform': 'scale(1)',
+                '-webkit-transform': 'scale(1)'
+            });
+        },0)
+
+    });
+    $('body').hammer().on('tap','#edit',function (event) {
+        event.stopPropagation();
+        var src = $('#check_img').attr('src');
+        $('#iosImg').attr('src',src)
+        $("#check_img").cropper({
+            aspectRatio: 1 / 1,
+            viewMode : 1,
+            rotatable: true,
+            guides :false,//裁剪框虚线 默认true有
+            dragMode : "move",
+            background : true,// 容器是否显示网格背景
+            movable : true,//是否能移动图片
+            cropBoxMovable :false,//是否允许拖动裁剪框
+            cropBoxResizable :false,//是否允许拖动 改变裁剪框大小
+        });
+        $("#check_img").cropper('replace', src);
+    });
+    $('body').hammer().on('tap','#close',function (event) {
+        event.stopPropagation();
+        setTimeout(function () {
+            $('#iosImg').css({
+                'transform': 'scale(0.7)',
+                '-webkit-transform': 'scale(0.7)'
+            });
+            $('.iosalert').addClass('none');
+        },0)
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //选择图片
     $('body').hammer().on('change','#uploadImage',function (event) {
