@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="css/worktable.css"/>
     <link rel="stylesheet" href="css/bill.css">
     <link rel="stylesheet" type="text/css" href="../home/css/home.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="../../public/css/cropper.min.css"/>-->
     <title></title>
 </head>
 <body>
@@ -121,7 +122,32 @@
 
 </div>
 
+
+<div class="iosalert none">
+    <img src="" alt="" id="iosImg">
+    <div style="width: 100%;line-height: 60px;color: #fff;text-align: center">
+        <!--<div id="edit">编辑</div>-->
+        <div id="close">关闭</div>
+    </div>
+</div>
+<style>
+    .iosalert{
+        width: 100%;height:100%;background-color: #000;
+        position: fixed;left:0; ;top:0;
+        }
+    #iosImg{
+        display: block;
+        width: 100%;
+        transform-style:preserve-3d;-webkit-transform-style:preserve-3d;backface-visibility:hidden;
+        -webkit-backface-visibility:hidden;perspective:1000;-webkit-perspective:1000;
+        transition:all .2s;-webkit-transition:all .2s;
+        transform:scale(0.7);-webkit-transform:scale(0.7);}
+    #edit,#close{
+
+    }
+</style>
 <script type="text/javascript" src="../../public/frame/self.js"></script>
+<!--<script type="text/javascript" src="../../public/frame/cropper.min.js"></script>-->
 <script type="text/javascript" src="js/qry_pro_salesdtl.js"></script>
 </body>
 </html>
