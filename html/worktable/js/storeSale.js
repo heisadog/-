@@ -231,6 +231,7 @@ $(function () {
         }
         if(pageName == "msa030_0200"){
             $('#pay_style li .pay_inputandicon').removeClass('poschecked');
+            $('#pay_style li').removeClass('poschecked');
             $('#pay_style li .bill_radio').removeClass('bill_radio_ch');
             $(this).addClass('poschecked');
             $(this).parent('li').addClass('poschecked');
