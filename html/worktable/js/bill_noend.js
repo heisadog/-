@@ -60,13 +60,13 @@ $(function () {
     $("body").hammer().on("tap", ".btngo", function (event) {
         event.stopPropagation();
         var czhm = $(this).parent().attr("data-kcczhm");//操作号码
-        saveFinalOrd(czhm);
+        saveFinalOrds(czhm);
     });
     //进入明细页
     $('body').hammer().on("tap",'.wfyContList .list_item_1',function (event) {
         event.stopPropagation();
         var clicked = $(event.target);//触发元素
-        console.log(clicked);
+        //console.log(clicked);
         var czhm = $(this).attr('data-czhm');
         localStorage.yd_czhm = czhm;
         wfy.goto('bill_noend_dtl');
@@ -179,135 +179,8 @@ function pageCreate(rows) {
 //================================================================================
 
 
-
-
-
-
-
-
-
-
-function factPay()
-{
-    var poppayid = $("#poppayid").val();
-    var popauthcode = $("#popauthcode").val();
-
-    if(!poppayid)
-    {
-        wfy.alert("未能获取到支付码");
-        return false;
-    }
-
-    if(!popauthcode)
-    {
-        wfy.alert("未能获取到验证码信息");
-        return false;
-    }
-
-    var payobj = {
-        "requestName"    :"posPaymentService",
-        "out_request_no" : poppayid,
-        "identityId"     : curpreordno,
-        "authCode"       : popauthcode,
-        "opruser"        : LoginName
-    };
-    console.log(payobj);
-    //支付内容
-    var callPay = new CallService("posPaymentService", _wfy_order_svr); //创建一个调用外部服务的方法
-    wfy.loading("cover", "", "正在发起支付请稍后...");
-    callPay.invoke(payobj, function(d)
-        {
-            wfy.unload();
-            if(d.success) //调用成功微信支付成功
-            {
-//              console.info(d);
-                if(d.payStatus == "USERPAYING") //支付中可能需要输入密码延迟10秒后关闭结果
-                {
-                    wfy.loading("正在等待密码验证...");
-                    setTimeout(function(){qryPayResult(poppayid);}, 15000 )
-                }else if(d.payStatus=="SUCCESS")  //成功直接回执结果
-                {
-                    //执行订单执行服务
-                    saveFinalOrd();
-                    // setPayStatus();
-                }
-            }
-            else
-            {
-                alert(d.errorMessage);
-            }
-        },
-        function()
-        {
-            alert(JSON.stringify(data));
-        },
-        true);
-}
-
-//查询支付结果
-function qryPayResult(paytradeno) {
-    var qryPayResult =
-        {   "out_request_no":paytradeno,
-            "identityId":curpreordno,
-            "requestNo":paytradeno,
-            "requestName":"posTradeQryService"
-        };
-    var callpayqry = new CallService("posTradeQryService", _wfy_order_svr); //创建一个调用外部服务的方法
-    wfy.loading("cover", "正在等待输入密码并等待查询支付结果...", "正在等待输入密码并等待查询支付结果...");
-    callpayqry.invoke(qryPayResult, function(d)
-        {
-            wfy.unload();
-            if(d.success) //调用成功
-            {
-                console.info(d);
-                saveFinalOrd();
-                ///setPayStatus(); //设置状态
-                //funs.goto("orderFinish");
-            }
-            else
-            {
-                alert(d.errorMessage);
-            }
-        },
-        function()
-        {
-            alert(JSON.stringify(data));
-        },
-        true);
-};
-//保存现金支付
-
-
-
-
-//销售收银更新支付状态  （用于现金 和 预付款 支付）
-function updatePayStatus(AS_KCCZHM) {
-    var biz = new FYBusiness('biz.pos.paystatus.upt');
-    var svc = biz.addCreateService("svc.pos.paystatus.upt",false);
-    var data = svc.addCreateData();
-    data.setValue("AS_USERID", LoginName);
-    data.setValue("AS_WLDM", DepartmentCode);
-    data.setValue("AS_FUNC", "svc.pos.paystatus.upt");
-    data.setValue("AS_KCCZHM",AS_KCCZHM);
-    var ip = new InvokeProc("true","proc");
-    ip.addBusiness(biz);
-    ip.invoke(function (res) {
-        if(res && res.success)
-        {
-            wfy.closePay();
-            console.info(res);
-            saveFinalOrd(czhm); //支付成功将订单转换为正式订单
-        }else{
-            wfy.closePay();
-            wfy.hideload();
-            wfy.alert("支付状态更新失败！");
-            //funs.goto("myOrder");
-        }
-    });
-}
-
 //将预订单转换为最终的订单保存最终的订单信息
-function saveFinalOrd(czhm) {
+function saveFinalOrds(czhm) {
     wfy.showload();
     var biz = new FYBusiness("biz.pos.preposexec.save");
     var svc = biz.addCreateService("svc.pos.preposexec.save", false);
