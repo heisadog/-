@@ -244,10 +244,10 @@
     margin-left: 12px;
     margin-right: 12px;
     width: auto;
-    height: 60px;
+    height: 72px;
 }
 .bill_sku_product .bill_sku_product_name{
-    line-height: 36px;
+    line-height: 44px;
     color: #000;
 }
 .bill_sku_product .b001{
@@ -259,6 +259,7 @@
     width: 36px;
     height: 36px;
     color: red;
+    font-size:16px;
     font-family: "wfyfont";
 }
 
@@ -268,7 +269,7 @@
 }
 .bill_sku_dtl li{
     width: 100%;
-    height: 36px;line-height: 36px;
+    height: 44px;line-height: 44px;
     position: relative;
 }
 .bill_sku_dtl li .bill_item,.bill_sku_dtl li .bill_drop{
@@ -276,7 +277,7 @@
     left: 0px;
     top: 0;
     width: 100%;
-    height: 36px;
+    height: 44px;
     z-index: 22;
     background-color: #fff;
     border-top: #f2f2f2 solid 1px;
@@ -302,17 +303,20 @@
 .bill_sku_dtl li .bill_drop span{
     float: right;
     width: 40px;
-    height: 36px;
+    height:44px;
     text-align: center;
     font-family: "wfyfont";
     margin: 0px 5px;
     color: red;
 }
 .bill_sku_dtl li .bill_drop span.mxdtl_add{
-    font-size:20px;
+    font-size:28px;
 }
 .bill_sku_dtl li .bill_drop span.mxdtl_reduce{
-    font-size:20px;
+    font-size:28px;
+}
+.bill_sku_dtl li .bill_drop span.mxdtl_delete{
+    font-size:18px;
 }
 /*dib底部弹出*/
 .bill_bot_to_top{
@@ -405,27 +409,34 @@
 }
 .b006 li{
     width: 100%;
-    line-height: 46px;
+    line-height: 50px;
     border-bottom: #d9d9d9 solid 1px;
     font-size:14px;
     color: #000;
     font-weight: 900;
 }
+.b006 li span.sku_style_num{
+    padding-left: 20px;
+    font-size:12px;
+    font-weight:normal;
+}
 .b006 li em{
-    display: inline-block;
-    width: 40px;
+    float: left;
+    width: 50px;
     text-align: center;
 
 }
 .b006 li em.add,.b006 li em.reduce{
     font-family: 'wfyfont';
-    font-size:16px;
+    font-size:22px;
     color: #000;
 }
 
 .b006 .b0061{
     float: right;
-    line-height: 44px;
+    width: 150px;
+    height: 46px;
+    line-height: 46px;
 }
 .b006{
     width: calc(100% - 24px);
