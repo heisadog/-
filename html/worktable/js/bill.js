@@ -379,7 +379,7 @@ $(function () {
         var ind = $(this).find(".bill_drop span").length;
         var indclass = "x_left_160";
         if(ind == 3){
-            indclass = "x_left_140";
+            indclass = "x_left_160";
         }
         if(ind == 0){//实现了取消 滑动
             indclass ='';
@@ -528,7 +528,7 @@ function showDataDtl() {
                         '<div class="bill_item thd ts200" data-code="'+cont[m].sku+'" data-barcode="'+cont[m].txhm+'">'+
                         '<span>'+cont[m].color+'</span>'+
                         '<span>'+cont[m].style+'</span>'+
-                        '<span>'+cont[m].num+'*'+cont[m].price+'='+accMul(cont[m].num,cont[m].price)+'</span>'+
+                        '<span>'+cont[m].num+' * '+cont[m].price+' = '+accMul(cont[m].num,cont[m].price)+'</span>'+
                         '</div>'+
                         '<div class="bill_drop" data-index ="'+m+'">'+
                         '<span class="mxdtl_add">&#xe6b9</span>'+
@@ -561,7 +561,7 @@ function showContDtl(dataindex,cont,contindex) {
         html+= '<li class="list_swiper">'+div+
                         '<span>'+cont[m].color+'</span>'+
                         '<span>'+cont[m].style+'</span>'+
-                        '<span>'+cont[m].num+'*'+cont[m].price+'='+accMul(cont[m].num,cont[m].price)+'</span>'+
+                        '<span>'+cont[m].num+' * '+cont[m].price+' = '+accMul(cont[m].num,cont[m].price)+'</span>'+
                     '</div>'+
                     '<div class="bill_drop" data-index ="'+m+'">'+
                         '<span class="mxdtl_add">&#xe6b9</span>'+
@@ -685,6 +685,7 @@ var doProdList = function (res) {
                             '<div class="gx_list_1_cont_item">'+
                                 '<div>'+res[i].xtwpks+'</div>'+
                                 '<div>'+res[i].xtwpmc+'</div>'+
+                                '<div>总库存数：'+res[i].kczksl+'</div>'+
                                 '<div class="checknum">已选(<span>'+0+'</span>)件</div>'+
                             '</div>'+
                         '</div>'+
@@ -713,7 +714,7 @@ function getProdDtl(xtwpks,callback){
         if ((d.iswholeSuccess === 'Y' || d.isAllBussSuccess === 'Y')) {
             var res = vOpr1.getResult(d, 'AC_RESULT').rows || [];
             result = res;
-            console.log(res);
+            //console.log(res);
             if(typeof callback === 'function'){
                 callback(res)
             }
@@ -737,6 +738,7 @@ var doProdDtl = function (res) {
     var skuarr = [];
     var colorstr='',stylestr='';
     if(res.length != 0){
+        $('#b011_num').html(ksmc);
         colorarr.push(res[0].xtysmc);
         skuarr.push(res[0].xtwpdm)
         for(var i = 1; i< res.length; i++){
@@ -781,9 +783,9 @@ var doProdDtl = function (res) {
             html +='<ul class="b006 none" id="sku_style'+a+'">';
             var this_color = colorarr[a];
             for(var b = 0;b < stylearr.length;b++){
-                var this_style = stylearr[b]; //这俩变量用于获取对应的 sku
+                var this_style = stylearr[b]; //这俩变量用于获取对应的 sku  getNum
                 var this_sku = getSku(this_color,this_style);
-                html +='<li><span class="sku_style">'+stylearr[b]+'</span> <div class="b0061">' +
+                html +='<li><span class="sku_style">'+stylearr[b]+'</span><span class="sku_style_num">库存：('+getNum(this_color,this_style)+')</span> <div class="b0061">' +
                     '<em class="reduce">&#xe66a</em>' +
                     '<em class="num" ' +
                     'data-sku ="'+this_sku+' " ' +
@@ -1583,12 +1585,12 @@ function getStyle(color) {
     }
     return arr;
 }
-//通过 颜色+型号（即sku） 从 临时数据中获取 数量
+//通过 颜色+型号（即sku） 获取sku 对应的库存
 function getNum(color,style) {
     var num;
-    for(var i = 0;i<tempdata.length;i++){
-        if(color == tempdata[i].color && style ==tempdata[i].style){
-            num = tempdata[i].num;
+    for(var i = 0;i<result.length;i++){
+        if(color == result[i].xtysmc && style ==result[i].xtwpxh){
+            num = result[i].kczksl;
         }
     }
     return num;
