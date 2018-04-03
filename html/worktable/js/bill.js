@@ -189,7 +189,7 @@ $(function () {
         var txhm = $(this).next().attr('data-tm');
         var xthh = $(this).next().attr('data-hh');
         var style = $(this).parents('li').find('.sku_style').html();//获取 型号 L M
-        if(pageName == 'msa030_0100'){
+        if(pageName == 'msa030_0100' || pageName == 'msa030_0800'){
             num --;
         }else{
             if(num>0){
@@ -218,7 +218,7 @@ $(function () {
             title: "请输入编辑数量",
             onOK: function(text) {
                 num = parseInt(Number(text)) || 0;
-                if(pageName != 'msa030_0100'){//销售收银
+                if(pageName != 'msa030_0100' || pageName != 'msa030_0800'){//销售收银
                     if(num < 0){
                         wfy.alert('不允许输入负数');
                         return false;
@@ -447,7 +447,7 @@ $(function () {
             data_index = $(this).parents('.bill_sku').attr('data-index');
             cont_index = $(this).parents('.bill_drop').attr('data-index');
             var cont = data[data_index].cont;
-            if(pageName == 'msa030_0100'){
+            if(pageName == 'msa030_0100' || pageName == 'msa030_0800'){
                 if(Number(cont[cont_index].num) == 1){
                     cont[cont_index].num = -1;
                 }else {
