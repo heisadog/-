@@ -50,6 +50,7 @@ $(function () {
     $('body').hammer().on('tap','.list_item_1',function (event) {
         event.stopPropagation();
         localStorage.recordcode=getValidStr($(this).attr("data-code"));
+        localStorage.kczksl=getValidStr($(this).attr("data-kczksl"));
         wfy.pagegoto('qry_pro_salesdtl');
     });
 
@@ -202,7 +203,7 @@ function createPage(rows){
         var temp=rows[i];
 
         htmlStr+='<div class="list_1 list_swiper" style="height:84px; font-size:13px;">' +
-            '<div class="list_item_1 thd ts200" data-code="'+temp.xtwpks+'">' +
+            '<div class="list_item_1 thd ts200" data-code="'+temp.xtwpks+'" data-kczksl="'+temp.kczksl+'">' +
             '<div class="item_line">' +
             '<span class=""><span style="color:#000">'+temp.xtwpks+'</span></span>' +
             '</div>' +

@@ -326,6 +326,8 @@ $(function () {
         saveObj.company=getValidStr($("#company").attr("data-code"));
         saveObj.price=getValidStr($("#price").val());
         saveObj.saleprice=getValidStr($("#saleprice").val());
+        saveObj.wholesalePrice=getValidStr($("#wholesalePrice").val());
+        saveObj.storeNum=getValidStr($("#storeNum").val());
         saveObj.season=getValidStr($("#season").attr("data-code"));
         saveObj.category=getValidStr($("#category").attr("data-code"));
         saveObj.unit=getValidStr($("#unit").attr("data-code"));
@@ -357,6 +359,16 @@ $(function () {
             var flag=priceVali(saveObj.price);
             if(!flag){
                 wfy.alert("请填写有效的进价");
+                return;
+            }
+        }
+        if(saveObj.wholesalePrice==""){
+            wfy.alert("批发不能为空");
+            return;
+        }else{
+            var flag=priceVali(saveObj.wholesalePrice);
+            if(!flag){
+                wfy.alert("请填写有效的批发价");
                 return;
             }
         }
@@ -571,6 +583,7 @@ function queryDataDeal(rows) {
         companyname:rows[0].qsgymc,
         price:rows[0].wpcbdj,
         saleprice:rows[0].wpxsdj,
+        wholesalePrice:rows[0].wppfdj,
         season:rows[0].xtwpjj,
         seasonname:"",
         category:rows[0].xtwplb,
@@ -619,6 +632,8 @@ function queryDataDeal(rows) {
     $("#company").attr("data-code",data.company);
     $("#price").val(data.price);
     $("#saleprice").val(data.saleprice);
+    $("#wholesalePrice").val(data.wholesalePrice);
+    $("#storeNum").val(localStorage.kczksl);
     $("#season").val(data.seasonname);
     $("#season").attr("data-code",data.season);
     $("#category").val(data.categoryname);
@@ -865,6 +880,8 @@ function dataSave(){
             vOpr1Data.setValue("AS_WPQSGY", saveObj.company);//厂商
             vOpr1Data.setValue("AN_WPCBDJ", saveObj.price);//进价(成本价)
             vOpr1Data.setValue("AN_WPXSDJ", saveObj.saleprice);//售价
+            vOpr1Data.setValue("AN_WPPFDJ", saveObj.wholesalePrice);//批发价
+            vOpr1Data.setValue("AN_QCKCSL", saveObj.storeNum);//库存数量
             vOpr1Data.setValue("AS_XTWPJJ", saveObj.season);//季节
             vOpr1Data.setValue("AS_XTWPLB", saveObj.category);//类别
             vOpr1Data.setValue("AS_XTJLDW", saveObj.unit);//计量单位

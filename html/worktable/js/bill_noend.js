@@ -111,7 +111,7 @@ function pageCreate(rows) {
             b = '<div class="list_item_btn btngo">转单</div>';
         }else {
             b = '<div class="list_item_btn btnde">取消</div>' +
-                '<div class="list_item_btn btnpay" style="background-color:#04BE02;">支付</div>';
+                '<div class="list_item_btn btnpay" style="background-color:#04BE02;">收银</div>';
         }
         html+='<div class="list_1 list_swiper" style="height:90px; font-size:13px;" ' +
             'data-hykyed="'+result[i].hykyed+'" ' +

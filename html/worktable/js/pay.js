@@ -48,7 +48,7 @@ var payHtml = '<li data-type="cash" data-typedm="01" class="">'+
                         '<div class="bill_pay_icon">&#xe637</div>'+
                         '<span>现<i class="hidden">大</i>金</span>'+
                         '<div class="bill_inp_bx">'+
-                             '<input type="tel" class="billInput" placeholder="￥" >'+
+                             '<input type="number" class="billInput" placeholder="￥" >'+
                         '</div>'+
                     '</div>'+
                     '<div class="bill_radio_close">&#xe69a</div>'+
@@ -59,7 +59,7 @@ var payHtml = '<li data-type="cash" data-typedm="01" class="">'+
                         '<div class="bill_pay_icon">&#xe61e</div>'+
                         '<span>钱<em class="hidden">大</em>包</span>'+
                         '<div class="bill_inp_bx">'+
-                             '<input type="tel" class="billInput" placeholder="￥">'+
+                             '<input type="number" class="billInput" placeholder="￥">'+
                         '</div>'+
                     '</div>'+
                     '<div class="bill_radio_close">&#xe69a</div>'+
@@ -69,7 +69,7 @@ var payHtml = '<li data-type="cash" data-typedm="01" class="">'+
                         '<div class="bill_pay_icon">&#xe606</div>'+
                         '<span>刷<i class="hidden">大</i>卡</span>'+
                         '<div class="bill_inp_bx">'+
-                             '<input type="tel" class="billInput" placeholder="￥">'+
+                             '<input type="number" class="billInput" placeholder="￥">'+
                         '</div>'+
                     '</div>'+
                     '<div class="bill_radio_close">&#xe69a</div>'+
@@ -79,7 +79,7 @@ var payHtml = '<li data-type="cash" data-typedm="01" class="">'+
                         '<div class="bill_pay_icon">&#xe677</div>'+
                         '<span>微<i class="hidden">大</i>信</span>'+
                         '<div class="bill_inp_bx">'+
-                             '<input type="tel" class="billInput" placeholder="￥">'+
+                             '<input type="number" class="billInput" placeholder="￥">'+
                         '</div>'+
                     '</div>'+
                     '<div class="bill_radio_close">&#xe69a</div>'+
@@ -89,7 +89,7 @@ var payHtml = '<li data-type="cash" data-typedm="01" class="">'+
                         '<div class="bill_pay_icon">&#xe67c</div>'+
                         '<span>支付宝</span>'+
                         '<div class="bill_inp_bx">'+
-                             '<input type="tel" class="billInput" placeholder="￥">'+
+                             '<input type="number" class="billInput" placeholder="￥">'+
                         '</div>'+
                     '</div>'+
                     '<div class="bill_radio_close">&#xe69a</div>'+

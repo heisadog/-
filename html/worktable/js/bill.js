@@ -48,18 +48,7 @@ var proimg = '';
 var stocktaking = ["","全盘","按款抽盘","按款色抽盘",'按款色码抽盘'];
 $(function () {
     var proxy={};
-    // var proxy = new Proxy({}, {
-    //     get : function( target , prop ) {
-    //         ischanege = false;
-    //         $('#save').removeClass('cabsdot_bosdt');
-    //         return target[prop];
-    //     },
-    //     set : function( target, prop, value) {
-    //         ischanege = false;
-    //         $('#save').removeClass('cabsdot_bosdt');
-    //         target[prop] = value;
-    //     }
-    // });
+
     //基本信息的伸缩功能   shang &#xe6a5  xia &#xe6a6
     wfy.tap('#slideup',function (that) {
         var dm = $(that).attr('data-win');
@@ -72,7 +61,7 @@ $(function () {
             $('.bill_head_cont').removeClass('bill_slidedown').addClass('bill_slideup');
         }
     })
-    // 监测 输入框
+    // 监测 输入框 的 搜索按钮
     $("#searchpro").on('keypress',function(e) {
         var keycode = e.keyCode;
         var searchName = $(this).val();
@@ -84,6 +73,14 @@ $(function () {
                 $('#bill_bot_to_top').removeClass('y100');
             })
         }
+    });
+    //实时监测 input
+    $('#searchpro').bind('input propertychange', function() {
+        var searchName = $(this).val();
+        getProdList(searchName,function (res) {
+            doProdList(res);
+            $('#bill_bot_to_top').removeClass('y100');
+        })
     });
     //选择时间
     $("#createTime").datetimePicker({
@@ -117,28 +114,73 @@ $(function () {
     //点击商品
     $('body').hammer().on('tap','#ks_list li',function (event) {
         event.stopPropagation();
-        ksdm = $(this).attr('data-ksdm');
-        ksmc = $(this).attr('data-ksmc');
-        jldw = $(this).attr('data-jldw');
-        proimg = $(this).attr('data-img');
-        $('#b011_img').attr('src',(wfy.empty(proimg)? "../../public/img/onerror.png" : _wfy_pic_ip+proimg));
-        $('#b011_mc').html(ksmc);
-        getProdDtl(ksdm,function (res) {
-            var objdata = {};
-            objdata['ksdm'] = ksdm;
-            objdata['cont'] = [];
-            objdata['ksmc'] = ksmc;
-            var arr = [];
-            for(var i = 0; i< data.length; i++){
-                arr.push(data[i].ksdm);
+        //新增点击查看图片功能，点击到图片 是展示 图，其他部位 进行下一个操作  通过判断触发元素 是不是img 来划分，因为之前的程序已经写好，所以这么做
+        var clicked = $(event.target);//触发元素
+        var parentDom = clicked.parents("li");//指向父级元素
+        //console.error(clicked.attr('id')) 由于 该结构中只有img 有id
+        if(!wfy.empty(clicked.attr('id'))){
+            //查看大图
+            var src = clicked.attr('src');
+            if(!wfy.empty(src)){
+                var clih = window.innerHeight;
+                var cliw = window.innerWidth;
+                var top = (clih-cliw)/2;
+                $('.iosalert').removeClass('none');
+                $('#iosImg').attr('src',src).css({
+                    'margin-top':top
+                })
+                setTimeout(function () {
+                    $('#iosImg').css({
+                        'transform': 'scale(1)',
+                        '-webkit-transform': 'scale(1)'
+                    });
+                },0)
             }
-            if(!arr.val_in_array(ksdm)){
-                data.push(objdata)
-            }
-            //console.log(res);
-            doProdDtl(res);
-            wfy.open('storeBox');
-        })
+        }else {
+            ksdm = parentDom.attr('data-ksdm');
+            ksmc = parentDom.attr('data-ksmc');
+            jldw = parentDom.attr('data-jldw');
+            proimg = parentDom.attr('data-img');
+            $('#b011_img').attr('src',(wfy.empty(proimg)? "../../public/img/onerror.png" : _wfy_pic_ip+proimg));
+            $('#b011_mc').html(ksmc);
+            getProdDtl(ksdm,function (res) {
+                var objdata = {};
+                objdata['ksdm'] = ksdm;
+                objdata['cont'] = [];
+                objdata['ksmc'] = ksmc;
+                var arr = [];
+                for(var i = 0; i< data.length; i++){
+                    arr.push(data[i].ksdm);
+                }
+                if(!arr.val_in_array(ksdm)){
+                    data.push(objdata)
+                }
+                //console.log(res);
+                doProdDtl(res);
+                wfy.open('storeBox');
+            })
+        }
+
+    })
+    //弹出的 选择中 点击图片 大图
+    $('body').hammer().on('tap','#b011_img',function (event) {
+        event.stopPropagation();
+        var src = $(this).attr('src');
+        if(!wfy.empty(src)){
+            var clih = window.innerHeight;
+            var cliw = window.innerWidth;
+            var top = (clih-cliw)/2;
+            $('.iosalert').removeClass('none');
+            $('#iosImg').attr('src',src).css({
+                'margin-top':top
+            })
+            setTimeout(function () {
+                $('#iosImg').css({
+                    'transform': 'scale(1)',
+                    '-webkit-transform': 'scale(1)'
+                });
+            },0)
+        }
     })
     //关闭 选择
     $('body').hammer().on('tap','#bill_close',function (event) {
@@ -149,6 +191,7 @@ $(function () {
     //新增监控 input 值的变化
     $('#sku_price').on('input propertychange',function(){
         var pr_val = $(this).val();
+        var reg = /^[0-9\-]+$/;
         var cont = [];
         for(var i = 0; i<data.length;i++){
             if(ksdm == data[i].ksdm){
