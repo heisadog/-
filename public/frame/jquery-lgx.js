@@ -371,6 +371,33 @@
                     $(".dia_shade").remove();
                 },200)
             })
+        },
+        showImg:function () {
+            //直接作用到 img上
+            var imgUrl = this.$element.attr('src');
+            //console.error(imgUrl)
+            var clih = document.body.clientHeight;
+            var cliw = document.body.clientWidth;
+            var top = (clih-cliw-50)/2;
+            var showImgDom = '<div class="iosalert"><img src="'+imgUrl+'" style="margin-top:'+top+'" alt="" id="iosImg"></div>';
+            $("body").append(showImgDom);
+            if(!wfy.empty(imgUrl)){
+                setTimeout(function () {
+                    $('#iosImg').css({
+                        'transform': 'scale(1)',
+                        '-webkit-transform': 'scale(1)'
+                    });
+                },50)
+            }
+            // $('#iosImg').on('click',function () {
+            //     setTimeout(function () {
+            //         $('#iosImg').css({
+            //             'transform': 'scale(0.7)',
+            //             '-webkit-transform': 'scale(0.7)'
+            //         });
+            //         $(".iosalert").remove();
+            //     },0)
+            // })
         }
 	}
     //遮罩层 隐藏 效果
@@ -381,6 +408,10 @@
     $.fn.slideTopConfirm = function(options){
         var slideTopConfirm = new Dialog(this, options);
         return slideTopConfirm.slideTopConfirm(); //这种返回的方式 类似 jQuery的函数用法
+    }
+    $.fn.showImgFromWX = function (options) {
+        var showImgFromWX = new Dialog(this, options);
+        return showImgFromWX.showImg()
     }
 })(jQuery)
 
