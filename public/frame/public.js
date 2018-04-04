@@ -86,6 +86,18 @@ $(function () {
 			$(this).addClass('mui-active');
 		}
 	})
+	//点击图片关闭 大图
+	$('body').hammer().on('tap','#iosImg',function (event) {
+		event.stopPropagation();
+		setTimeout(function () {
+			$('#iosImg').css({
+				'transform': 'scale(0.7)',
+				'-webkit-transform': 'scale(0.7)'
+			});
+			$('.iosalert').addClass('none');
+		},0)
+
+	});
 	
 })
 
