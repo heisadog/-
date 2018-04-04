@@ -23,15 +23,15 @@
         </div>
         <ul class="bill_head_cont thd ts200">
             <li><span>仓/店</span><input class="createTime"  readonly="readonly"  id="createStore" placeholder=""></li>
+            <li><span>日期</span><input class="createTime" readonly="readonly" id="createDate" placeholder=""></li>
+            <li><span>店员</span><input class="createTime"  readonly="readonly"  id="createGuide" placeholder=""></li>
             <li>
                 <span>客户</span>
                 <input class="createTime" readonly="readonly"  id="createKehu" placeholder="">
                 <div class="kehudel none">&#xe651</div>
             </li>
-            <li class="js_createMoney"><span>金额</span><input class="createTime" type="tel" id="createMoney" placeholder=""></li>
-            <li><span>日期</span><input class="createTime" readonly="readonly" id="createDate" placeholder=""></li>
-            <li><span>店员</span><input class="createTime"  readonly="readonly"  id="createGuide" placeholder=""></li>
-            <li><span>备注</span><input class="createTime" type="text"  id="createBZ" placeholder=""></li>
+            <li class="js_createMoney"><span>金额</span><input class="createTime" type="number" id="createMoney" placeholder=""></li>
+            <li class="none"><span>备注</span><input class="createTime" type="text"  id="createBZ" placeholder=""></li>
         </ul>
         <!--商品明细-->
         <div class="bill_part_head js_hidebill">
@@ -95,6 +95,12 @@
                 <!--<div class="bill_radio"></div>-->
             <!--</li>-->
         </ul>
+
+        <!--优惠设置-->
+        <div class="bill_part_head js_hidebill">
+            <span>优惠设置</span>
+            <!--<div id="s" class="wxadd">&#xe6b9</div>-->
+        </div>
     </div>
 </div>
 <!--底部按钮-->
@@ -147,7 +153,7 @@
         </div>
         <div class="bline"></div>
         <div class="b003">价格</div>
-        <div class="b004"><input type="tel" id="sku_price" class="sku_price"/></div>
+        <div class="b004"><input type="number" id="sku_price" class="sku_price"/></div>
         <div class="bline"></div>
         <div class="b003">尺码</div>
     </div>
@@ -217,6 +223,11 @@
         <span id="pay_true">确定</span>
         <span id="pay_can">取消</span>
     </div>
+</div>
+
+
+<div class="iosalert none">
+    <img src="" alt="" id="iosImg">
 </div>
 <script type="text/javascript" src="../../public/frame/gbk.js"></script>
 <script type="text/javascript" src="js/storeSale.js"></script>
