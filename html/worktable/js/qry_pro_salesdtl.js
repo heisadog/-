@@ -1,23 +1,9 @@
 localStorage.his = 'qry_pro_salesdtl';
 localStorage.prev = 'qry_pro_sales';
 //季节
-var seasonArr=[
-    {code: '01', title: '春'},
-    {code: '02', title: '夏'},
-    {code: '03', title: '秋'},
-    {code: '04', title: '冬'},
-    {code: '05', title: '春夏'},
-    {code: '06', title: '秋冬'},
-];
+var seasonArr=[{code: '01', title: '春'}, {code: '02', title: '夏'}, {code: '03', title: '秋'}, {code: '04', title: '冬'}, {code: '05', title: '春夏'}, {code: '06', title: '秋冬'}];
 //计量单位
-var unitArr=[
-    {code: '01', title: '件'},
-    {code: '02', title: '双'},
-    {code: '03', title: '条'},
-    {code: '04', title: '个'},
-    {code: '05', title: '套'},
-];
-
+var unitArr=[{code: '01', title: '件'}, {code: '02', title: '双'}, {code: '03', title: '条'}, {code: '04', title: '个'}, {code: '05', title: '套'}];
 //颜色
 var colorArr=[];
 //尺码
@@ -28,9 +14,8 @@ var brandArr=[];
 var companyArr=[];
 //类别
 var categoryArr=[];
-
 //物品代码
-var recordcode=localStorage.recordcode;
+var recordcode = localStorage.recordcode;//判断 新增 还是 编辑
 
 var saveObj={};//数据保存对象
 var windowType="";//新增弹窗类型
@@ -44,65 +29,48 @@ var flag="list";//颜色尺码新增点击页面的类型，默认为列表点�
 var img = '';
 var extname = ''
 $(function () {
+    //查询明细信息
+    if(recordcode==""){
+        pageFlag="add";
+        $("#unit").val("件");
+        $("#unit").attr("data-code","01");
+        $("#girard").removeAttr("readonly");
+        $("#name").removeAttr("readonly");
+        $("#price").removeAttr("readonly");
+        $("#saleprice").removeAttr("readonly");
+        $("#wholesalePrice").removeAttr("readonly");
+        $("#storeNum").removeAttr("readonly");
+    }else{
+        pageFlag="edit";
+        getDataDtl(recordcode);
+        $("#name").removeAttr("readonly");
+        $("#price").removeAttr("readonly");
+        $("#saleprice").removeAttr("readonly");
+        $("#wholesalePrice").removeAttr("readonly");
+    }
+    //获取下拉、弹窗列表的数据
+    getComboList();
+    //点击图片查看大图
     $('body').hammer().on('tap','#check_img',function (event) {
         event.stopPropagation();
         var src = $(this).attr('src');
-        var clih = document.body.clientHeight;
-        var cliw = document.body.clientWidth;
-        var top = (clih-cliw-50)/2;
-        $('.iosalert').removeClass('none');
-        $('#iosImg').attr('src',src).css({
-            'margin-top':top
-        })
-        setTimeout(function () {
-            $('#iosImg').css({
-                'transform': 'scale(1)',
-                '-webkit-transform': 'scale(1)'
-            });
-        },0)
-
+        if(!wfy.empty(src)){
+            var clih = document.body.clientHeight;
+            var cliw = document.body.clientWidth;
+            var top = (clih-cliw)/2;
+            console.error(top)
+            $('.iosalert').removeClass('none');
+            $('#iosImg').attr('src',src).css({
+                'margin-top':top
+            })
+            setTimeout(function () {
+                $('#iosImg').css({
+                    'transform': 'scale(1)',
+                    '-webkit-transform': 'scale(1)'
+                });
+            },0)
+        }
     });
-    $('body').hammer().on('tap','#edit',function (event) {
-        event.stopPropagation();
-        var src = $('#check_img').attr('src');
-        $('#iosImg').attr('src',src)
-        $("#check_img").cropper({
-            aspectRatio: 1 / 1,
-            viewMode : 1,
-            rotatable: true,
-            guides :false,//裁剪框虚线 默认true有
-            dragMode : "move",
-            background : true,// 容器是否显示网格背景
-            movable : true,//是否能移动图片
-            cropBoxMovable :false,//是否允许拖动裁剪框
-            cropBoxResizable :false,//是否允许拖动 改变裁剪框大小
-        });
-        $("#check_img").cropper('replace', src);
-    });
-    $('body').hammer().on('tap','#close',function (event) {
-        event.stopPropagation();
-        setTimeout(function () {
-            $('#iosImg').css({
-                'transform': 'scale(0.7)',
-                '-webkit-transform': 'scale(0.7)'
-            });
-            $('.iosalert').addClass('none');
-        },0)
-
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     //选择图片
     $('body').hammer().on('change','#uploadImage',function (event) {
@@ -111,8 +79,7 @@ $(function () {
         // extname = $('#fileId').attr('extname');
         localStorage.isupdataImg = 'Y';//是否换过图片
     });
-    //获取下拉、弹窗列表的数据
-    getComboList();
+
 
     //颜色
     $('body').hammer().on('tap', '#color', function (event) {
@@ -341,23 +308,6 @@ $(function () {
         wfy.closeWin("addwindow");
         $('#addwindow').css("bottom","-270px");
     });
-    //查询明细信息
-    if(recordcode==""){
-        pageFlag="add";
-        $("#unit").val("件");
-        $("#unit").attr("data-code","01");
-        $("#girard").removeAttr("readonly");
-        $("#name").removeAttr("readonly");
-        $("#price").removeAttr("readonly");
-        $("#saleprice").removeAttr("readonly");
-    }else{
-        pageFlag="edit";
-        getDataDtl(recordcode);
-        $("#name").removeAttr("readonly");
-        $("#price").removeAttr("readonly");
-        $("#saleprice").removeAttr("readonly");
-    }
-
 
     //点击保存按钮
     //onkeyup="this.value=this.value.replace(/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/g,'')"
@@ -444,8 +394,13 @@ $(function () {
         }
         //如果 换过图片 就执行 图片上传
 
-    });
+    })
+
 });
+
+
+
+
 //验证 款式是否存在
 var checkKS = function (callback) {
     var vBiz = new FYBusiness("biz.ctlitem.item.save.kscheck");
@@ -474,12 +429,6 @@ var checkKS = function (callback) {
     })
 }
 
-
-
-
-
-
-
 function imgname() {
     var time = new Date();
     var name = 'upload'+time.getTime();
@@ -488,14 +437,11 @@ function imgname() {
 //获取下拉弹唱数据值
 function getComboList() {
     var vBiz = new FYBusiness("biz.ctlitem.baseitem.list");
-
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.baseitem.list", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
     vOpr1Data.setValue("AS_WLDM", DepartmentCode);
     vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.baseitem.list");
-
-
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
@@ -601,13 +547,11 @@ function getDataDtl(record) {
             var result = vOpr1.getResult(d, "AC_RESULT").rows || [];
             console.log(result)
             queryDataDeal(result);
-
         } else {
             wfy.alert("数据查询失败,"+d.errorMessage);
         }
     }) ;
 }
-
 //查询数据处理
 function queryDataDeal(rows) {
     //qsgymc: nullwpcbdj: 1wpqsgy: nullwpxhzb: "A0"wpxsdj: 1xtjldw: "01"xtjlmc: "件"xtlbmc: nullxtppmc: nullxtpzgg: "01"xtwpdm: "A011101L"xtwpjj: nullxtwpks: "111"xtwplb: nullxtwpmc: "111"xtwppp: nullxtwpxh: "L"xtxhxh: 12xtysmc: "白色"xtyszb: "A0"
@@ -641,27 +585,22 @@ function queryDataDeal(rows) {
             data.seasonname=seasonArr[i].title;
         }
     }
-
     var productStr="";
     var code="";
     for(var i=0;i<rows.length;i++){
         var temp=rows[i];
         code=temp.xtpzgg;
-
         if($.inArray(temp.xtwpxh,data.size)<0){
             data.sizecode.push(temp.xtxhxh);
             data.size.push(temp.xtwpxh);
         }
-
         if($.inArray(temp.xtpzgg,data.color)<0){
             data.color.push(temp.xtpzgg);
             data.colorname.push(temp.xtysmc);
         }
-
         productStr+=temp.xtpzgg+","+temp.xtwpxh+","+temp.xtwpdm+";";
 
     }
-
     data.productcode=productStr.substring(0,productStr.length-1);
 
     $("#girard").val(data.girard);
@@ -741,7 +680,6 @@ function save_color(code,name) {
         return;
     }
     var vBiz = new FYBusiness("biz.ctlitem.color.save");
-
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.color.save", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
@@ -751,8 +689,6 @@ function save_color(code,name) {
     vOpr1Data.setValue("AS_XTPZGG", code);
     vOpr1Data.setValue("AS_XTYSMC", name);
     vOpr1Data.setValue("AS_XTYSMS", "");
-
-
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
@@ -762,7 +698,6 @@ function save_color(code,name) {
             wfy.closeWin("addwindow");
             $('#addwindow').css("bottom","-270px");
             getComboList();
-
             wfy.alert("新增成功",function () {
                 if(flag=="win"){
                     var code=$("#"+windowType).attr("data-code");
@@ -782,7 +717,6 @@ function save_color(code,name) {
 //新增保存之 尺码
 function save_size(code,name) {
     var vBiz = new FYBusiness("biz.ctlitem.size.save");
-
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.size.save", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
@@ -790,12 +724,10 @@ function save_size(code,name) {
     vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.size.save");
     vOpr1Data.setValue("AS_WPXHZB", sizegroup);
     vOpr1Data.setValue("AS_XTWPXH", name);
-
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
-
             addWindowReset();
             wfy.closeWin("addwindow");
             $('#addwindow').css("bottom","-270px");
@@ -820,7 +752,6 @@ function save_size(code,name) {
 //新增保存之 品牌
 function save_brand(code,name) {
     var vBiz = new FYBusiness("biz.ctlitem.brand.save");
-
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.brand.save", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
@@ -828,7 +759,6 @@ function save_brand(code,name) {
     vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.brand.save");
     vOpr1Data.setValue("AS_XTWPPP", code);
     vOpr1Data.setValue("AS_XTPPMC", name);
-
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
@@ -850,7 +780,6 @@ function save_brand(code,name) {
 //新增保存之 类别
 function save_category(code,name) {
     var vBiz = new FYBusiness("biz.ctlitem.category.save");
-
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.category.save", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
@@ -858,7 +787,6 @@ function save_category(code,name) {
     vOpr1Data.setValue("AS_FUNC", "svc.ctlitem.category.save");
     vOpr1Data.setValue("AS_XTWPLB", code);
     vOpr1Data.setValue("AS_XTLBMC", name);
-
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
@@ -877,7 +805,7 @@ function save_category(code,name) {
     }) ;
 }
 
-
+//图片上传
 function imgupdate() {
     img = imgname();
     wfy.showload("正在上传图片");
@@ -961,7 +889,7 @@ function dataSave(){
     }) ;
 }
 
-
+//选择图片并处理
 function selectFileImage(fileObj) {
     var file = fileObj.files['0'];
     var agoimg=document.getElementById("ago");

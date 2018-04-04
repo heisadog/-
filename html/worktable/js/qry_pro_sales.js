@@ -133,8 +133,8 @@ function getDataList() {
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
-
             var result = vOpr1.getResult(d, "AC_RESULT").rows || [];
+            console.log(result)
             var num = vOpr1.getOutputPermeterMapValue(d, "AN_SL");
             var money = vOpr1.getOutputPermeterMapValue(d, "AN_JE");
             $("#tonum").html(num);
