@@ -53,7 +53,25 @@ $(function () {
         ks = $('#ks').val();
         mc = $('#mc').val();
         wfy.closesearch();
-        list(ks,mc,md,'KS','SL','ASC');
+        $('#stock_head li').each(function (index) {
+            var index = index;
+            var span = $(this).find('span');
+            if(span.hasClass('check')){
+                if(index == 0 || index == 1){
+                    par1 = $(this).attr('data-type');
+                }
+                if(index == 2 || index == 3){
+                    par2 = $(this).attr('data-type');
+                    var htm = $(this).find('i').html();
+                    if(htm == '↓'){
+                        par3 = 'ASC';
+                    }else {
+                        par3 = 'DESC';
+                    }
+                }
+            }
+        })
+        list(ks,mc,md,par1,par2,par3);
     })
     //排序
     $('body').hammer().on('tap','#stock_head li',function (event) {
