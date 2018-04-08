@@ -46,7 +46,7 @@ $(function () {
         }
         if(pageName == 'msa030_0200'){
             $('#pagename').html('收款');
-            $('.js_hidebill').addClass('none');
+            $('.js_hidebill,.js_createZK,.js_createLX').addClass('none');
             $('#pub_bottom_btn').html(botBtnHtml_coll);
         }
     })
