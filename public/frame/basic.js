@@ -118,7 +118,7 @@
     };
     //对于电商项目的价格 设置保留n个小数<如果只传一个参数就默认的保留2位小数> toFixed 把数字转换为字符串
     part1.setTwoNum = function(price,n){
-        if(price<0){ price = 0 };
+        // if(price<0){ price = 0 };
         return  isNaN(price) ? 0 : (part1.empty(n) ? new Number(price).toFixed(2) : new Number(price).toFixed(n));
     };
     //四舍五入取整数（保存几位）Math.round(price)
