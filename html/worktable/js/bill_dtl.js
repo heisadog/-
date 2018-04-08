@@ -244,7 +244,13 @@ $(function () {
                 }else if(pageName=="msa010_0100"){
                     requireAudit();//要货单审核
                 }else if(pageName=="msa010_0300"){
-                    calloutAudit();//调出单审核
+                    //calloutAudit();//调出单审核
+                    subDiaoChu(opercode,function () {
+                        wfy.alert("审核成功");
+                        setTimeout(function () {
+                            wfy.pagegoto('bill_entry');
+                        },1000);
+                    });
                 }
             }else{
                 wfy.alert("单据未保存，不能进行审核！");
