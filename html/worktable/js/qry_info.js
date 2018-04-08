@@ -181,7 +181,7 @@ function getDatalist() {
                     $("#total_money").attr("style","");
                 }
 
-                $("#total_money").html(wfy.setTwoNum(total_money));
+                $("#total_money").html(Number(total_money).toFixed(2));
                 createPage(list);
 
             } else {
@@ -249,7 +249,7 @@ function createPage(result) {
                     '<ul class="stock_head_sell">' +
                     '<li style="width: 30%;text-align: center;">' + result[i].xsxflx + '</li>'+
                     '<li style="width: 30%;text-align: center;">' + result[i].xsjssm + '</li>'+
-                    '<li style="width: 40%;text-align: center;">' + wfy.setTwoNum(result[i].kcxsje) + '</li>' +
+                    '<li style="width: 40%;text-align: center;">' + Number(result[i].kcxsje).toFixed(2) + '</li>' +
                     '</ul>' +
                     '</div>';
             }
