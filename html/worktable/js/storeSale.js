@@ -275,9 +275,10 @@ function getCommRequestBean() {
         pay.payTypeMc = $(this).find('span').html();// 支付方式名称
         pay.kyed = kyed;//可用额度
         pay.payTypeFee = tonum < 0 ? (-Math.abs(Number($(this).find('.billInput').val()))) : (Math.abs(Number($(this).find('.billInput').val())));
-        if(pay.payTypeFee != 0){
-            payLogList.push(pay);
-        }
+        // if(pay.payTypeFee != 0){
+        //     payLogList.push(pay);
+        // }
+        payLogList.push(pay);
     })
     arr.push(payLogList);
     console.log(payLogList)
