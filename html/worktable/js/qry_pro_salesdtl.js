@@ -909,8 +909,6 @@ function dataSave(){
 //选择图片并处理
 function selectFileImage(fileObj) {
     var file = fileObj.files['0'];
-    var agoimg=document.getElementById("ago");
-    //图片方向角 added by lzk
     var Orientation = null;
     if (file) {
         var rFilter = /^(image\/jpeg|image\/png)$/i; // 检查图片格式
@@ -918,7 +916,6 @@ function selectFileImage(fileObj) {
             wfy.alert("请选择jpeg、png格式的图片");
             return;
         }
-        // var URL = URL || webkitURL;
         //获取照片方向角属性，用户旋转控制
         EXIF.getData(file, function() {
             EXIF.getAllTags(this);
@@ -928,15 +925,14 @@ function selectFileImage(fileObj) {
         oReader.onload = function(e) {
             var image = new Image();
             image.src = e.target.result;
-            agoimg.src = e.target.result;
-            agoimg.onload = function() {
+            image.onload = function() {
                 var expectWidth = this.naturalWidth;
                 var expectHeight = this.naturalHeight;
                 var calc = expectWidth / expectHeight;
                 var canvas = document.getElementById('myCanvas');
                 var ctx = canvas.getContext("2d");
                 canvas.width = 1200;
-                canvas.height = (canvas.width)*calc;
+                canvas.height = (canvas.width)/calc;
                 console.log('canvas数据'+canvas.width)
                 var base64 = null;
                 //修复ios
@@ -958,7 +954,6 @@ function selectFileImage(fileObj) {
         oReader.readAsDataURL(file);
     }
     //$('#uploadImage').imgloadsize();
-
 }
 
 
