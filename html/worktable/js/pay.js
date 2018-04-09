@@ -298,12 +298,12 @@ $(function () {
                 wfy.alert('请先选择商品');
                 return false;
             }
-            for(var i = 0; i < cont.length; i++){
-                if(cont[i].num < 0){
-                    wfy.alert('销售开单不能选择负商品！');
-                    return false;
-                }
-            }
+            // for(var i = 0; i < cont.length; i++){
+            //     if(cont[i].num < 0){
+            //         wfy.alert('销售开单不能选择负商品！');
+            //         return false;
+            //     }
+            // }
             createOrder();
         }
         //收款
