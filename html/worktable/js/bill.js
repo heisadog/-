@@ -43,8 +43,10 @@ var jldw = '';//计量单位
 var cont =[];//读取data 中的cont内容的 容器
 var objdemo ={'color':'','price':'','num':'','style':'',"sku":''}//基本数据格式
 var dtlFlag=false;//明细页面标志
-var wpdj = 0;//物品单价
+var wpdj = 0;//物品单价(零售价)
+var wppfdj = 0 ; //物品批发价格 后期新加
 var proimg = '';
+var salestyle = '批发';// 销售类型  新增的
 var stocktaking = ["","全盘","按款抽盘","按款色抽盘",'按款色码抽盘'];
 $(function () {
     var proxy={};
@@ -205,6 +207,53 @@ $(function () {
         }
         $('#sum_money').html('￥'+jage);
     });
+    //新增 折扣 实时监控  只计算总额
+    $('#createZK').on('input propertychange',function(){
+        var zk = $(this).val()/100;
+        var reg = /^[0-9\-]+$/;
+        var pr_val = Number($('#totalMoney').attr('data-jige'));
+        var totalMoney = accMul(pr_val,zk);
+        if(totalMoney.toString().length>6){
+            $('#totalMoney,#totalNum').parent().css({
+                'line-height':'25px'
+            })
+            $('#totalMoney,#totalNum').css({
+                'display':'block'
+            })
+        }else {
+            $('#totalMoney,#totalNum').parent().css({
+                'line-height':'50px'
+            })
+            $('#totalMoney,#totalNum').css({
+                'display':'inline'
+            })
+        }
+        $('#totalMoney').html(totalMoney);
+    });
+    // 新增 点击 选择销售类型
+    $("#createLX").picker({
+        title: "请选择销售类型",
+        cols: [
+            {
+                textAlign: 'center',
+                values:['批发','零售']
+            }
+        ],
+        onChange:function (p) {
+            var vue = p.value[0];
+            if(vue == '零售'){
+                salestyle = '零售';
+                changeData('零售')
+                showDataDtl();
+                //起初想在 showDataDtl 中做改动 突然发现牵扯太多！！！ 换个思路：切换类型的时候 仅是对data中价格做改变，牵扯到 展示商品信息（doProdDtl）的改动
+            }
+            if(vue == '批发'){
+                salestyle = '批发';
+                changeData('批发');
+                showDataDtl();
+            }
+        }
+    });
     //数量+
     $('body').hammer().on("tap",'.b0061 .add',function( event){
         event.stopPropagation();
@@ -288,18 +337,19 @@ $(function () {
         var color = $("#sku_color li.colorcheck").html();//获取当前的颜色值
         var sku = getSku(color,style);
         var sku_price = $("#sku_price").val();
-        var obj ={'color':'','price':'','num':'','style':'',"sku":'','ksmc':'','jldw':'','txhm':'','serialnum':'','wpdj':''};
+        var obj ={'color':'','price':'','num':'','style':'',"sku":'','ksmc':'','jldw':'','txhm':'','serialnum':'','wpdj':'','wppfdj':''};
         //生成一条数据
         obj.color = color;
-        obj.price = sku_price;
+        obj.price = sku_price;//真正的价格
         obj.num = num;
-        obj.style = style;
+        obj.style = style;//
         obj.sku = sku;
         obj.ksmc = ksmc;
         obj.jldw = jldw;
         obj.txhm = txhm;
         obj.serialnum = xthh;
-        obj.wpdj = wpdj;
+        obj.wpdj = wpdj;//物品零售价
+        obj.wppfdj = wppfdj;//物品批发价  201/-4-8 新增 批发价 ， 默认显示批发价
         //console.log(obj);
         //往 临时数据 tempdata 中添加数据，(需要验证sku 是不是已经存在，存在就覆盖，不存在就添加)
         for(var k = 0; k<data.length; k++){
@@ -411,7 +461,21 @@ $(function () {
     $('body').hammer().on('tap','#bill_slide_head_ok',function (event) {
         event.stopPropagation();
         //弹出层消失，在添加页面展示 选中的数据 处理 data
+
+        //改动：仅对销售和开单 需要依据是 批发or 零售 做处理
+        // if(pageName == 'msa030_0100' || pageName == 'msa030_0800'){
+        //     var saleStyle = $('#createLX').val();
+        //     if(saleStyle == '批发'){
+        //         showDataDtl('批发');
+        //     }
+        //     if(saleStyle == '零售'){
+        //         showDataDtl('零售');
+        //     }
+        // }else {
+        //     showDataDtl('批发');
+        // }
         showDataDtl();
+        //改动结束
         $('input').blur();
         $('#bill_bot_to_top').addClass('y100');
     })
@@ -661,18 +725,22 @@ function getTotalNumAndMoney() {
         totalMoney = accAdd(totalMoney,accMul(Number(cont[m].num),Number(cont[m].price)));
     }
     if(totalMoney.toString().length>6){
-        $('#totalMoney').parent().css({
+        $('#totalMoney,#totalNum').parent().css({
             'line-height':'25px'
         })
-        $('#totalNum').parent().css({
-            'line-height':'25px'
+        $('#totalMoney,#totalNum').css({
+            'display':'block'
         })
-        $('#totalMoney').html('<br>'+totalMoney);
-        $('#totalNum').html('<br>'+totalNum);
     }else {
-        $('#totalMoney').html(totalMoney);
-        $('#totalNum').html(totalNum);
+        $('#totalMoney,#totalNum').parent().css({
+            'line-height':'50px'
+        })
+        $('#totalMoney,#totalNum').css({
+            'display':'inline'
+        })
     }
+    $('#totalMoney').html(totalMoney).attr('data-jige',totalMoney);
+    $('#totalNum').html(totalNum);
     $('#numtotal').html(totalNum); //左上角 sku总数
 }
 
@@ -776,6 +844,7 @@ var doProdDtl = function (res) {
     //取得该款式商品的 颜色 型号等信息，展示出来.型号 是依据 颜色而定的
     console.log(res)
     wpdj = res[0].wpxsdj || 0;//价格
+    wppfdj = res[0].wppfj || 0;//价格
     var colorarr = [];//颜色
     var stylearr = [];//尺寸---------依据颜色 设定
     var skuarr = [];
@@ -802,24 +871,32 @@ var doProdDtl = function (res) {
         })
         $('#sku_color').width(domwidth);
         $('#sku_color').html(colorstr);
-        $('#sku_price').val(wpdj);//--------------价格-----------------------
+        //--------------价格-----------------------
+        var oldprice = '';
+        if(salestyle == '零售'){
+            oldprice = wpdj;
+        }else {
+            oldprice = wppfdj;
+        }
         //依据颜色 显示 型号。默认展示 第一个颜色 的型号 。（这里应该将颜色作为参数，封装成一个可以公用的。切换颜色也需要用）
         var cont = fromDataGetCont();
         // 新增 提示价格----------------------------18-2-5---------------------
         if(cont.length ==0){
-            $('#sku_price').val(wpdj);
+            $('#sku_price').val(oldprice);
             $('#storeBox .b003').eq(1).html("价格")
         }else {
             for(var mm = 0; mm < cont.length ; mm++){
-                if(cont[mm].price == cont[mm].wpdj){
-                    $('#sku_price').val(wpdj);
-                    $('#storeBox .b003').eq(1).html("价格")
-                }else {
+                if((cont[mm].price != cont[mm].wppfdj) && (cont[mm].price != cont[mm].wpdj)){
+                    //既不等于批发价也不等于零售价 就是改过价格*（不考虑 改价格的时候正好等于 零售价或批发价）
                     $('#sku_price').val(cont[mm].price);
-                    $('#storeBox .b003').eq(1).html("价格(<span style='font-size:11px;color: #f00'>原价"+wpdj+"</span>)")
+                    $('#storeBox .b003').eq(1).html("价格(<span style='font-size:11px;color: #f00'>原价"+oldprice+"</span>)")
+                }else {
+                    $('#sku_price').val(oldprice);
+                    $('#storeBox .b003').eq(1).html("价格")
                 }
             }
         }
+
         var html = '';
         for(var a = 0;a < colorarr.length;a++){
             stylearr = getStyle(colorarr[a]);
@@ -877,7 +954,7 @@ var getListRUKU = function(pageNum,AS_DJLX,AS_DJZT,callback) {
     vOpr1Data.setValue("AN_PAGE_SIZE", "20");
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
-    //console.log(JSON.stringify(ip));
+    console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
@@ -1064,11 +1141,12 @@ var getListDIAOCHU = function (pageNum,callback) {
     vOpr1Data.setValue("AN_PAGE_SIZE", "20");
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
+    //console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
             var res = vOpr1.getResult(d, 'AC_ZYDB').rows || [];
-            console.log(res);
+            //console.log(res);
             if(typeof callback === 'function'){
                 callback(res);
             }
@@ -1959,6 +2037,32 @@ function fromContGetSerial(cont,sku) {
     return num;
 }
 
+//切换 销售类型
+function changeData(sytle) {
+    /*
+     * 18-4-8 新需求 加了 批发价（商品默认显示批发价！）  和 选择零售类型
+     * 由于 存在切换 销售类型 ，所以 数据展示也跟着类型不同 展示不同的价格！！
+     * 注意一点;对于 改过价格 的 不受 销售类型的 影响 ！！！都显示 改后的价格
+     * */
+    if(data.length ==0){
+        return;
+    }
+    for(var i = 0; i<data.length; i++){
+        var cont =  data[i].cont;
+        for(var m = 0; m< cont.length;m++){
+            if((Number(cont[m].price) == cont[m].wpdj) || (Number(cont[m].price) == cont[m].wppfdj)){
+                if(sytle == '零售'){
+                    cont[m].price = cont[m].wpdj;
+                    console.error(0)
+                }
+                if(sytle == '批发'){
+                    cont[m].price = cont[m].wppfdj;
+                    console.error(1)
+                }
+            }
+        }
+    }
+}
 
 //精确 加法
 function accAdd(arg1, arg2) {
