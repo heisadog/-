@@ -924,7 +924,6 @@ html {
 
 .toolbar,
 .toolbar .title {
-	font-size: .85rem;
 	color: #3d4145;
 	width: 100%
 }
@@ -1086,7 +1085,6 @@ html {
 	width: 100%;
 	padding: 0;
 	text-align: right;
-	font-size: 1rem;
 	font-weight: 400;
 	-webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);
 	-webkit-mask-box-image: linear-gradient(to top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent)
