@@ -34,11 +34,17 @@ $(function () {
         }
 
     });
-    //取消支付
+    //取消支付 modles
     $("body").hammer().on("tap", "#cannoend", function (event) {
         event.stopPropagation();
         $('#wfyContList .list_item_1').removeClass('x_left_160');
         wfy.closePay();
+    });
+    //去 开单
+    $("body").hammer().on("tap", "#modles", function (event) {
+        event.stopPropagation();
+        localStorage.page = 'msa030_0800';
+        wfy.pagegoto('storeSale');
     });
     //点击选择 支付方式(当以预付款方式为主要支付方式的时候，需要验证 额度和商品金额)
     $('body').hammer().on('tap','#pay_style li .pay_inputandicon',function (event) {

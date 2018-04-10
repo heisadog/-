@@ -7,32 +7,53 @@ var operType="";
 
 var saveObj={};//数据保存对象
 var shopArr=[];//门店
-var roleArr=[];//岗位
-
+var roleArr_gs=[{xtyhzm: "M00", xtyzmc: "老板"}];//岗位
+var roleArr_md=[{xtyhzm: "M01", xtyzmc: "店长"},{xtyhzm: "M02", xtyzmc: "导购"}];//岗位
+wfy.showload();
 $(function () {
-
     //获取下拉显示数据
     getComboData();
-
+    //查询明细信息
+    if(code!=""){
+        operType="EDIT";
+        $("#mobile").attr("readonly","readonly");
+        getDataDtl(code);
+    }else{
+        operType="ADD";
+        $("#mobile").removeAttr("readonly");
+    }
     //门店
     $('body').hammer().on('tap', '#shop', function (event) {
         event.stopPropagation();
-
+        if(operType == 'EDIT'){
+            return false;
+        }
         var html = '';
         for(var i = 0; i <shopArr.length; i++){
-            html+='<div class="item" style="text-align: center;" data-code="'+shopArr[i].xtwldm+'" data-type="shop">'+shopArr[i].xtwlmc+'</div>'
+            html+='<div class="item" style="text-align: center;" data-code="'+shopArr[i].xtwldm+'" data-type="shop" data-lx="'+shopArr[i].xtkhlx+'">'+shopArr[i].xtwlmc+'</div>'
         }
         $("#multi_box").html(html);
         wfy.openWin('multi_box');
     });
-
     //岗位
     $('body').hammer().on('tap', '#quarters', function (event) {
         event.stopPropagation();
-
         var html = '';
+        var roleArr = [];
+        var lx = $('#shop').attr('data-lx');
+        var gsmc = $('#shop').val();
+        if(gsmc == ''){
+            wfy.alert('请先选择门店');
+            return ;
+        }
+        if(lx == 1){
+            //公司
+            roleArr = roleArr_gs;
+        }else {
+            roleArr = roleArr_md;
+        }
         for(var i = 0; i <roleArr.length; i++){
-            html+='<div class="item" style="text-align: center;" data-code="'+roleArr[i].xtyhzm+'" data-type="quarters">'+roleArr[i].xtyzmc+'</div>'
+            html+='<div class="item" style="text-align: center;" data-code="'+roleArr[i].xtyhzm+'" data-type="quarters" data-lx="岗位">'+roleArr[i].xtyzmc+'</div>'
         }
         $("#multi_box").html(html);
         wfy.openWin('multi_box');
@@ -41,13 +62,16 @@ $(function () {
     //点击选择弹出的模式
     $('body').hammer().on('tap','#multi_box .item',function (event) {
         event.stopPropagation();
-        var nodeId= $(this).attr('data-type');
         var selCode= $(this).attr('data-code');
         var selName= $(this).html();
-
+        var nodeId= $(this).attr('data-type');
         $("#"+nodeId).attr("data-code",selCode);
         $("#"+nodeId).val(selName);
-
+        if(nodeId =='shop'){
+            var lx = $(this).attr('data-lx');
+            $("#"+nodeId).attr("data-lx",lx);
+            $('#quarters').val('').attr('data-code','');
+        }
         wfy.closeWin();
     });
 
@@ -62,6 +86,8 @@ $(function () {
         saveObj.shop=getValidStr($("#shop").attr("data-code"));
         saveObj.quarters=getValidStr($("#quarters").attr("data-code"));
         saveObj.status=$("#mui-switch").hasClass("mui-active")?"N":"Y";//离职标志
+        saveObj.cost=$("#cost").hasClass("mui-active")?"Y":"N";//成本
+        saveObj.sale=$("#sale").hasClass("mui-active")?"Y":"N";//收银
 
         if(operType=="ADD"){
             if(getValidStr($("#mobile").val())=="") {
@@ -103,7 +129,6 @@ $(function () {
             wfy.alert("门店不能为空");
             return;
         }
-
         if(saveObj.quarters==""){
             wfy.alert("岗位不能为空");
             return;
@@ -111,43 +136,28 @@ $(function () {
 
         dataSave();
     });
-
-
-
-    //查询明细信息
-    if(code!=""){
-        operType="EDIT";
-        $("#mobile").attr("readonly","readonly");
-        getDataDtl(code);
-    }else{
-        operType="ADD";
-        $("#mobile").removeAttr("readonly");
-    }
-
 });
 
 //获取下拉显示数据
 function getComboData() {
     var vBiz = new FYBusiness("biz.ctluser.baseitem.qry");
-
     var vOpr1 = vBiz.addCreateService("svc.ctluser.baseitem.qry", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
     vOpr1Data.setValue("AS_WLDM", DepartmentCode);
     vOpr1Data.setValue("AS_FUNC", "svc.ctluser.baseitem.qry");
-
     var ip = new InvokeProc(false);
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             roleArr=vOpr1.getResult(d, "AC_ROLE").rows||[];
             shopArr=vOpr1.getResult(d, "AC_SHOP").rows||[];
-
+            console.log(shopArr)
+            console.log(roleArr)
             if(shopArr.length==1){
                 $("#shop").val(shopArr[0].xtwlmc);
                 $("#shop").attr("data-code",shopArr[0].xtwldm);
             }
-
         } else {
             wfy.alert("获取数据失败");
         }
@@ -157,7 +167,6 @@ function getComboData() {
 //获取数据明细
 function getDataDtl(record) {
     var vBiz = new FYBusiness("biz.ctluser.userdefine.qry");
-
     var vOpr1 = vBiz.addCreateService("svc.ctluser.userdefine.qry", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
@@ -166,15 +175,13 @@ function getDataDtl(record) {
     vOpr1Data.setValue("AS_KEYWORDS", "");
     vOpr1Data.setValue("AS_XTYHDM", record);
     vOpr1Data.setValue("AN_PAGE_NUM", "1");
-    vOpr1Data.setValue("AN_PAGE_SIZE", "20");
-
+    vOpr1Data.setValue("AN_PAGE_SIZE", "100");
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
-
             var result = vOpr1.getResult(d, "AC_RESULT").rows || [];
-
+            console.log(result)
             $("#name").val(result[0].xtyhxm);
             $("#jobnum").val(result[0].xtzgdm);
             $("#password").attr("data-code",result[0].xtyhmm);//密文
@@ -183,6 +190,7 @@ function getDataDtl(record) {
             });
             $("#shop").val(result[0].xtwlmc);
             $("#shop").attr("data-code",result[0].xtwldm);
+            $("#shop").attr("data-lx",result[0].xtkhlx);
             $("#quarters").val(result[0].xtyzmc);
             $("#quarters").attr("data-code",result[0].xtyhzm);
             $("#mobile").val(result[0].xtyhdm);
@@ -193,7 +201,17 @@ function getDataDtl(record) {
             }else{
                 $("#mui-switch").addClass("mui-active");
             }
-
+            if(result[0].xtcbqx=="N"){//成本
+                $("#cost").removeClass("mui-active");
+            }else{
+                $("#cost").addClass("mui-active");
+            }
+            if(result[0].xtsyqx=="N"){//收银
+                $("#sale").removeClass("mui-active");
+            }else{
+                $("#sale").addClass("mui-active");
+            }
+            wfy.hideload();
         } else {
             wfy.alert("数据查询失败,"+d.errorMessage);
         }
@@ -203,13 +221,11 @@ function getDataDtl(record) {
 //密码状态转换
 function changePassStatus(type,record,callback) {
     var url="";
-
     if(type=="decrypt"){//转为明文
         url=_wfy_decrypt_url+"?data="+record;
     }else if(type=="encrypt"){//转为密文
         url=_wfy_encrypt_url+"?data="+record;
     }
-
     $.ajax({
         type: 'GET',
         url: url,
@@ -238,7 +254,6 @@ function changePassStatus(type,record,callback) {
 //手机位数验证（11位数字）
 function mobilephoneVali(mobile) {
     var reg = /^1[0-9]\d{9}$/;
-
     //var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
     var myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
     if (myreg.test(mobile)) {
@@ -257,13 +272,9 @@ function checkPass(pass) {
     };
 }
 
-
-
 //保存数据
 function dataSave(){
-
     var vBiz = new FYBusiness("biz.ctluser.userdefine.save");
-
     var vOpr1 = vBiz.addCreateService("svc.ctluser.userdefine.save", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
@@ -278,12 +289,13 @@ function dataSave(){
     vOpr1Data.setValue("AS_XTLXFS", saveObj.mobile);
     vOpr1Data.setValue("AS_XTLZBZ", saveObj.status);
     vOpr1Data.setValue("AS_STATUS", operType);
-
+    vOpr1Data.setValue("AS_CBQX", saveObj.cost);
+    vOpr1Data.setValue("AS_SYQX", saveObj.sale);
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
+    console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
-
             wfy.alert("保存成功",function () {
                 wfy.pagegoto("staffmgt");
             });
