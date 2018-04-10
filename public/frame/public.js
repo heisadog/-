@@ -86,6 +86,15 @@ $(function () {
 			$(this).addClass('mui-active');
 		}
 	})
+	//开关事件，(后期追加 同一个页面多个~~)
+	$('body').hammer().on('tap','div[data-style="switch"]',function (event) {
+		event.stopPropagation();
+		if($(this).hasClass('mui-active')){
+			$(this).removeClass('mui-active');
+		}else {
+			$(this).addClass('mui-active');
+		}
+	})
 	//点击图片关闭 大图
 	$('body').hammer().on('tap','#iosImg',function (event) {
 		event.stopPropagation();
