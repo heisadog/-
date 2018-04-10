@@ -63,7 +63,7 @@ $(function () {
         saveFinalOrds(czhm);
     });
     //进入明细页
-    $('body').hammer().on("tap",'.wfyContList .list_item_1',function (event) {
+    $('body').hammer().on("tap",'#wfyContList .list_item_1',function (event) {
         event.stopPropagation();
         var clicked = $(event.target);//触发元素
         //console.log(clicked);

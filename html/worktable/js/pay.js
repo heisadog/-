@@ -132,7 +132,7 @@ $(function () {
     if(pageName == 'msa030_0200'){//收款
         $('#pay_style').html(payCollHtml);
     }
-    if(pageName == 'msa030_0900'){//未结订单
+    if(pageName == 'msa030_0900'){//未结订单 de 收银弹窗
         $('#pay_style').html(payHtml).css({
             'padding-bottom':'70px'
         });
@@ -245,46 +245,14 @@ $(function () {
                     tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
                         '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
                 }
-
-
             }
-
             wfy.confirm(tipCont,function () {
-                //生成预订单
                 //如果用户取消 支付，再次点击的时候 生成预订单失败。需要验证预订单的存在
                 if(preOrdno == ''){
                     createOrder();
                 }else{
                     //直接走支付
-                    var pay = [];
-                    mainPayType = '';//主体支付方式
-                    mainPayTypeJe = '';//主体支付金额
-                    pay = getCommRequestBean()[2];
-                    console.error(pay);
-                    //选取 主要的支付方式
-                    for(var i = 0; i<pay.length; i++){
-                        if(pay[i].payType == '02' || pay[i].payType == '03' || pay[i].payType == '04'){
-                            if(pay[i].payTypeFee != ''){
-                                mainPayType = pay[i].payType;
-                                mainPayTypeJe = pay[i].payTypeFee;
-                            }else {
-                                mainPayType = '';
-                            }
-                        }else {
-                            mainPayType = '';
-                        }
-                    }
-                    if(mainPayType == ''){
-                        postPay(getCommRequestBean()[2]);
-                    }
-                    if(mainPayType == '02'){
-                        //刷卡
-                        payBankOrder(preOrdno,preOrdno,mainPayTypeJe)
-                    }
-                    if(mainPayType == '04' || mainPayType == '03'){
-                        //扫一扫
-                        payScanOrder(preOrdno,preOrdno,mainPayTypeJe)
-                    }
+                    updaState(getCommRequestBean()[2])
                 }
 
             },function () {
@@ -342,13 +310,9 @@ $(function () {
                     //现金
                     payOverCallback(false);
                 }
-                if(sk_typedm == '02'){
-                    //刷卡
-                    payBankOrder(noteNo,noteNo,orderAmount)
-                }
-                if(sk_typedm == '04' || sk_typedm == '03'){
-                    //扫一扫
-                    payScanOrder(noteNo,noteNo,orderAmount)
+                if(sk_typedm == '04' || sk_typedm == '03' || sk_typedm == '02'){
+                    //扫一扫deng
+                    payOverCallback(true);
                 }
             });
         }
@@ -382,8 +346,6 @@ $(function () {
             }
         })
         var pay = [];
-        mainPayType = '';//主体支付方式
-        mainPayTypeJe = '';//主体支付金额
         $('#pay_style li.poschecked').each(function () {
             if(Number($(this).find('.billInput').val()) != 0){
                 var payobj = {};
@@ -397,13 +359,6 @@ $(function () {
 
         })
         console.error(pay);
-        //选取 主要的支付方式
-        for(var i = 0; i<pay.length; i++){
-            if(pay[i].payType == '02' || pay[i].payType == '03' || pay[i].payType == '04'){
-                mainPayType = pay[i].payType;
-                mainPayTypeJe = pay[i].payTypeFee;
-            }
-        }
         //验证
         //首先如果有选客户，验证客户的额度
         if(ishykh){
@@ -435,196 +390,13 @@ $(function () {
                 '元,如果确认付款，相当于抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
         }
         wfy.confirm(tipCont,function () {
-            if(mainPayType == ''){
-                postPay(pay);
-            }
-            if(mainPayType == '02'){
-                //刷卡
-                payBankOrder(xtxphm,xtxphm,mainPayTypeJe)
-            }
-            if(mainPayType == '04' || mainPayType == '03'){
-                //扫一扫
-                payScanOrder(xtxphm,xtxphm,mainPayTypeJe)
-            }
+            updaState(pay)
         },function () {
 
         });
 
     });
 })
-
-
-
-//刷卡
-function payBankOrder(_xtxphm, noteNo, _money) {
-    uexMposUMS.payorder_callback = payOrder_callback;
-    var _transData = {};
-    _transData["appId"] = AppId;
-    _transData["extOrderNo"] = noteNo;  //支付流水号
-    _transData["extBillNo"] = _xtxphm;  //小票号
-    _transData["isNeedPrintReceipt"] = IsPrint;
-    _transData["amt"] = _money*100;
-
-    var _data = {};
-    _data["appName"] = "银行卡收款";
-    _data["transId"] = "消费";
-    _data["transData"] = _transData;
-
-    try {
-        uexMposUMS.payOrder(_data["appName"],_data["transId"],_transData);
-    } catch(e) {
-        // statements
-        alert("取消"+e.message);
-    }
-
-}
-//扫一扫 （微信和 支付宝）
-function payScanOrder(_xtxphm, noteNo, _money) {
-    uexMposUMS.payorder_callback = payOrder_callback;
-    var _transData = {};
-    _transData["appId"] = AppId;
-    _transData["extOrderNo"] = noteNo;  //支付流水号
-    _transData["extBillNo"] = _xtxphm;  //小票号
-    _transData["isNeedPrintReceipt"] = IsPrint;
-    _transData["amt"] = _money*100;
-    var _data = {};
-    _data["appName"] = "POS 通";
-    _data["transId"] = "扫一扫";
-    _data["transData"] = _transData;
-    try {
-        uexMposUMS.payOrder(_data["appName"],_data["transId"],_transData);
-    } catch(e) {
-        alert("取消"+e.message);
-    }
-}
-//退货
-function refundOrder(_refNo, _date, _money) {
-    uexMposUMS.payorder_callback = payOrder_callback;
-    var _transData = {};
-    _transData["appId"] = AppId;
-    _transData["refNo"] = _refNo;  //支付流水号
-    _transData["date"] = _date;  //小票号
-    _transData["amt"] = _money;
-
-    var _data = {};
-    _data["appName"] = "公共资源";
-    _data["transId"] = "退货";
-    _data["transData"] = _transData;
-
-    try {
-        uexMposUMS.payOrder(_data["appName"],_data["transId"],_transData);
-    } catch(e) {
-        // statements
-        alert(e.message);
-    }
-
-}
-//支付回调
-var payOrder_callback = function (opCode, dataType, data){
-    //dataType 为1
-    //alert(dataType+" 我是dataType和 data"+data);
-    var datastr = data.replace(/"{/g, "{").replace(/}"/g, "}");
-    var datastr_re =  datastr.split(',"memInfo"')[0]+'}}';
-    eval("var _jsoninfo_ = "+datastr_re);
-    //判断调用接口是否成功
-    var resultCode = _jsoninfo_["resultCode"]+"";//接口调用成功，业务判断
-    var resultMsg = _jsoninfo_["resultMsg"];//接口调用成功，业务判断
-    var appName = _jsoninfo_["appName"];// 银行卡收款
-    var transId = _jsoninfo_["transId"];//消费------交易类型
-
-    var _jsondata_ = _jsoninfo_["transData"];//承载交易信息
-
-    //alert(resultCode+","+resultMsg+","+appName+","+transId);
-    //接口调用成功，业务判断
-    if(resultCode=="0")
-    {
-        if(_jsondata_["resCode"]=="00")// 00表示交易成功！
-        {
-            //业务返回正确,建议返回完整的transData
-            //关键和都有的数据如下：
-            /*
-             merchantName:商户名
-             merchantNo:商户编号
-             terminalNo:终端编号
-             operNo:操作员号
-             amt:交易金额
-             batchNo:批次号
-             traceNo:凭证号
-             refNo:参考号   XXXXXXXXXXXXXXXXXXXX 极其重要 退款需要 XXXXXXXXXXXXXXXXXXXXXX
-             date:日期
-             time:时间
-             memInfo:备注
-             */
-            merchantNo = _jsondata_["merchantNo"];
-            rescodeDate = _jsondata_["date"];
-            runningWater = _jsondata_["refNo"];
-            cardNo = _jsondata_["cardNo"];
-            if(pageName == 'msa030_0100'){//销售收银
-                postPay(getCommRequestBean()[2]);
-            }
-            if(pageName == 'msa030_0200'){//收款
-                payOverCallback(true);
-            }
-            // if(transId=="退货")
-            // {
-            //     //退货成功回调
-            //     /**************************************************************************
-            //      * refundSuccessCallBack(_jsondata_);
-            //      ***************************************************************************/
-            // }
-            // else
-            // {
-            //     //支付成功回调
-            //     /**************************************************************************
-            //      * paySuccessCallBack(_jsondata_);
-            //      ***************************************************************************/
-            // }
-        }
-        else
-        {
-            //报错回调,参数建议使用 _jsondata_["resCode"]   _jsondata_["resDesc"]，也可以直接使用transData
-            if(transId=="退货")
-            {
-                //退货失败回调
-                /**************************************************************************
-                 * refundErrorCallBack(rcode, rmsg)
-                 ***************************************************************************/
-            }
-            else
-            {
-                //支付失败回调
-                /**************************************************************************
-                 * payErrorCallBack(rcode, rmsg)
-                 ***************************************************************************/
-            }
-        }
-    }
-    else
-    {
-        //支付没成功！！
-        //已经生成订单
-        $.confirm('支付失败，已经生成预订单，继续销售还是前往未结订单页面继续付款？',function () {
-            wfy.pagegoto('bill_noend');
-        },function () {
-            window.location.reload();
-        })
-        //报错回调,参数建议使用 resultCode， resultMsg，也可以直接使用transData
-        if(transId=="退货")
-        {
-            //退货失败回调
-            /**************************************************************************
-             * refundErrorCallBack(rcode, rmsg)
-             ***************************************************************************/
-        }
-        else
-        {
-            //支付失败回调
-            /**************************************************************************
-             * payErrorCallBack(rcode, rmsg)
-             ***************************************************************************/
-        }
-    }
-};
 // 生成 预订单
 function createOrder() {
     var cont = [];
@@ -688,35 +460,7 @@ function createOrder() {
                     })
                 }
                 if(pageName == 'msa030_0100'){//销售收银
-                    var pay = [];
-                    mainPayType = '';//主体支付方式
-                    mainPayTypeJe = '';//主体支付金额
-                    pay = getCommRequestBean()[2];
-                    console.error(pay);
-                    //选取 主要的支付方式
-                    for(var i = 0; i<pay.length; i++){
-                        if(pay[i].payType == '02' || pay[i].payType == '03' || pay[i].payType == '04'){
-                            if(pay[i].payTypeFee != ''){
-                                mainPayType = pay[i].payType;
-                                mainPayTypeJe = pay[i].payTypeFee;
-                            }else {
-                                mainPayType = '';
-                            }
-                        }else {
-                            mainPayType = '';
-                        }
-                    }
-                    if(mainPayType == ''){
-                        postPay(getCommRequestBean()[2]);
-                    }
-                    if(mainPayType == '02'){
-                        //刷卡
-                        payBankOrder(preOrdno,preOrdno,mainPayTypeJe)
-                    }
-                    if(mainPayType == '04' || mainPayType == '03'){
-                        //扫一扫
-                        payScanOrder(preOrdno,preOrdno,mainPayTypeJe)
-                    }
+                    updaState(getCommRequestBean()[2]);
                 }
             }
             else {
@@ -729,6 +473,9 @@ function createOrder() {
         },
         true);
 }
+
+
+
 //支付完 的回调  ----只用在收款模块（向数据库保存银行收款信息）
 var payOverCallback = function (flag) {
     var vBiz = new FYBusiness("biz.vipremoney.cash.save");
@@ -795,9 +542,10 @@ var payOverCallback = function (flag) {
         }
     }) ;
 }
-//向 预订单 传输 支付信息
-var postPay = function (pay) {
-    var vBiz = new FYBusiness("biz.pos.paymode.save");
+
+
+function updaState(pay) {
+    var vBiz = new FYBusiness("biz.pos.pay.status.save");
     var vOpr1 = vBiz.addCreateService("svc.pos.paymode.save", false);
     var vOpr1Data = [];
     for(var i =0; i<pay.length; i++){
@@ -813,79 +561,34 @@ var postPay = function (pay) {
         o.AN_YDDKJF = 0;
         o.AS_XSZFZH = '';//银行卡号
         o.AS_XTXPHM = noteNo;//x小票号码
-        o.AS_ZFLSHM = runningWater;//流水号（参考号）
+        o.AS_ZFLSHM = '';//流水号（参考号）
         vOpr1Data.push(o);
     }
     vOpr1.addDataArray(vOpr1Data)
+    var vOpr2 = vBiz.addCreateService("svc.pos.paystatus.upt", false);
+    var vOpr2Data = vOpr2.addCreateData();
+    vOpr2Data.setValue("AS_USERID", LoginName);
+    vOpr2Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr2Data.setValue("AS_FUNC", "svc.pos.paystatus.upt");
+    vOpr2Data.setValue("AS_KCCZHM",preOrdno);
+    var vOpr3 = vBiz.addCreateService("svc.pos.preposexec.save", false);
+    var vOpr3Data = vOpr3.addCreateData();
+    vOpr3Data.setValue("AS_USERID", LoginName);
+    vOpr3Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr3Data.setValue("AS_FUNC", "svc.pos.preposexec.save");
+    vOpr3Data.setValue("AS_PRECZHM", preOrdno);
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
-            console.log('cheng');
-            updatePayStatus(preOrdno);
+            wfy.alert('生成订单成功！',function () {
+                window.location.reload();
+            });
         } else {
             // todo...[d.errorMessage]
-            wfy.alert("更新失败");
+            wfy.alert('操作失败！'+d.errorMessage)
         }
     }) ;
-}
-//销售收银更新支付状态
-function updatePayStatus(AS_KCCZHM) {
-    var biz = new FYBusiness('biz.pos.paystatus.upt');
-    var svc = biz.addCreateService("svc.pos.paystatus.upt",false);
-    var data = svc.addCreateData();
-    data.setValue("AS_USERID", LoginName);
-    data.setValue("AS_WLDM", DepartmentCode);
-    data.setValue("AS_FUNC", "svc.pos.paystatus.upt");
-    data.setValue("AS_KCCZHM",AS_KCCZHM);
-    var ip = new InvokeProc("true","proc");
-    console.log(JSON.stringify(ip))
-    ip.addBusiness(biz);
-    ip.invoke(function (res) {
-        if(res && res.success)
-        {
-            console.info(res);
-            saveFinalOrd(); //支付成功将订单转换为正式订单
-        }else{
-            wfy.alert("支付状态更新失败！");
-            //funs.goto("myOrder");
-        }
-    });
-}
-//将预订单转换为最终的订单保存最终的订单信息
-function saveFinalOrd() {
-    var biz = new FYBusiness("biz.pos.preposexec.save");
-    var svc = biz.addCreateService("svc.pos.preposexec.save", false);
-    var data = svc.addCreateData();
-    data.setValue("AS_USERID", LoginName);
-    data.setValue("AS_WLDM", DepartmentCode);
-    data.setValue("AS_FUNC", "svc.pos.preposexec.save");
-    data.setValue("AS_PRECZHM", preOrdno);
-    data.setValue("AS_KCCZHM","");
-    data.setValue("AS_KCPDHM","");
-    data.setValue("AS_THCZHM","");
-    data.setValue("AS_THXPHM","");
-
-    var ip = new InvokeProc("ture","proc");
-    ip.addBusiness(biz);
-    console.log(JSON.stringify(ip));
-    ip.invoke(function (res) {
-        if (res && res.success) {
-            console.log('生成订单成功！');
-            preOrdno = '';
-            $.confirm('支付成功，已生成订单！是否打印单据？',function () {
-                console.log(operNo+'--'+noteNo);
-                Components.bluetoothPrint.printSaleTicket(operNo,noteNo,'57');
-                setTimeout(function () {
-                    window.location.reload();
-                },1000)
-            },function () {
-                window.location.reload();
-            })
-        } else {
-            wfy.alert("预订单转换为正式订单失败！");
-        }
-    });
 }

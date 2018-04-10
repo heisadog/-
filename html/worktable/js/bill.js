@@ -554,7 +554,7 @@ $(function () {
             data_index = $(this).parents('.bill_sku').attr('data-index');
             cont_index = $(this).parents('.bill_drop').attr('data-index');
             var cont = data[data_index].cont;
-            if(pageName == 'msa030_0100' || pageName == 'msa030_0800'){
+            if(pageName == 'msa030_0100' || pageName == 'msa030_0800' || pageName == 'msa030_0900'){
                 if(Number(cont[cont_index].num) == 1){
                     cont[cont_index].num = -1;
                 }else {
@@ -614,6 +614,7 @@ $(function () {
 })
 //显示 data 的数据内容
 function showDataDtl() {
+    console.log(data);
     var html ="";
     if(data.length == 0){
         html = wfy.zero('暂无添加商品');
@@ -1711,7 +1712,7 @@ function getNum(color,style) {
     var num;
     for(var i = 0;i<result.length;i++){
         if(color == result[i].xtysmc && style ==result[i].xtwpxh){
-            num = result[i].kczksl;
+            num = result[i].kczksl || '---';
         }
     }
     return num;
@@ -2053,11 +2054,9 @@ function changeData(sytle) {
             if((Number(cont[m].price) == cont[m].wpdj) || (Number(cont[m].price) == cont[m].wppfdj)){
                 if(sytle == '零售'){
                     cont[m].price = cont[m].wpdj;
-                    console.error(0)
                 }
                 if(sytle == '批发'){
                     cont[m].price = cont[m].wppfdj;
-                    console.error(1)
                 }
             }
         }
