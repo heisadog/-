@@ -1712,7 +1712,7 @@ function getNum(color,style) {
     var num;
     for(var i = 0;i<result.length;i++){
         if(color == result[i].xtysmc && style ==result[i].xtwpxh){
-            num = result[i].kczksl || '---';
+            num = result[i].kczksl || '0';
         }
     }
     return num;
