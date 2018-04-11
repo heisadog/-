@@ -725,6 +725,12 @@ function getTotalNumAndMoney() {
         //totalMoney += (Number(cont[m].num))*(Number(cont[m].price));
         totalMoney = accAdd(totalMoney,accMul(Number(cont[m].num),Number(cont[m].price)));
     }
+    //新增 如果 有折扣 那么要重新 计算折扣后的价格
+    //如果此时有折扣m 那么重新计算总价格
+    var zk = $('#createZK').val()/100;
+    totalMoney = accMul(totalMoney,zk);
+    //end
+    
     if(totalMoney.toString().length>6){
         $('#totalMoney,#totalNum').parent().css({
             'line-height':'25px'
