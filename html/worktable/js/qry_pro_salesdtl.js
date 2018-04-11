@@ -27,7 +27,9 @@ var data={};
 
 var flag="list";//颜色尺码新增点击页面的类型，默认为列表点击
 var img = '';
-var extname = ''
+var extname = '';
+var cbqx = localStorage.user_cbqx;
+//var cbqx = 'Y';
 $(function () {
     //查询明细信息
     if(recordcode==""){
@@ -47,6 +49,9 @@ $(function () {
         $("#price").removeAttr("readonly");
         $("#saleprice").removeAttr("readonly");
         $("#wholesalePrice").removeAttr("readonly");
+    }
+    if(cbqx == "N"){
+        $('#inprice').addClass('none');
     }
     //获取下拉、弹窗列表的数据
     getComboList();
@@ -324,7 +329,7 @@ $(function () {
         saveObj.sizeserial=getValidStr($("#size").attr("data-serial")).split(",");
         saveObj.brand=getValidStr($("#brand").attr("data-code"));
         saveObj.company=getValidStr($("#company").attr("data-code"));
-        saveObj.price=getValidStr($("#price").val());
+        saveObj.price = cbqx == 'Y' ? getValidStr($("#price").val()) : 0 ;
         saveObj.saleprice=getValidStr($("#saleprice").val());
         saveObj.wholesalePrice=getValidStr($("#wholesalePrice").val());
         saveObj.storeNum=getValidStr($("#storeNum").val());
@@ -352,14 +357,17 @@ $(function () {
                 return;
             }
         }
-        if(saveObj.price==""){
-            wfy.alert("进价不能为空");
-            return;
-        }else{
-            var flag=priceVali(saveObj.price);
-            if(!flag){
-                wfy.alert("请填写有效的进价");
+
+        if(cbqx == 'Y'){
+            if(saveObj.price == ""){
+                wfy.alert("进价不能为空");
                 return;
+            }else{
+                var flag=priceVali(saveObj.price);
+                if(!flag){
+                    wfy.alert("请填写有效的进价");
+                    return;
+                }
             }
         }
         if(saveObj.wholesalePrice==""){
