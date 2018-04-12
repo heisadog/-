@@ -14,6 +14,11 @@ var brandArr=[];
 var companyArr=[];
 //类别
 var categoryArr=[];
+//入库仓库
+var storeresurt = [];
+var ckmcarr = [];
+var ckdmarr = [];
+var check_ckdm = '';
 //物品代码
 var recordcode = localStorage.recordcode;//判断 新增 还是 编辑
 
@@ -24,11 +29,13 @@ var colorgroup="";//颜色组
 var sizegroup="";//尺码组
 
 var data={};
+var datas = [];//新增 库存 操作的数据
 
 var flag="list";//颜色尺码新增点击页面的类型，默认为列表点击
 var img = '';
 var extname = '';
 var cbqx = localStorage.user_cbqx;
+console.log(cbqx)
 //var cbqx = 'Y';
 $(function () {
     //查询明细信息
@@ -41,7 +48,7 @@ $(function () {
         $("#price").removeAttr("readonly");
         $("#saleprice").removeAttr("readonly");
         $("#wholesalePrice").removeAttr("readonly");
-        $("#storeNum").removeAttr("readonly");
+        //$("#storeNum").removeAttr("readonly");
     }else{
         pageFlag="edit";
         getDataDtl(recordcode);
@@ -53,6 +60,18 @@ $(function () {
     if(cbqx == "N"){
         $('#inprice').addClass('none');
     }
+    //库存数的 设定 默认执行了  由于 需要一个默认的 库存
+    getcangku(function (res) {
+        // console.error(res);
+        storeresurt = res || [];
+        for(var i = 0; i<storeresurt.length; i++){
+            ckmcarr.push(storeresurt[i].kcckmc);
+            ckdmarr.push(storeresurt[i].kcckdm);
+        }
+        check_ckdm = storeresurt[0].kcckdm;
+    })
+
+
     //获取下拉、弹窗列表的数据
     getComboList();
     //点击图片查看大图
@@ -85,7 +104,6 @@ $(function () {
         localStorage.isupdataImg = 'Y';//是否换过图片
     });
 
-
     //颜色
     $('body').hammer().on('tap', '#color', function (event) {
         event.stopPropagation();
@@ -95,27 +113,35 @@ $(function () {
         createWindow(windowType,code);
         $("#tosttop").removeClass('y100');
     });
-
     //尺码
     $('body').hammer().on('tap', '#size', function (event) {
         event.stopPropagation();
-
         var code=$(this).attr("data-code");
         windowType="size";
         createWindow(windowType,code);
         $("#tosttop").removeClass('y100');
     });
 
+    //库存数
+    $('body').hammer().on('tap', '#storeNum', function (event) {
+        event.stopPropagation();
+        //只在新增的时候有效果！
+        if(pageFlag=="add"){
+            creatstoreNum();
+            windowType="store";
+            $("#tosttop").removeClass('y100');
+        }
+    });
+
+
     //选择弹出层 点击关闭按钮
     $('body').hammer().on('tap','#tost_cancel',function (event) {
         event.stopPropagation();
         $("#tosttop").addClass('y100');
     });
-
     //选择弹出层 点击某个按钮
     $('body').hammer().on('tap','.tost_title_list',function (event) {
         event.stopPropagation();
-
         if(!$(this).hasClass('noedit')){
             if(!$(this).hasClass('addcheck')){
                 $(this).addClass('addcheck');
@@ -123,38 +149,138 @@ $(function () {
                 $(this).removeClass('addcheck');
             }
         }
-
     });
-
     //选择弹出层 确定按钮
     $('body').hammer().on('tap','#tost_true',function (event) {
         event.stopPropagation();
+        //x新增库存数的确定 if else
+        if(windowType=="store"){
+            //把总数拿过来。顺便 将具体数据记录！~~~ 一边再次点开的时候保存之前的数据，继续操作~~ 组一个大的数据，顺便在保存的时候也用！！
+            var totalnum = 0;
+            datas = [];
+            $('#tosttop_cont .addstorenum').each(function (index) {
+                var obj = {'colorstr':'',"colordm":'',"total":'','num':[]}
+                obj.colorstr = $(this).children('dt').find('.addstorenum_name').html();
+                obj.colordm = $(this).children('dt').find('.addstorenum_name').attr('data-colordm');
+                obj.total = $(this).children('dt').find('.dt_num').val();
+                $(this).children('dd').each(function () {
+                    var numobj = {'sizestr':'','sizedm':'','sizenum':''}
+                    numobj.sizestr = $(this).find('.addstorenum_name').html();
+                    numobj.sizedm = $(this).find('.addstorenum_name').attr('data-code');
+                    numobj.sizenum = $(this).find('.dd_num').val();
+                    obj.num.push(numobj);
+                })
+                datas.push(obj);
+                var num = Number($(this).children('dt').find('.dt_num').val());
+                totalnum += num;
+            })
+            console.log(datas);
+            $('#storeNum').val(totalnum);
 
-        var groupArr=[];
-        var codeArr=[];
-        var nameArr=[];
-        var serialArr=[];
-        $('#tosttop_cont .addcheck').each(function () {
-            groupArr.push($(this).attr('data-group'));
-            codeArr.push($(this).attr('data-code'));
-            nameArr.push($(this).html());
-
+        }else {
+            //原先的 代码 执行
+            var groupArr=[];
+            var codeArr=[];
+            var nameArr=[];
+            var serialArr=[];
+            $('#tosttop_cont .addcheck').each(function () {
+                groupArr.push($(this).attr('data-group'));
+                codeArr.push($(this).attr('data-code'));
+                nameArr.push($(this).html());
+                if(windowType=="size"){
+                    serialArr.push($(this).attr('data-serial'));
+                }
+            });
+            $("#"+windowType).attr("data-code",codeArr.join());
+            $("#"+windowType).val(nameArr.join());
             if(windowType=="size"){
-                serialArr.push($(this).attr('data-serial'));
+                $("#"+windowType).attr("data-serial",serialArr.join());
             }
-        });
-
-        //$("#"+windowType).attr("data-group",groupArr.join());
-        $("#"+windowType).attr("data-code",codeArr.join());
-        $("#"+windowType).val(nameArr.join());
-
-        if(windowType=="size"){
-            $("#"+windowType).attr("data-serial",serialArr.join());
         }
-
-
         $("#tosttop").addClass('y100');
     })
+    $('body').hammer().on('tap', '#createStore', function (event) {
+        event.stopPropagation();
+        console.error(0)
+        $("#createStore").picker({
+            title: "请选择仓库",
+            cols: [
+                {
+                    textAlign: 'center',
+                    values:ckmcarr
+                }
+            ],
+            onChange:function (p) {
+                var vue = p.value[0];
+                for(var m = 0; m<ckmcarr.length; m++){
+                    if(vue == ckmcarr[m].kcckmc){
+                        check_ckdm = ckdmarr[m].kcckdm;
+                    }
+                }
+            }
+        });
+    });
+    //++
+    $('body').hammer().on('tap', '.dt_add', function (event) {
+        event.stopPropagation();
+        var dom = $(this).parents('dl').find('dd');
+        var total_num = 0;
+        dom.each(function () {
+            var this_dom = $(this).find('.dd_num').val();
+            this_dom ++;
+            total_num += Number(this_dom);
+            $(this).find('.dd_num').val(this_dom);
+        })
+        $(this).prev().val(total_num);
+    });
+    //--
+    $('body').hammer().on('tap', '.dt_redu', function (event) {
+        event.stopPropagation();
+        var dom = $(this).parents('dl').find('dd');
+        var total_num = 0;
+        dom.each(function () {
+            var this_dom = $(this).find('.dd_num').val();
+            if(this_dom>0){
+                this_dom --;
+            }
+            total_num += Number(this_dom);
+            $(this).find('.dd_num').val(this_dom);
+        })
+        $(this).next().val(total_num);
+    });
+    //+
+    $('body').hammer().on('tap', '.dd_add', function (event) {
+        event.stopPropagation();
+        var num = $(this).prev().val();
+        num ++;
+        $(this).prev().val(num);
+        var dom = $(this).parents('dl').find('dd');
+        var total_num = 0;
+        dom.each(function () {
+            var this_dom = $(this).find('.dd_num').val();
+            total_num += Number(this_dom);
+        })
+        $(this).parents('dl').find('.dt_num').val(total_num);
+    });
+    //-
+    $('body').hammer().on('tap', '.dd_redu', function (event) {
+        event.stopPropagation();
+        var num = $(this).next().val();
+        if(num>0){
+            num --;
+        }
+        $(this).next().val(num);
+        var dom = $(this).parents('dl').find('dd');
+        var total_num = 0;
+        dom.each(function () {
+            var this_dom = $(this).find('.dd_num').val();
+            total_num += Number(this_dom);
+        })
+        $(this).parents('dl').find('.dt_num').val(total_num);
+    });
+    //blur
+
+
 
 
     //品牌
@@ -219,10 +345,8 @@ $(function () {
         var nodeId= $(this).attr('data-type');
         var selCode= $(this).attr('data-code');
         var selName= $(this).html();
-
         $("#"+nodeId).attr("data-code",selCode);
         $("#"+nodeId).val(selName);
-
         wfy.closeWin();
     });
 
@@ -268,11 +392,9 @@ $(function () {
             $("#name_div").removeClass("none");
             $("#addwindow").attr("style","height:153px;");
         }
-
         $("#window_title").html(window_title);
         $("#field_code_title").html(field_code_title);
         $("#field_name_title").html(field_name_title);
-
         wfy.openWin("addwindow");
         $('#addwindow').attr("data-type",typdcode);
         $('#addwindow').css("bottom","240px");
@@ -288,7 +410,6 @@ $(function () {
     //新增弹窗 确认按钮
     $('body').hammer().on('tap', '#btn_sure', function (event) {
         event.stopPropagation();
-
         var type=$("#addwindow").attr("data-type");
         var code=getValidStr($("#field_code").val());
         var name=getValidStr($("#field_name").val());
@@ -307,9 +428,7 @@ $(function () {
     //新增弹窗 取消按钮
     $('body').hammer().on('tap', '#btn_cancel', function (event) {
         event.stopPropagation();
-
         addWindowReset();
-
         wfy.closeWin("addwindow");
         $('#addwindow').css("bottom","-270px");
     });
@@ -413,8 +532,8 @@ $(function () {
 
         }
         //如果 换过图片 就执行 图片上传
-
     })
+
 
 });
 
@@ -484,72 +603,148 @@ function getComboList() {
 //生成颜色尺码弹窗数据
 function createWindow(type,selData) {
     var selArr=selData.split(",");
-
     var html='<input type="hidden" id="win_type" name="'+type+'"/>';
-
     if(type=="color"){
-        //颜色
         if(colorArr.length != 0){
-           /* html= '无可选颜色，请新增';
-        }else {*/
             outer:
             for(var i = 0;i<colorArr.length; i++){
-
                 for(var j=0;j<selArr.length;j++){
                     if(colorArr[i].xtwpys==selArr[j]){
                         if(pageFlag=="edit"){
                             html+= '<div class="tost_title_list addcheck noedit" data-group="'+colorArr[i].wpyszb+'" data-code="'+colorArr[i].xtwpys+'">'+colorArr[i].xtysmc+'</div>';
-
                         } else{
                             html+= '<div class="tost_title_list addcheck" data-group="'+colorArr[i].wpyszb+'" data-code="'+colorArr[i].xtwpys+'">'+colorArr[i].xtysmc+'</div>';
-
                         }
-
                         continue outer;
                     }
                 }
-
                 html+= '<div class="tost_title_list" data-group="'+colorArr[i].wpyszb+'" data-code="'+colorArr[i].xtwpys+'">'+colorArr[i].xtysmc+'</div>';
             }
-
         }
-
         html+= '<div class="tost_title_list comboadd" style="border: dashed 1px #999;color: #999;">&#xe6b9;</div>';
-
     }else{
         //尺码
         if(sizeArr.length != 0){
-           /* html= '无可选尺码，请新增';
-        }else {*/
-
             outer:
                 for(var i = 0;i<sizeArr.length; i++){
-
                     for(var j=0;j<selArr.length;j++){
                         if(sizeArr[i].xtwpxh==selArr[j]){
-
                             if(pageFlag=="eidt"){
                                 html+= '<div class="tost_title_list addcheck noedit" data-group="'+sizeArr[i].wpxhzb+'" data-code="'+sizeArr[i].xtwpxh+'" data-serial="'+sizeArr[i].xtxhxh+'">'+sizeArr[i].xtwpxh+'</div>';
-
                             } else{
                                 html+= '<div class="tost_title_list addcheck" data-group="'+sizeArr[i].wpxhzb+'" data-code="'+sizeArr[i].xtwpxh+'" data-serial="'+sizeArr[i].xtxhxh+'">'+sizeArr[i].xtwpxh+'</div>';
                             }
-
                             continue outer;
                         }
                     }
-
                     html+= '<div class="tost_title_list" data-group="'+sizeArr[i].wpxhzb+'" data-code="'+sizeArr[i].xtwpxh+'" data-serial="'+sizeArr[i].xtxhxh+'">'+sizeArr[i].xtwpxh+'</div>';
                 }
         }
-
         html+= '<div class="tost_title_list comboadd" style="border: dashed 1px #999;color: #999;">&#xe6b9;</div>';
+    }
+    $("#tosttop_cont").html(html);
+}
+
+function creatstoreNum() {
+    var colorstr = wfy.empty($('#color').val()) ? '均色' : $('#color').val();
+    var colorcode = wfy.empty($('#color').attr('data-code')) ? 'F':$('#color').attr('data-code');//默认均色 F
+    var sizestr = wfy.empty($('#size').val()) ? '均码' : $('#size').val();
+    var sizecode = wfy.empty($('#size').attr('data-code')) ? '01':$('#size').attr('data-code');//默认均码 01
+    var colorstrarr = colorstr.split(',');
+    var colorcodearr = colorcode.split(',');
+    var sizestrarr = sizestr.split(',');
+    var sizecodearr = sizecode.split(',');
+    //如果 datas中有 数据 则说明 之前添加过！！！so 要浮现内容
+    console.log(datas)
+
+    var html = '';
+    var a=b=c ='';
+    html += ' <ul class="bill_head_cont thd ts200">' +
+                '<li><span>仓/店</span><input class="createTime" value="'+storeresurt[0].kcckmc+'"  readonly="readonly"  id="createStore" placeholder="---"></li>' +
+                '<li style="height: 0px"></li>' +
+            '</ul>';
+    for(var i = 0; i<colorstrarr.length; i++){
+        try {
+            var flg = wfy.empty(datas[i].total);
+            flg ? a = 0  : a = datas[i].total;
+            flg ? b = [] : b = datas[i].num;
+        }
+            catch (e){
+                a = 0;
+                b = []
+            }
+
+        html+='<dl class="addstorenum">'+
+            '<dt>'+
+            '<span class="addstorenum_name" data-colordm ="'+colorcodearr[i]+'">'+colorstrarr[i]+'</span>'+
+            '<div class="addstorenum_n"><em class="dt_redu">&#xe66a</em><input class="dt_num" type="tel" value="'+a+'"><em class="dt_add">&#xe6b9</em></div>'+
+            '</dt>';
+        for(var m = 0; m<sizestrarr.length; m++){
+            try{
+                var flg = wfy.empty(b);
+                flg ? c = 0 : c= b[m].sizenum;
+            }catch (e){
+                c = 0;
+            }
+            html+= '<dd>'+
+                '<span class="addstorenum_name" data-code = "'+sizecodearr[m]+'">'+sizestrarr[m]+'</span>'+
+                '<div class="addstorenum_n"><em class="dd_redu">&#xe66a</em><input class="dd_num" type="tel" value="'+c+'"><em class="dd_add">&#xe6b9</em></div>'+
+                '</dd>';
+        }
+        html+= '</dl>';
 
     }
-
     $("#tosttop_cont").html(html);
+    //用上边的try catch 一遍处理的数据 每个颜色的总数有点问题（加加减减型号的情况） 所以 每个款式的总数要从 对应的 型号中重新获取之和！！！!
+    $('#tosttop_cont .addstorenum').each(function () {
+        var dom = $(this).children('dd');
+        var d = 0;
+        dom.each(function () {
+            var num = $(this).find('.dd_num').val();
+            d += Number(num);
+        })
+        $(this).children('dt').find('.dt_num').val(d);
+    })
 
+
+
+    $('.dt_num').blur(function () {
+        var value = $(this).val();
+        $(this).parents('.addstorenum').find('.dd_num').val(value);
+        var len = $(this).parents('.addstorenum').find('dd').length;
+        $(this).val(value*len);
+    })
+    $('.dd_num').blur(function () {
+        var dom = $(this).parents('.addstorenum').children('dd');
+        var d = 0;
+        dom.each(function () {
+            var num = $(this).find('.dd_num').val();
+            d += Number(num);
+        })
+        $(this).parents('.addstorenum').children('dt').find('.dt_num').val(d);
+    })
+
+    // $('.dt_num').on('input propertychange',function () {
+    //     console.error(1)
+    //     var value = $(this).val();
+    //     console.error(value)
+    //     $(this).parents('.addstorenum').find('.dd_num').val(value);
+    //     var len = $(this).parents('.addstorenum').find('dd').length;
+    //     $(this).val(value*len);
+    // })
+    // $('.dd_num').on('input propertychange',function () {
+    //     var dom = $(this).parents('.addstorenum').children('dd');
+    //     var d = 0;
+    //     dom.each(function () {
+    //         var num = $(this).val();
+    //         d += Number(num);
+    //     })
+    //     $(this).parents('.addstorenum').children('dt').find('.dt_num').val(d);
+    // })
 }
+
+
+
 
 //获取数据明细
 function getDataDtl(record) {
@@ -565,7 +760,7 @@ function getDataDtl(record) {
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             var result = vOpr1.getResult(d, "AC_RESULT").rows || [];
-            console.log(result)
+            //console.log(result)
             queryDataDeal(result);
         } else {
             wfy.alert("数据查询失败,"+d.errorMessage);
@@ -648,7 +843,7 @@ function queryDataDeal(rows) {
     $("#category").attr("data-code",data.category);
     $("#unit").val(data.unitname);
     $("#unit").attr("data-code",data.unit);
-    console.log($('#check_img').attr('src'))
+    //console.log($('#check_img').attr('src'))
     $('#check_img').attr('src',_wfy_pic_ip+data.img)
 
 }
@@ -904,14 +1099,119 @@ function dataSave(){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             wfy.hideload();
             localStorage.isupdataImg = 'N';
-            wfy.alert("保存成功",function () {
-                wfy.goto("qry_pro_sales");
-            });
+            //修改 新增的时候  自动升成入库单！！
+            if(pageFlag=="add" && datas.length != 0){
+                getorder('RK',function (res) {
+                    var czhm = res[0].operid;//操作号码
+                    var xphm = res[0].orderid;//单号
+                    var vBiz = new FYBusiness("biz.ctl.item.rkd.save");
+                    var vOpr1 = vBiz.addCreateService("svc.ctl.item.rkd.head.save", false);
+                    var vOpr1Data = vOpr1.addCreateData();
+                    vOpr1Data.setValue("AS_USERID", LoginName);
+                    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+                    vOpr1Data.setValue("AS_FUNC", "svc.ctl.item.rkd.head.save");
+                    vOpr1Data.setValue("AS_OPERID", czhm);
+                    vOpr1Data.setValue("AS_ORDERID", xphm);
+                    vOpr1Data.setValue("AS_WPCKDM", check_ckdm);
+                    var vOpr2 = vBiz.addCreateService("svc.ctl.item.rkd.dtl.save", false);
+                    var vOpr2Data = [];
+                    for(var i = 0; i<datas.length; i++){
+                        var cont = datas[i].num;
+                        for(var m = 0; m<cont.length;m++ ){
+                            var obj = {};
+                            obj.AS_USERID = LoginName;
+                            obj.AS_WLDM = DepartmentCode;
+                            obj.AS_FUNC = "svc.ctl.item.rkd.dtl.save";
+                            obj.AS_OPERID = czhm;
+                            obj.AS_ORDERID = xphm;
+                            obj.AS_XTWPKS = getValidStr($("#girard").val());//款式
+                            obj.AS_XTPZGG = datas[i].colordm;//颜色代码
+                            obj.AS_XTWPXH = cont[m].sizedm ;//尺码序号（代码）
+                            obj.AN_WPCBDJ = saveObj.price;//进价成本
+                            obj.AN_QCKCSL = cont[m].sizenum //库存数量
+                            obj.AS_XTJLDW = getValidStr($("#unit").attr("data-code"));//计量单位
+                            obj.AS_WPCKDM = check_ckdm;
+                            vOpr2Data.push(obj);
+                        }
+                    }
+                    vOpr2.addDataArray(vOpr2Data)
+                    var ip = new InvokeProc();
+                    ip.addBusiness(vBiz);
+                    console.log(JSON.stringify(ip));
+                    ip.invoke(function(d){
+                        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+                            // todo...
+                            wfy.alert("保存成功",function () {
+                                wfy.goto("qry_pro_sales");
+                            });
+                        } else {
+                            // todo...[d.errorMessage]
+                            wfy.alert(d.errorMessage);
+                        }
+                    }) ;
+                })
+            }
+            if(pageFlag=="edit"){
+                wfy.alert("保存成功",function () {
+                    wfy.goto("qry_pro_sales");
+                });
+            }
 
         } else {
             wfy.alert("保存失败,"+d.errorMessage);
         }
     }) ;
+}
+
+//新增的时候默认生成 入库单
+function addrukulist() {
+    getorder('RK',function (res) {
+        var czhm = res[0].operid;//操作号码
+        var xphm = res[0].orderid;//单号
+        var vBiz = new FYBusiness("biz.ctl.item.rkd.save");
+        var vOpr1 = vBiz.addCreateService("svc.ctl.item.rkd.head.save", false);
+        var vOpr1Data = vOpr1.addCreateData();
+        vOpr1Data.setValue("AS_USERID", LoginName);
+        vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+        vOpr1Data.setValue("AS_FUNC", "svc.ctl.item.rkd.head.save");
+        vOpr1Data.setValue("AS_OPERID", czhm);
+        vOpr1Data.setValue("AS_ORDERID", xphm);
+        vOpr1Data.setValue("AS_WPCKDM", check_ckdm);
+        var vOpr2 = vBiz.addCreateService("svc.ctl.item.rkd.dtl.save", false);
+        var vOpr2Data = [];
+        for(var i = 0; i<datas.length; i++){
+            var cont = datas[i].num;
+            for(var m = 0; m<cont.length;m++ ){
+                var obj = {};
+                obj.AS_USERID = LoginName;
+                obj.AS_WLDM = DepartmentCode;
+                obj.AS_FUNC = "svc.ctl.item.rkd.dtl.save";
+                obj.AS_OPERID = czhm;
+                obj.AS_ORDERID = xphm;
+                obj.AS_XTWPKS = getValidStr($("#girard").val());//款式
+                obj.AS_XTPZGG = datas[i].colordm;//颜色代码
+                obj.AS_XTWPXH = cont[m].sizedm ;//尺码序号（代码）
+                obj.AN_WPCBDJ = saveObj.price;//进价成本
+                obj.AN_QCKCSL = cont[m].sizenum //库存数量
+                obj.AS_XTJLDW = getValidStr($("#unit").attr("data-code"));//计量单位
+                obj.AS_WPCKDM = check_ckdm;
+            }
+            vOpr2Data.push(obj);
+        }
+        vOpr2.addDataArray(vOpr2Data)
+        var ip = new InvokeProc();
+        ip.addBusiness(vBiz);
+        console.log(JSON.stringify(ip));
+        ip.invoke(function(d){
+            if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+                // todo...
+                console.log('cheng')
+            } else {
+                // todo...[d.errorMessage]
+                wfy.alert(d.errorMessage);
+            }
+        }) ;
+    })
 }
 
 //选择图片并处理
@@ -965,6 +1265,31 @@ function selectFileImage(fileObj) {
 }
 
 
+// 获取仓库  入库单
+var getcangku = function (call) {
+    var vBiz = new FYBusiness("biz.invopr.warehouse.qry");
+    var vOpr1 = vBiz.addCreateService("svc.invopr.warehouse.qry", false);
+    var vOpr1Data = vOpr1.addCreateData();
+    vOpr1Data.setValue("AS_USERID", LoginName);
+    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr1Data.setValue("AS_FUNC", "svc.invopr.warehouse.qry");
+    vOpr1Data.setValue("AS_DJLX", 'RK');// 例如RK
+    var ip = new InvokeProc();
+    ip.addBusiness(vBiz);
+    //console.log(JSON.stringify(ip));
+    ip.invoke(function(d){
+        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+            // todo...
+            var res = vOpr1.getResult(d, "AC_KCCKDM").rows;
+            if(typeof call === 'function'){
+                call(res);
+            }
+        } else {
+            // todo...[d.errorMessage]
+            wfy.alert(d.errorMessage);
+        }
+    }) ;
+}
 
 
 
