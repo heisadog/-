@@ -53,7 +53,7 @@
             <input class="createTime" type="number" readonly="true" id="saleprice" name="saleprice" placeholder="请设置零售价" data-code="">
         </li>
         <li><span class="">库存数</span>
-            <input class="createTime" type="number" readonly="true" id="storeNum" name="saleprice" placeholder="请输入库存数" data-code="">
+            <input class="createTime" type="number" readonly="true" id="storeNum" name="saleprice" placeholder="请设置库存数" data-code="">
         </li>
         <li><span>品牌</span>
             <input class="createTime" readonly="true" id="brand" name="brand" placeholder="请选择品牌" data-code="">
@@ -116,12 +116,16 @@
     <div class="wfyContList" style="height: calc(100% - 40px);height: -webkit-calc(100% - 40px)">
         <div class="cont">
             <div id="tosttop_cont">
-                <!--<div class="tost_title">单据类</div>-->
-                <!--<ul class="tost_title_list">-->
-                <!--<li class="addcheck">出库单</li>-->
-                <!--<li>出库单</li>-->
-                <!--<li>出库单</li>-->
-                <!--</ul>-->
+                <dl class="addstorenum">
+                    <dt>
+                        <span class="addstorenum_name">红色</span>
+                        <div class="addstorenum_n"><em>&#xe66a</em><input type="tel"><em>&#xe6b9</em></div>
+                    </dt>
+                    <dd>
+                        <span class="addstorenum_name">F</span>
+                        <div class="addstorenum_n"><em>&#xe66a</em><input type="tel"><em>&#xe6b9</em></div>
+                    </dd>
+                </dl>
             </div>
         </div>
     </div>
@@ -133,6 +137,7 @@
     <img src="" alt="" id="iosImg">
 </div>
 <style>
+
     .iosalert{
         width: 100%;height:100%;background-color: #000;
         position: fixed;left:0; ;top:0;
