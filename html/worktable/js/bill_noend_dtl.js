@@ -15,10 +15,10 @@ $(function () {
     //收银
     //------------------------------------------点击 提交（）-------------------------------------------
     $("body").hammer().on("tap", "#sub_sale", function (event) {
-        // if(localStorage.user_syqx == 'N'){
-        //     wfy.alert('抱歉，您未有收银权限！');
-        //     return ;
-        // }
+        if(localStorage.user_syqx == 'N'){
+            wfy.alert('抱歉，您未有收银权限！');
+            return ;
+        }
         operNo = savedata.czhm;
         noteNo = savedata.xtxphm;
         preOrdno= savedata.czhm;
