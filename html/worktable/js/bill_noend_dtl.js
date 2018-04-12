@@ -1,15 +1,99 @@
 var savedata ={};
 $(function () {
+    ishykh = wfy.empty($('#dtl_createKehu').attr('data-hykh')) ? false:true;
+
     $('body').hammer().on('tap','#back',function (event) {
         event.stopPropagation();
         wfy.goto('bill_noend');
     });
     dtl();
     //提交
-    $('body').hammer().on('tap','#sub',function (event) {
+    $('body').hammer().on('tap','#sub_save',function (event) {
         event.stopPropagation();
         saveData();
     });
+    //收银
+    //------------------------------------------点击 提交（关于未结订单页面的）-------------------------------------------
+    $("body").hammer().on("tap", "#sub_sale", function (event) {
+        operNo = savedata.czhm;
+        noteNo = savedata.xtxphm;
+        preOrdno= savedata.czhm;
+        orderAmount = Number($('#totalMoney').html());
+        if($('#pay_style li.poschecked').length == 0){
+            wfy.alert('请先设置支付方式');
+            return false;
+        }
+        //可能多个组合付款方式，先 做个支付信息的提示
+        var pay_check_dm = [];
+        var pay_check_mc = [];
+        var pay_check_je = [];
+        var pay_check_je_total = 0
+        $('#pay_style li.poschecked').each(function () {
+            var dm = $(this).attr('data-typedm');
+            var mc = $(this).find('span').html();
+            var je = Number($(this).find('.billInput').val());
+            if(je < 0){
+                je = je*(-1);
+            }
+            if(je != 0){
+                pay_check_dm.push(dm);
+                pay_check_mc.push(mc);
+                pay_check_je.push(je);
+                pay_check_je_total = Components.add(pay_check_je_total,je);
+            }
+        })
+        var pay = [];
+        $('#pay_style li.poschecked').each(function () {
+            if(Number($(this).find('.billInput').val()) != 0){
+                var payobj = {};
+                payobj.payFee = $('#totalMoney').html();
+                payobj.payType = $(this).attr('data-typedm');//支付方式
+                payobj.payTypeMc = $(this).find('span').html();// 支付方式名称
+                payobj.kyed = kyed;//可用额度
+                payobj.payTypeFee = Number($(this).find('.billInput').val());
+                pay.push(payobj);
+            }
+
+        })
+        console.error(pay);
+        //验证
+        //首先如果有选客户，验证客户的额度
+        if(ishykh){
+            var val_yf =  Number($('#pay_style li[data-type="fukuan"]').find('.billInput').val());
+            if(val_yf > kyed){
+                wfy.alert("钱包金额大于用户可用额度！");
+                return false;
+            }
+        }
+        if(pay_check_je_total > orderAmount){
+            wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
+            return false;
+        }
+        if((orderAmount - pay_check_je_total) > 10){
+            wfy.alert("支付总金额与订单金额相差较大，请重新设置支付金额！");
+            return false;
+        }
+        var tipCont = '您选择的支付信息<br> ';
+        for(var i = 0; i<pay_check_dm.length;i++){
+            if(pay_check_je[i] != 0){
+                tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
+                    '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
+                    '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
+                    '</div>';
+            }
+        }
+        if((orderAmount - pay_check_je_total) != 0){
+            tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
+                '元,如果确认付款，相当于抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
+        }
+        wfy.confirm(tipCont,function () {
+            updaState(pay)
+        },function () {
+
+        });
+
+    });
+    
 })
 function dtl() {
     var vBiz = new FYBusiness("biz.pos.order.msg.qry");
@@ -39,6 +123,7 @@ function dtl() {
             console.log(AC_GUIDE)
             savedata.czhm = AC_HEAD[0].kcczhm;
             savedata.xtxphm = AC_HEAD[0].xtxphm;
+            kyed = AC_HEAD[0].hykyje;
             if(AC_HEAD.length != 0){
                 $("#xiaopiao").html(AC_HEAD[0].xtxphm || "");
             }else {
@@ -48,8 +133,8 @@ function dtl() {
             $('#dtl_createDate').val((AC_HEAD[0].kcczrq).slice(0,10));
             $('#dtl_createGuide').val(AC_GUIDE[0].xtyhxm).attr('data-dgdm',AC_GUIDE[0].kcdgdm);
             $('#dtl_createKehu').val(AC_HEAD[0].khhyxm).attr('data-hykh',AC_HEAD[0].khhykh);
-            $('#pub_bottom_btn').html(botBtnHtml);
-            $('#pay_style').hide();
+            $('#pub_bottom_btn').html(botBtnHtml_dtl);
+
             console.log(data);
             var ksdmarr = [];
             for(var i = 0 ;i<AC_PRODUCT.length; i++){
@@ -59,7 +144,7 @@ function dtl() {
                 objdata['ksmc'] = AC_PRODUCT[i].xtwpmc;
                 var obj ={'color':'','price':'','num':'','style':'',"sku":'','ksmc':'','jldw':'','txhm':'','serialnum':'','wpdj':'','wppfdj':''};
                 obj.color = AC_PRODUCT[i].xtysmc;
-                obj.price = AC_PRODUCT[i].kcssje;//真正的价格
+                obj.price = Math.abs(AC_PRODUCT[i].kcxsdj);//真正的价格
                 obj.num = AC_PRODUCT[i].kcczsl;
                 obj.style = AC_PRODUCT[i].xtwpxh;//
                 obj.sku = AC_PRODUCT[i].xtwpdm;
@@ -87,6 +172,10 @@ function dtl() {
             }
             console.log(data)
             showDataDtl();
+            $('#pay_style li[data-type="fukuan"]').find('.billInput').val('');
+            $('#pay_style li[data-type="fukuan"]').removeClass('none');//选中客户的时候，预付款方式出现
+            $('#pay_style li[data-type="fukuan"]').removeClass('poschecked');//如果之前选了预付款，切换用户 清除选择
+            $('#pay_style li').eq(1).find('i').html('可用：'+kyed);
         } else {
             // todo...[d.errorMessage]
             wfy.alert(d.errorMessage)
@@ -137,9 +226,9 @@ function saveData() {
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
             console.log('成');
-            wfy.alert('单据商品保存成功！',function () {
-                window.location.reload()
-            })
+            // wfy.alert('单据商品保存成功！',function () {
+            //     window.location.reload()
+            // })
             // var pay = [];
             // $('#pay_style li.poschecked').each(function () {
             //     if(Number($(this).find('.billInput').val()) != 0){

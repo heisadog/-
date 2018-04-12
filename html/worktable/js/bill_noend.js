@@ -16,22 +16,22 @@ $(function () {
     //支付
     $("body").hammer().on("tap", ".btnpay", function (event) {
         event.stopPropagation();
-        orderAmount = $(this).parent().attr("data-ddyfje");//订单金额
-        if(orderAmount < 0){
-            wfy.alert('此未结订单金额小于0，建议直接删除重新做单！')
-        }else {
-            czhm = $(this).parent().attr("data-kcczhm");//操作号码
-            var yhkh = $(this).parent().attr("data-khhyxm");//客户
-            xtxphm = $(this).parent().attr("data-xtxphm");//
-            kyed = wfy.empty($(this).parent().attr("data-hykyed")) ? 0 : Number($(this).parent().attr("data-hykyed"));//可用额度
-            $('#pay_style li').eq(1).find('i').html('可用：'+kyed);
-            ishykh = !wfy.empty(yhkh);
-            if(ishykh){
-                $('#pay_style li[data-type="fukuan"]').removeClass('none');
-            }
-            $('#totalMoney').html(orderAmount);
-            wfy.openPay('pay_alert_box');
+        if(localStorage.user_syqx == 'N'){
+            wfy.alert('抱歉，您未有收银权限！');
+            return ;
         }
+        orderAmount = $(this).parent().attr("data-ddyfje");//订单金额
+        czhm = $(this).parent().attr("data-kcczhm");//操作号码
+        var yhkh = $(this).parent().attr("data-khhyxm");//客户
+        xtxphm = $(this).parent().attr("data-xtxphm");//
+        kyed = wfy.empty($(this).parent().attr("data-hykyed")) ? 0 : Number($(this).parent().attr("data-hykyed"));//可用额度
+        $('#pay_style li').eq(1).find('i').html('可用：'+kyed);
+        ishykh = !wfy.empty(yhkh);
+        if(ishykh){
+            $('#pay_style li[data-type="fukuan"]').removeClass('none');
+        }
+        $('#totalMoney').html(orderAmount);
+        wfy.openPay('pay_alert_box');
 
     });
     //取消支付 modles
@@ -75,6 +75,7 @@ $(function () {
         //console.log(clicked);
         var czhm = $(this).attr('data-czhm');
         localStorage.yd_czhm = czhm;
+        localStorage.page = 'msa030_0900';
         wfy.goto('bill_noend_dtl');
     })
 

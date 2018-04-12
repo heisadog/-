@@ -98,7 +98,10 @@ var payHtml = '<li data-type="cash" data-typedm="01" class="">'+
 var botBtnHtml ='<div class="pub_num">总数：<span id="totalNum">0</span></div>'+
                 '<div class="pub_num">总额：<span>￥</span><span id="totalMoney">0</span></div>'+
                 '<div class="pub_num pub_btn" id="sub" style="width: 120px">提交</div>';
-
+var botBtnHtml_dtl ='<div class="pub_num">总数：<span id="totalNum">0</span></div>'+
+    '<div class="pub_num">总额：<span>￥</span><span id="totalMoney">0</span></div>'+
+    '<div class="pub_num pub_btn" id="sub_save" style="width: 60px">提交</div>'+
+    '<div class="pub_num pub_btn" id="sub_sale" style="width: 60px">收银</div>';
 var botBtnHtml_coll = '<div class="pub_num pub_btn" id="sub" style="width: 100%">提交</div>';
 
 var botBtnHtml_noend =  '<div class="pub_num">总额：<span>￥</span><span id="totalMoney">0</span></div>'+
@@ -584,7 +587,7 @@ function updaState(pay) {
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
             wfy.alert('生成订单成功！',function () {
-                window.location.reload();
+                //window.location.reload();
             });
         } else {
             // todo...[d.errorMessage]
