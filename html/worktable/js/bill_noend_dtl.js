@@ -13,8 +13,12 @@ $(function () {
         saveData();
     });
     //收银
-    //------------------------------------------点击 提交（关于未结订单页面的）-------------------------------------------
+    //------------------------------------------点击 提交（）-------------------------------------------
     $("body").hammer().on("tap", "#sub_sale", function (event) {
+        // if(localStorage.user_syqx == 'N'){
+        //     wfy.alert('抱歉，您未有收银权限！');
+        //     return ;
+        // }
         operNo = savedata.czhm;
         noteNo = savedata.xtxphm;
         preOrdno= savedata.czhm;
@@ -172,10 +176,12 @@ function dtl() {
             }
             console.log(data)
             showDataDtl();
-            $('#pay_style li[data-type="fukuan"]').find('.billInput').val('');
-            $('#pay_style li[data-type="fukuan"]').removeClass('none');//选中客户的时候，预付款方式出现
-            $('#pay_style li[data-type="fukuan"]').removeClass('poschecked');//如果之前选了预付款，切换用户 清除选择
-            $('#pay_style li').eq(1).find('i').html('可用：'+kyed);
+            if(ishykh){
+                $('#pay_style li[data-type="fukuan"]').find('.billInput').val('');
+                $('#pay_style li[data-type="fukuan"]').removeClass('none');//选中客户的时候，预付款方式出现
+                $('#pay_style li[data-type="fukuan"]').removeClass('poschecked');//如果之前选了预付款，切换用户 清除选择
+                $('#pay_style li').eq(1).find('i').html('可用：'+kyed);
+            }
         } else {
             // todo...[d.errorMessage]
             wfy.alert(d.errorMessage)
@@ -226,9 +232,9 @@ function saveData() {
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
             console.log('成');
-            // wfy.alert('单据商品保存成功！',function () {
-            //     window.location.reload()
-            // })
+            wfy.alert('单据商品保存成功！',function () {
+                window.location.reload()
+            })
             // var pay = [];
             // $('#pay_style li.poschecked').each(function () {
             //     if(Number($(this).find('.billInput').val()) != 0){
