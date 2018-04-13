@@ -36,7 +36,7 @@ $(function () {
         if(pageName == 'msa030_0800'){//销售开单
             $('#pagename').html('销售开单');
             $('#pay_head,#pay_style').hide();
-            $('.js_createMoney').addClass('none');
+            $('.js_createMoney,.js_createZK').addClass('none');
             $('#pub_bottom_btn').html(botBtnHtml);
         }
         if(pageName == 'msa030_0100'){//销售收银
