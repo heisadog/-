@@ -209,26 +209,29 @@ $(function () {
     });
     //新增 折扣 实时监控  只计算总额
     $('#createZK').on('input propertychange',function(){
-        var zk = $(this).val()/100;
-        var reg = /^[0-9\-]+$/;
-        var pr_val = Number($('#totalMoney').attr('data-jige'));
-        var totalMoney = accMul(pr_val,zk);
-        if(totalMoney.toString().length>6){
-            $('#totalMoney,#totalNum').parent().css({
-                'line-height':'25px'
-            })
-            $('#totalMoney,#totalNum').css({
-                'display':'block'
-            })
-        }else {
-            $('#totalMoney,#totalNum').parent().css({
-                'line-height':'50px'
-            })
-            $('#totalMoney,#totalNum').css({
-                'display':'inline'
-            })
-        }
-        $('#totalMoney').html(totalMoney);
+
+        // var zk = $(this).val()/100;
+        // var reg = /^[0-9\-]+$/;
+        // var pr_val = Number($('#totalMoney').attr('data-jige'));
+        // var totalMoney = accMul(pr_val,zk);
+        // if(totalMoney.toString().length>6){
+        //     $('#totalMoney,#totalNum').parent().css({
+        //         'line-height':'25px'
+        //     })
+        //     $('#totalMoney,#totalNum').css({
+        //         'display':'block'
+        //     })
+        // }else {
+        //     $('#totalMoney,#totalNum').parent().css({
+        //         'line-height':'50px'
+        //     })
+        //     $('#totalMoney,#totalNum').css({
+        //         'display':'inline'
+        //     })
+        // }
+        // $('#totalMoney').html(totalMoney);
+        //操作方法你按照我的来，先把折扣改为7折，进入选择商品，出来再改一下销售类型，把折扣调完8折 上述的bug
+        getTotalNumAndMoney();//修改后直接重新获取计算
     });
     // 新增 点击 选择销售类型
     $("#createLX").picker({
