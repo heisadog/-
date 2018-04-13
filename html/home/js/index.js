@@ -106,6 +106,8 @@ $(function () {
     $('body').hammer().on('tap','#storeBox .item',function (event) {
         event.stopPropagation();
         var that = $(this);
+        localStorage.mddm = $(this).attr('data-wldm');
+        DepartmentCode = $(this).attr('data-wldm');
         setTimeout(function () {
             var mddm = that.attr('data-wldm');
             var mdmc = that.html();

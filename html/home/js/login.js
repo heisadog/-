@@ -177,8 +177,9 @@ function checkLogin(){
                     localStorage.data = JSON.stringify(data);
                 }
                 localStorage.reguid = $('#uid').val();
-                localStorage.regpwd  = $('#pwd').val()
-                wfy.goto("index");
+                localStorage.regpwd  = $('#pwd').val();
+                getqx();
+                //wfy.goto("index");
             }
         },
         error: function (info) {
@@ -257,7 +258,8 @@ function gotoIndex() {
                             localStorage.yhGuid = msg.guid;//保存返回的guid，注销时使用
                             localStorage.footerIndex = 0;
                             //登陆成功 将输入的账号 添加到data中
-                            wfy.goto("index");
+                            getqx()
+                            //wfy.goto("index");
                         }
                     },
                     error: function (info) {
@@ -275,4 +277,65 @@ function gotoIndex() {
         }
     });
 }
+
+function getqx() {
+    var vBiz = new FYBusiness("biz.ctluser.qx.qry");
+    var vOpr1 = vBiz.addCreateService("svc.ctluser.qx.qry", false);
+    var vOpr1Data = vOpr1.addCreateData();
+    vOpr1Data.setValue("AS_USERID", LoginName);
+    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr1Data.setValue("AS_FUNC", "svc.ctluser.qx.qry");
+    var ip = new InvokeProc();
+    ip.addBusiness(vBiz);
+    ip.invoke(function(d){
+        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+            // todo...svc.ctluser.qx.qry AC_USERINFO
+            var res = vOpr1.getResult(d, "AC_USERINFO").rows;
+            console.error(res);
+            localStorage.user_cbqx = res[0].xtcbqx;
+            localStorage.user_syqx = res[0].xtsyqx;
+            wfy.goto("index");
+        } else {
+            // todo...[d.errorMessage]
+            wfy.alert(d.errorMessage)
+        }
+    }) ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
