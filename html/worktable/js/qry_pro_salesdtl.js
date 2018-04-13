@@ -757,10 +757,11 @@ function getDataDtl(record) {
     vOpr1Data.setValue("AS_XTWPKS", record);
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
+    console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             var result = vOpr1.getResult(d, "AC_RESULT").rows || [];
-            //console.log(result)
+            console.log(result)
             queryDataDeal(result);
         } else {
             wfy.alert("数据查询失败,"+d.errorMessage);
@@ -1290,7 +1291,6 @@ var getcangku = function (call) {
         }
     }) ;
 }
-
 
 
 

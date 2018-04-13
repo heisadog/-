@@ -586,7 +586,7 @@ function updaState(pay) {
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             // todo...
-            wfy.alert('生成订单成功！',function () {
+            Components.alert('生成订单成功！',function () {
                 if(pageName =='msa030_0900'){
                     wfy.pagegoto('bill_noend');
                 }else {

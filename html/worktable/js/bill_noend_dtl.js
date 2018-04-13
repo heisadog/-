@@ -15,10 +15,10 @@ $(function () {
     //收银
     //------------------------------------------点击 提交（）-------------------------------------------
     $("body").hammer().on("tap", "#sub_sale", function (event) {
-        if(localStorage.user_syqx == 'N'){
-            wfy.alert('抱歉，您未有收银权限！');
-            return ;
-        }
+        // if(localStorage.user_syqx == 'N'){
+        //     wfy.alert('抱歉，您未有收银权限！');
+        //     return ;
+        // }
         operNo = savedata.czhm;
         noteNo = savedata.xtxphm;
         preOrdno= savedata.czhm;
@@ -27,6 +27,7 @@ $(function () {
             wfy.alert('请先设置支付方式');
             return false;
         }
+        var tipCont = '您选择的支付信息<br> ';
         //可能多个组合付款方式，先 做个支付信息的提示
         var pay_check_dm = [];
         var pay_check_mc = [];
@@ -60,38 +61,73 @@ $(function () {
 
         })
         console.error(pay);
-        //验证
-        //首先如果有选客户，验证客户的额度
-        if(ishykh){
-            var val_yf =  Number($('#pay_style li[data-type="fukuan"]').find('.billInput').val());
-            if(val_yf > kyed){
-                wfy.alert("钱包金额大于用户可用额度！");
+        if(orderAmount <= 0){
+            orderAmount = orderAmount*(-1);
+            //涉及到负销售
+            var is_fa = false;
+            $('#pay_style li:gt(1)').each(function () {
+                if($(this).hasClass('poschecked')){
+                    is_fa = true;
+                    $(this).children('.pay_inputandicon').removeClass('poschecked')
+                    $(this).removeClass('poschecked').find('.billInput').val("");
+                }
+            })
+            if(is_fa || ($('#pay_style li[data-type="cash"]').hasClass('poschecked') && $('#pay_style li[data-type="fukuan"]').hasClass('poschecked'))){
+                wfy.alert('销售金额为负数，只能选择现金或者钱包中的一种');
                 return false;
             }
-        }
-        if(pay_check_je_total > orderAmount){
-            wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
-            return false;
-        }
-        if((orderAmount - pay_check_je_total) > 10){
-            wfy.alert("支付总金额与订单金额相差较大，请重新设置支付金额！");
-            return false;
-        }
-        var tipCont = '您选择的支付信息<br> ';
-        for(var i = 0; i<pay_check_dm.length;i++){
-            if(pay_check_je[i] != 0){
-                tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
-                    '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
-                    '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
-                    '</div>';
+
+            if( pay_check_je_total != orderAmount){
+                wfy.alert('付款金额与订单金额不相等，请重新输入！');
+                return false;
+            }
+            for(var i = 0; i<pay_check_dm.length;i++){
+                if(pay_check_je[i] != 0){
+                    tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
+                        '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
+                        '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
+                        '</div>';
+                }
+            }
+        }else{
+            //首先如果有选客户，验证客户的额度
+            if(ishykh){
+                var val_yf =  $('#pay_style li[data-type="fukuan"]').find('.billInput').val();
+                if(val_yf > kyed){
+                    wfy.alert("钱包金额大于用户可用额度！");
+                    return false;
+                }
+            }
+            if(pay_check_je_total > orderAmount){
+                wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
+                return false;
+            }
+            if((orderAmount - pay_check_je_total) > 10){
+                wfy.alert("支付总金额与订单金额相差较大，请重新设置支付金额！");
+                return false;
+            }
+            for(var i = 0; i<pay_check_dm.length;i++){
+                if(pay_check_je[i] != 0){
+                    tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
+                        '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
+                        '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
+                        '</div>';
+                }
+            }
+            if((orderAmount - pay_check_je_total) != 0){
+                tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
+                    '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
             }
         }
-        if((orderAmount - pay_check_je_total) != 0){
-            tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
-                '元,如果确认付款，相当于抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
-        }
         wfy.confirm(tipCont,function () {
-            updaState(pay)
+            //如果用户取消 支付，再次点击的时候 生成预订单失败。需要验证预订单的存在
+            if(preOrdno == ''){
+                createOrder();
+            }else{
+                //直接走支付
+                updaState(getCommRequestBean()[2])
+            }
+
         },function () {
 
         });
@@ -261,7 +297,27 @@ function saveData() {
 }
 
 
-
+var vBiz = new FYBusiness("biz.ctluser.qx.qry");
+var vOpr1 = vBiz.addCreateService("svc.ctluser.qx.qry", false);
+var vOpr1Data = vOpr1.addCreateData();
+vOpr1Data.setValue("AS_USERID", LoginName);
+vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+vOpr1Data.setValue("AS_FUNC", "svc.ctluser.qx.qry");
+var ip = new InvokeProc();
+ip.addBusiness(vBiz);
+ip.invoke(function(d){
+    if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+        // todo...svc.ctluser.qx.qry AC_USERINFO
+        var res = vOpr1.getResult(d, "AC_USERINFO").rows;
+        console.error(res);
+        // localStorage.user_cbqx = res[0].xtcbqx;
+        // localStorage.user_syqx = res[0].xtsyqx;
+        //wfy.goto("index");
+    } else {
+        // todo...[d.errorMessage]
+        wfy.alert(d.errorMessage)
+    }
+}) ;
 
 
 

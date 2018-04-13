@@ -9,7 +9,7 @@ var saveObj={};//数据保存对象
 var shopArr=[];//门店
 var roleArr_gs=[{xtyhzm: "M00", xtyzmc: "老板"}];//岗位
 var roleArr_md=[{xtyhzm: "M01", xtyzmc: "店长"},{xtyhzm: "M02", xtyzmc: "导购"}];//岗位
-wfy.showload();
+// wfy.showload();
 $(function () {
     //获取下拉显示数据
     getComboData();
