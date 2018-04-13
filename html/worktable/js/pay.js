@@ -139,10 +139,10 @@ $(function () {
         $('#pay_style').html(payHtml).css({
             'padding-bottom':'70px'
         });
-        if(wfy.pageName() == 'bill_noend'){
-            $('#pub_bottom_btn').html(botBtnHtml_noend);
-        }
-        
+        // if(wfy.pageName() == 'bill_noend'){
+        //     $('#pub_bottom_btn').html(botBtnHtml_noend);
+        // }
+
     }
     $("body").hammer().on("tap", ".bill_radio_close", function (event) {
         event.stopPropagation();
