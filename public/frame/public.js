@@ -135,7 +135,30 @@ function getorder(AS_TYPE,call) {
 		}
 	}) ;
 }
-
+//获取权限
+function getqx(call) {
+	var vBiz = new FYBusiness("biz.ctluser.qx.qry");
+	var vOpr1 = vBiz.addCreateService("svc.ctluser.qx.qry", false);
+	var vOpr1Data = vOpr1.addCreateData();
+	vOpr1Data.setValue("AS_USERID", LoginName);
+	vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+	vOpr1Data.setValue("AS_FUNC", "svc.ctluser.qx.qry");
+	var ip = new InvokeProc();
+	ip.addBusiness(vBiz);
+	ip.invoke(function(d){
+		if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+			// todo...svc.ctluser.qx.qry AC_USERINFO
+			var res = vOpr1.getResult(d, "AC_USERINFO").rows;
+			console.error(res);
+			if(typeof call === 'function'){
+				call(res);
+			}
+		} else {
+			// todo...[d.errorMessage]
+			wfy.alert(d.errorMessage)
+		}
+	}) ;
+}
 
 
 
