@@ -10,7 +10,9 @@ $(function () {
     //提交
     $('body').hammer().on('tap','#sub_save',function (event) {
         event.stopPropagation();
-        saveData();
+        if(!$(this).hasClass('cabsdot_bosdt')){
+            saveData();
+        }
     });
     //收银
     //------------------------------------------点击 提交（）-------------------------------------------

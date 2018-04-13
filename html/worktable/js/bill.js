@@ -240,6 +240,7 @@ $(function () {
             }
         ],
         onChange:function (p) {
+            $('#sub_save').removeClass('cabsdot_bosdt');
             var vue = p.value[0];
             if(vue == '零售'){
                 salestyle = '零售';
@@ -258,7 +259,7 @@ $(function () {
     $('body').hammer().on("tap",'.b0061 .add',function( event){
         event.stopPropagation();
         ischanege = false;
-        $('#save').removeClass('cabsdot_bosdt');
+        $('#save,#sub_save').removeClass('cabsdot_bosdt');
         var num=$(this).prev().html();
         var txhm = $(this).prev().attr('data-tm');
         var xthh = $(this).prev().attr('data-hh');
@@ -276,12 +277,12 @@ $(function () {
     $('body').hammer().on("tap",'.b0061 .reduce',function( event){
         event.stopPropagation();
         ischanege = false;
-        $('#save').removeClass('cabsdot_bosdt');
+        $('#save,#sub_save').removeClass('cabsdot_bosdt');
         var num=$(this).next().html();
         var txhm = $(this).next().attr('data-tm');
         var xthh = $(this).next().attr('data-hh');
         var style = $(this).parents('li').find('.sku_style').html();//获取 型号 L M
-        if(pageName == 'msa030_0100' || pageName == 'msa030_0800'){
+        if(pageName == 'msa030_0100' || pageName == 'msa030_0800' || pageName == 'msa030_0900'){
             num --;
         }else{
             if(num>0){
@@ -299,7 +300,7 @@ $(function () {
     $('body').hammer().on("tap",'.b0061 .num',function( event){
         event.stopPropagation();
         ischanege = false;
-        $('#save').removeClass('cabsdot_bosdt');
+        $('#save,#sub_save').removeClass('cabsdot_bosdt');
         var num = 0;
         var txhm = $(this).attr('data-tm');
         var xthh = $(this).attr('data-hh');
@@ -310,7 +311,7 @@ $(function () {
             title: "请输入编辑数量",
             onOK: function(text) {
                 num = parseInt(Number(text)) || 0;
-                if(pageName != 'msa030_0100' || pageName != 'msa030_0800'){//销售收银
+                if(pageName != 'msa030_0100' || pageName != 'msa030_0800' || pageName != 'msa030_0900'){//销售收银
                     if(num < 0){
                         wfy.alert('不允许输入负数');
                         return false;
@@ -502,7 +503,7 @@ $(function () {
     $('body').hammer().on('tap','.bill_sku_delete',function (event) {
         event.stopPropagation();
         ischanege = false;
-        $('#save').removeClass('cabsdot_bosdt');
+        $('#save,#sub_save').removeClass('cabsdot_bosdt');
         var ksdm = $(this).attr('data-ksdm');
         var index = 0;
         for(var i = 0 ; i<data.length; i++){
@@ -526,7 +527,7 @@ $(function () {
         $('body').hammer().on('tap','.mxdtl_add',function (event) {
             event.stopPropagation();
             ischanege = false;
-            $('#save').removeClass('cabsdot_bosdt');
+            $('#save,#sub_save').removeClass('cabsdot_bosdt');
             var data_index = 0 ;//data的索引
             var cont_index = 0 ;//cont的索引
             data_index = $(this).parents('.bill_sku').attr('data-index');
@@ -548,7 +549,7 @@ $(function () {
         $('body').hammer().on('tap','.mxdtl_reduce',function (event) {
             event.stopPropagation();
             ischanege = false;
-            $('#save').removeClass('cabsdot_bosdt');
+            $('#save,#sub_save').removeClass('cabsdot_bosdt');
             var data_index = 0 ;//data的索引
             var cont_index = 0 ;//cont的索引
             data_index = $(this).parents('.bill_sku').attr('data-index');
@@ -576,7 +577,7 @@ $(function () {
         $('body').hammer().on('tap','.mxdtl_delete',function (event) {
             event.stopPropagation();
             ischanege = false;
-            $('#save').removeClass('cabsdot_bosdt');
+            $('#save,#sub_save').removeClass('cabsdot_bosdt');
             var data_index = 0 ;//data的索引
             var cont_index = 0 ;//cont的索引
             data_index = $(this).parents('.bill_sku').attr('data-index');
@@ -730,7 +731,7 @@ function getTotalNumAndMoney() {
     var zk = $('#createZK').val()/100;
     totalMoney = accMul(totalMoney,zk);
     //end
-    
+
     if(totalMoney.toString().length>6){
         $('#totalMoney,#totalNum').parent().css({
             'line-height':'25px'
