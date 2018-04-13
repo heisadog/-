@@ -653,9 +653,9 @@ function createWindow(type,selData) {
 
 function creatstoreNum() {
     var colorstr = wfy.empty($('#color').val()) ? '均色' : $('#color').val();
-    var colorcode = wfy.empty($('#color').attr('data-code')) ? 'F':$('#color').attr('data-code');//默认均色 F
+    var colorcode = wfy.empty($('#color').attr('data-code')) ? '01':$('#color').attr('data-code');//默认均色 F
     var sizestr = wfy.empty($('#size').val()) ? '均码' : $('#size').val();
-    var sizecode = wfy.empty($('#size').attr('data-code')) ? '01':$('#size').attr('data-code');//默认均码 01
+    var sizecode = wfy.empty($('#size').attr('data-code')) ? 'F':$('#size').attr('data-code');//默认均码 01
     var colorstrarr = colorstr.split(',');
     var colorcodearr = colorcode.split(',');
     var sizestrarr = sizestr.split(',');
