@@ -34,10 +34,18 @@ var datas = [];//新增 库存 操作的数据
 var flag="list";//颜色尺码新增点击页面的类型，默认为列表点击
 var img = '';
 var extname = '';
-var cbqx = localStorage.user_cbqx;
-console.log(cbqx)
+
 //var cbqx = 'Y';
 $(function () {
+    getqx(function (res) {
+        cbqx = res[0].xtcbqx;
+        syqx = res[0].xtsyqx;
+        console.log(cbqx);
+        console.log(syqx);
+        if(cbqx == "N"){
+            $('#inprice').addClass('none');
+        }
+    })
     //查询明细信息
     if(recordcode==""){
         pageFlag="add";
@@ -57,9 +65,7 @@ $(function () {
         $("#saleprice").removeAttr("readonly");
         $("#wholesalePrice").removeAttr("readonly");
     }
-    if(cbqx == "N"){
-        $('#inprice').addClass('none');
-    }
+
     //库存数的 设定 默认执行了  由于 需要一个默认的 库存
     getcangku(function (res) {
         // console.error(res);
@@ -1100,6 +1106,7 @@ function dataSave(){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             wfy.hideload();
             localStorage.isupdataImg = 'N';
+            console.error(pageFlag)
             //修改 新增的时候  自动升成入库单！！
             if(pageFlag=="add" && datas.length != 0){
                 getorder('RK',function (res) {
@@ -1147,12 +1154,14 @@ function dataSave(){
                             });
                         } else {
                             // todo...[d.errorMessage]
-                            wfy.alert(d.errorMessage);
+                            wfy.alert('入库单生成失败'+d.errorMessage,function () {
+                                wfy.goto("qry_pro_sales");
+                            });
                         }
                     }) ;
                 })
             }
-            if(pageFlag=="edit"){
+            if(pageFlag=="edit" || (pageFlag=="add" && datas.length == 0)){
                 wfy.alert("保存成功",function () {
                     wfy.goto("qry_pro_sales");
                 });

@@ -1,5 +1,13 @@
 var savedata ={};
+console.log(cbqx)
+console.log(syqx)
 $(function () {
+    getqx(function (res) {
+        cbqx = res[0].xtcbqx;
+        syqx = res[0].xtsyqx;
+        console.log(cbqx);
+        console.log(syqx);
+    })
     ishykh = wfy.empty($('#dtl_createKehu').attr('data-hykh')) ? false:true;
 
     $('body').hammer().on('tap','#back',function (event) {
@@ -17,7 +25,7 @@ $(function () {
     //收银
     //------------------------------------------点击 提交（）-------------------------------------------
     $("body").hammer().on("tap", "#sub_sale", function (event) {
-        if(localStorage.user_syqx == 'N'){
+        if(syqx == 'N'){
             wfy.alert('抱歉，您未有收银权限！');
             return ;
         }

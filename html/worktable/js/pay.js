@@ -179,6 +179,7 @@ $(function () {
                     pay_check_je.push(je);
                     pay_check_je_total = Components.add(pay_check_je_total,je);
                 }
+                
 
             })
             if(cont.length == 0){
@@ -214,7 +215,7 @@ $(function () {
                     return false;
                 }
                 for(var i = 0; i<pay_check_dm.length;i++){
-                    if(pay_check_je[i] != 0){
+                    if(pay_check_je[i]){
                         tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
                             '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
                             '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
@@ -239,7 +240,7 @@ $(function () {
                     return false;
                 }
                 for(var i = 0; i<pay_check_dm.length;i++){
-                    if(pay_check_je[i] != 0){
+                    if(pay_check_je[i]){
                         tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
                             '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
                             '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
@@ -383,7 +384,7 @@ $(function () {
         }
         var tipCont = '您选择的支付信息<br> ';
         for(var i = 0; i<pay_check_dm.length;i++){
-            if(pay_check_je[i] != 0){
+            if(pay_check_je[i]){
                 tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
                     '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
                     '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +

@@ -188,6 +188,7 @@ $(function () {
     $('body').hammer().on('tap','#bill_close',function (event) {
         event.stopPropagation();
         tempdata=[];
+        console.error(data)
         wfy.close();
     })
     //新增监控 input 值的变化
@@ -458,6 +459,14 @@ $(function () {
             //计算 每个款式下 已选的 数量
             getTotalNum();
         }
+        /*
+        * sb需求 搜索的商品添加数量后 清空搜索
+        * */
+        $('#searchpro').val('');
+        getProdList("",function (res) {
+            doProdList(res);
+        })
+        //sb结束
         wfy.close();
     })
 
@@ -465,21 +474,7 @@ $(function () {
     $('body').hammer().on('tap','#bill_slide_head_ok',function (event) {
         event.stopPropagation();
         //弹出层消失，在添加页面展示 选中的数据 处理 data
-
-        //改动：仅对销售和开单 需要依据是 批发or 零售 做处理
-        // if(pageName == 'msa030_0100' || pageName == 'msa030_0800'){
-        //     var saleStyle = $('#createLX').val();
-        //     if(saleStyle == '批发'){
-        //         showDataDtl('批发');
-        //     }
-        //     if(saleStyle == '零售'){
-        //         showDataDtl('零售');
-        //     }
-        // }else {
-        //     showDataDtl('批发');
-        // }
         showDataDtl();
-        //改动结束
         $('input').blur();
         $('#bill_bot_to_top').addClass('y100');
     })
@@ -807,7 +802,7 @@ var doProdList = function (res) {
                             '<div class="gx_list_1_cont_item">'+
                                 '<div>'+res[i].xtwpks+'</div>'+
                                 '<div>'+res[i].xtwpmc+'</div>'+
-                                '<div>总库存数：'+res[i].kczksl+'</div>'+
+                                '<div>总库存数：'+(res[i].kczksl || 0)+'</div>'+
                                 '<div class="checknum">已选(<span>'+0+'</span>)件</div>'+
                             '</div>'+
                         '</div>'+

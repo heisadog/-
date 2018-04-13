@@ -3,7 +3,14 @@ localStorage.prev = "worktable";
 
 var pageSize = 10,pageNum = 1,hasMore = false, isLoading = false;
 var pageName = 'msa030_0900';
+
 $(function () {
+    getqx(function (res) {
+        cbqx = res[0].xtcbqx;
+        syqx = res[0].xtsyqx;
+        console.log(cbqx);
+        console.log(syqx);
+    })
     getOrderList();
     //取消
     $("body").hammer().on("tap", ".btnde", function (event) {
@@ -16,7 +23,7 @@ $(function () {
     //支付
     $("body").hammer().on("tap", ".btnpay", function (event) {
         event.stopPropagation();
-        if(localStorage.user_syqx == 'N'){
+        if(syqx == 'N'){
             wfy.alert('抱歉，您未有收银权限！');
             return ;
         }
