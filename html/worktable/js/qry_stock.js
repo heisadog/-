@@ -16,7 +16,7 @@ wfy.closesearch = function () {
 $(function () {
     wfy.init();
 
-    list("","","",par1,par2,par3);
+    list();
 
     //点击搜索
     wfy.tap('#modles',function (_this) {
@@ -71,7 +71,7 @@ $(function () {
                 }
             }
         })
-        list(ks,mc,md,par1,par2,par3);
+        list();
     })
     //排序
     $('body').hammer().on('tap','#stock_head li',function (event) {
@@ -103,12 +103,12 @@ $(function () {
                 par3 = 'DESC';
             }
         }
-        list(ks,mc,md,par1,par2,par3);
+        list();
     })
 
 });
 
-function list(ks,mc,md,kssstyle,num,para) {
+function list() {
     var vBiz = new FYBusiness("biz.invqry.stock.qry");
     var vOpr1 = vBiz.addCreateService("svc.invqry.stock.qry", false);
     var vOpr1Data = vOpr1.addCreateData();
@@ -119,17 +119,19 @@ function list(ks,mc,md,kssstyle,num,para) {
     vOpr1Data.setValue("AS_XTWPMC", mc);//品名
     vOpr1Data.setValue("AS_XSMDDM", md);//门店
     vOpr1Data.setValue("AS_XTWPPP", "");//品牌 ---暂时为空
-    vOpr1Data.setValue("AS_XSCXFS", kssstyle);//查询方式：按款式-'KS' | 按商品-'WP'
-    vOpr1Data.setValue("AS_XSPXFS", num);//排序方式：按库存数-'SL' | 按库存额-'JE'
-    vOpr1Data.setValue("AS_XSPXLX", para);//排序类型：升序-'ASC' | 降序-'DESC'
+    vOpr1Data.setValue("AS_XSCXFS", par1);//查询方式：按款式-'KS' | 按商品-'WP'
+    vOpr1Data.setValue("AS_XSPXFS", par2);//排序方式：按库存数-'SL' | 按库存额-'JE'
+    vOpr1Data.setValue("AS_XSPXLX", par3);//排序类型：升序-'ASC' | 降序-'DESC'
     vOpr1Data.setValue("AN_PAGE_NUM", pageIndex);//第几页
     vOpr1Data.setValue("AN_PAGE_SIZE", "20");//每页条数
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
+    console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             var rows = vOpr1.getResult(d, "AC_LIST").rows || [];
             var toje = vOpr1.getResult(d, "AC_SUM").rows || [];
+            console.error(rows)
             $('#tonum').html(toje[0].kczksl);
             $('#toje').html(wfy.setTwoNum(toje[0].kczkje,2));
             var html ="";
@@ -173,7 +175,7 @@ function list(ks,mc,md,kssstyle,num,para) {
                     setTimeout(function () {
                         if(loading ){
                             pageIndex ++;
-                            list(ks,mc,md,kssstyle,num,para);
+                            list();
                             loading = false;
                         }
                     },1000);
