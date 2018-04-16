@@ -149,7 +149,7 @@ function list() {
                     '</div>' +
                     '<div class="wfyitem_line" style="color: red">' +
                     '<span class="fl" style="width: 50%;">库存数：'+(rows[i].kczksl || 0)+'</span>' +
-                    '<span>库存额：'+(rows[i].kczkje || " ")+'</span>' +
+                    '<span>库存额：'+(rows[i].kczkje || 0)+'</span>' +
                     ' </div> ' +
                     '</div>';
             }
