@@ -147,6 +147,15 @@
     color: #333;
     float: left;
     padding: 12px 0;
+
+}
+.bill_head_cont li div.createTime{
+    width: calc(100% - 140px);
+    width: -webkit-calc(100% - 140px);
+    text-align: center;
+    color: #333;
+    float: left;
+    height: 42px;
 }
 #pay_style li span{
     padding: 0;

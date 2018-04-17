@@ -37,7 +37,13 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 } 
 input:focus {  
            /* background-color: #f00;  *//*获取焦点时设置input的背景颜色颜色 */
-        } 
+        }
+/*修改 ios下 disabled导致效果消失的问题：*/
+input:disabled,input[disabled] {
+    color: #343434!important;
+    opacity: 1;
+}
+
 ol,ul {
     list-style: none;
 }
