@@ -153,19 +153,21 @@ $(function () {
     //---------------------------------------------------点击 提交（销售 和 收款。销售开单··）--------------------------
     $('body').hammer().on('tap','#sub',function (event) {
         event.stopPropagation();
+        // 销售收银
         var cont = [];
         for(var a = 0; a<data.length;a++){
             cont = cont.concat(data[a].cont);
         }
         hykh = $('#createKehu').attr('data-hykh');
-        //销售收银
-        if(pageName == 'msa030_0100'){
+        //销售收银 he 关于未结订单 列表的
+        if(pageName == 'msa030_0100' || pageName =="msa030_0900"){
             orderAmount = Number($('#totalMoney').html());
             var tipCont = '您选择的支付信息<br> ';
             var pay_check_dm = [];
             var pay_check_mc = [];
             var pay_check_je = [];
-            var pay_check_je_total = 0
+            var pay_check_je_total = 0;
+            //
             $('#pay_style li.poschecked').each(function () {
                 var dm = $(this).attr('data-typedm');
                 var mc = $(this).find('span').html();
@@ -211,16 +213,8 @@ $(function () {
                 }
 
                 if( pay_check_je_total != orderAmount){
-                    wfy.alert('付款金额与订单金额不相等，请重新输入！');
+                    wfy.alert('销售金额为负数,输入金额与订单金额不相等，请重新输入！');
                     return false;
-                }
-                for(var i = 0; i<pay_check_dm.length;i++){
-                    if(pay_check_je[i]){
-                        tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
-                            '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
-                            '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
-                            '</div>';
-                    }
                 }
             }else{
                 //首先如果有选客户，验证客户的额度
@@ -235,22 +229,23 @@ $(function () {
                     wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
                     return false;
                 }
+                //-----抹零
                 if((orderAmount - pay_check_je_total) > 10){
                     wfy.alert("支付总金额与订单金额相差较大，请重新设置支付金额！");
                     return false;
                 }
-                for(var i = 0; i<pay_check_dm.length;i++){
-                    if(pay_check_je[i]){
-                        tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
-                            '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
-                            '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
-                            '</div>';
-                    }
+            }
+            for(var i = 0; i<pay_check_dm.length;i++){
+                if(pay_check_je[i]){
+                    tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
+                        '<span style="float:left;width: 40%; margin-left: 10%">'+pay_check_mc[i]+':</span>' +
+                        '<span style="float: left;width: 50%">'+pay_check_je[i]+'元</span>' +
+                        '</div>';
                 }
-                if((orderAmount - pay_check_je_total) != 0){
-                    tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
-                        '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
-                }
+            }
+            if((orderAmount - pay_check_je_total) != 0){
+                tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
+                    '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
             }
             wfy.confirm(tipCont,function () {
                 //如果用户取消 支付，再次点击的时候 生成预订单失败。需要验证预订单的存在
@@ -262,8 +257,9 @@ $(function () {
                 }
 
             },function () {
-                
+
             });
+
             
         }
         //销售开单
@@ -272,12 +268,6 @@ $(function () {
                 wfy.alert('请先选择商品');
                 return false;
             }
-            // for(var i = 0; i < cont.length; i++){
-            //     if(cont[i].num < 0){
-            //         wfy.alert('销售开单不能选择负商品！');
-            //         return false;
-            //     }
-            // }
             createOrder();
         }
         //收款
@@ -323,7 +313,8 @@ $(function () {
             });
         }
     })
-    //------------------------------------------点击 提交（关于未结订单页面的）-------------------------------------------
+
+    //------------------------------------------点击 提交（关于未结订单 列表的）-------------------------------------------
     $("body").hammer().on("tap", "#sub_noend", function (event) {
         operNo = czhm;
         noteNo = xtxphm;
@@ -374,13 +365,35 @@ $(function () {
                 return false;
             }
         }
-        if(pay_check_je_total > orderAmount){
-            wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
-            return false;
-        }
-        if((orderAmount - pay_check_je_total) > 10){
-            wfy.alert("支付总金额与订单金额相差较大，请重新设置支付金额！");
-            return false;
+        console.log(orderAmount)
+        if(orderAmount <=0){
+            orderAmount = orderAmount*(-1);
+            var is_fa = false;
+            $('#pay_style li:gt(1)').each(function () {
+                if($(this).hasClass('poschecked')){
+                    is_fa = true;
+                    $(this).children('.pay_inputandicon').removeClass('poschecked')
+                    $(this).removeClass('poschecked').find('.billInput').val("");
+                }
+            })
+            if(is_fa || ($('#pay_style li[data-type="cash"]').hasClass('poschecked') && $('#pay_style li[data-type="fukuan"]').hasClass('poschecked'))){
+                wfy.alert('销售金额为负数，只能选择现金或者钱包中的一种');
+                return false;
+            }
+
+            if( pay_check_je_total != orderAmount){
+                wfy.alert('销售金额为负数,输入金额与订单金额不相等，请重新输入！');
+                return false;
+            }
+        }else {
+            if(pay_check_je_total > orderAmount){
+                wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
+                return false;
+            }
+            if((orderAmount - pay_check_je_total) > 10){
+                wfy.alert("支付总金额与订单金额相差较大，请重新设置支付金额！");
+                return false;
+            }
         }
         var tipCont = '您选择的支付信息<br> ';
         for(var i = 0; i<pay_check_dm.length;i++){

@@ -181,7 +181,10 @@ $(function () {
         kyed = Number($(this).attr('data-kyed'));
         $('#createKehu').val(hymc).attr('data-hykh',hykh);
 
-        if(pageName =='msa030_0100' || pageName =='msa030_0800' ){
+        $('#dtl_createKehu').val(hymc).attr('data-hykh',hykh);//用于未接订单详情
+        $('#sub_save').removeClass('cabsdot_bosdt');//用于未接订单详情
+
+        if(pageName =='msa030_0100' || pageName =='msa030_0800' || pageName =='msa030_0900' ){
             $('#pay_style li[data-type="fukuan"]').find('.billInput').val('');
             $('#pay_style li[data-type="fukuan"]').removeClass('none');//选中客户的时候，预付款方式出现
             $('#pay_style li[data-type="fukuan"]').removeClass('poschecked');//如果之前选了预付款，切换用户 清除选择
@@ -198,6 +201,7 @@ $(function () {
         hykh = '';
         ishykh = false;
         $('#createKehu').val('').attr('data-hykh','');
+        $('#dtl_createKehu').val('').attr('data-hykh','');
         $(this).addClass('none');
         $('#pay_style li[data-type="fukuan"]').addClass('none');//清除客户的时候，预付款方式消失
     })

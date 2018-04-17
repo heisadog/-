@@ -1,6 +1,4 @@
 var savedata ={};
-console.log(cbqx)
-console.log(syqx)
 $(function () {
     getqx(function (res) {
         cbqx = res[0].xtcbqx;
@@ -8,12 +6,17 @@ $(function () {
         console.log(cbqx);
         console.log(syqx);
     })
-    ishykh = wfy.empty($('#dtl_createKehu').attr('data-hykh')) ? false:true;
 
     $('body').hammer().on('tap','#back',function (event) {
         event.stopPropagation();
         wfy.goto('bill_noend');
     });
+    //客户
+    wfy.tap('#dtl_createKehu',function (that) {
+        getKHList('');
+        document.documentElement.style.overflow = "hidden";
+        $('#kehu').removeClass('y100');
+    })
     dtl();
     //提交
     $('body').hammer().on('tap','#sub_save',function (event) {
@@ -174,6 +177,8 @@ function dtl() {
             savedata.czhm = AC_HEAD[0].kcczhm;
             savedata.xtxphm = AC_HEAD[0].xtxphm;
             kyed = AC_HEAD[0].hykyje;
+            ishykh = wfy.empty(AC_HEAD[0].khhykh) ? false:true;
+            console.log(ishykh);
             if(AC_HEAD.length != 0){
                 $("#xiaopiao").html(AC_HEAD[0].xtxphm || "");
             }else {
@@ -245,14 +250,22 @@ function saveData() {
         return;
     }
     var vBiz = new FYBusiness("biz.pos.orde.wpdtl.save");
-    var vOpr1 = vBiz.addCreateService("svc.pos.order.wpdtl.delete", false);
+
+    var vOpr1 = vBiz.addCreateService("svc.pos.order.wpdtl.had.save", false);
     var vOpr1Data = vOpr1.addCreateData();
     vOpr1Data.setValue("AS_USERID", LoginName);
     vOpr1Data.setValue("AS_WLDM", DepartmentCode);
-    vOpr1Data.setValue("AS_FUNC", "svc.pos.order.wpdtl.delete");
+    vOpr1Data.setValue("AS_FUNC", "svc.pos.order.wpdtl.had.save");
     vOpr1Data.setValue("AS_KCCZHM", savedata.czhm);
-    var vOpr2 = vBiz.addCreateService("svc.pos.orde.wpdtl.save", false);
-    var vOpr2Data = [];
+    vOpr1Data.setValue("AS_KHHYKH", $('#dtl_createKehu').attr('data-hykh'));
+    var vOpr2 = vBiz.addCreateService("svc.pos.order.wpdtl.delete", false);
+    var vOpr2Data = vOpr2.addCreateData();
+    vOpr2Data.setValue("AS_USERID", LoginName);
+    vOpr2Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr2Data.setValue("AS_FUNC", "svc.pos.order.wpdtl.delete");
+    vOpr2Data.setValue("AS_KCCZHM", savedata.czhm);
+    var vOpr3 = vBiz.addCreateService("svc.pos.orde.wpdtl.save", false);
+    var vOpr3Data = [];
     for(var m = 0; m<cont.length; m++){
         var obj = {};
         obj.AS_USERID = LoginName;
@@ -268,9 +281,9 @@ function saveData() {
         obj.AS_XTXSRY = $('#dtl_createGuide').attr('data-dgdm');
         obj.AS_XTZSYY = '';
         obj.AS_XTZPBZ = 'N';
-        vOpr2Data.push(obj);
+        vOpr3Data.push(obj);
     }
-    vOpr2.addDataArray(vOpr2Data)
+    vOpr3.addDataArray(vOpr3Data)
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     console.log(JSON.stringify(ip));
@@ -281,53 +294,12 @@ function saveData() {
             wfy.alert('单据商品保存成功！',function () {
                 window.location.reload()
             })
-            // var pay = [];
-            // $('#pay_style li.poschecked').each(function () {
-            //     if(Number($(this).find('.billInput').val()) != 0){
-            //         var payobj = {};
-            //         payobj.payFee = $('#totalMoney').html();
-            //         payobj.payType = $(this).attr('data-typedm');//支付方式
-            //         payobj.payTypeMc = $(this).find('span').html();// 支付方式名称
-            //         payobj.kyed = kyed;//可用额度
-            //         payobj.payTypeFee = Number($(this).find('.billInput').val());
-            //         pay.push(payobj);
-            //     }
-            //
-            // })
-            // console.log(pay);
-            // operNo = savedata.czhm;
-            // noteNo = savedata.xtxphm;
-            // preOrdno= savedata.czhm;
-            // updaState(pay)
         } else {
             // todo...[d.errorMessage]
             wfy.alert('保存失败'+d.errorMessage)
         }
     }) ;
 }
-
-
-var vBiz = new FYBusiness("biz.ctluser.qx.qry");
-var vOpr1 = vBiz.addCreateService("svc.ctluser.qx.qry", false);
-var vOpr1Data = vOpr1.addCreateData();
-vOpr1Data.setValue("AS_USERID", LoginName);
-vOpr1Data.setValue("AS_WLDM", DepartmentCode);
-vOpr1Data.setValue("AS_FUNC", "svc.ctluser.qx.qry");
-var ip = new InvokeProc();
-ip.addBusiness(vBiz);
-ip.invoke(function(d){
-    if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
-        // todo...svc.ctluser.qx.qry AC_USERINFO
-        var res = vOpr1.getResult(d, "AC_USERINFO").rows;
-        console.error(res);
-        // localStorage.user_cbqx = res[0].xtcbqx;
-        // localStorage.user_syqx = res[0].xtsyqx;
-        //wfy.goto("index");
-    } else {
-        // todo...[d.errorMessage]
-        wfy.alert(d.errorMessage)
-    }
-}) ;
 
 
 

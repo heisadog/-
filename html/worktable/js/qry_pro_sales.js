@@ -1,5 +1,5 @@
 var pageNum = 1, loading = false;
-
+var loadend = false;
 var orderObj={
     content:"",
     isdisable:"N",//是否停用
@@ -31,10 +31,11 @@ $(function () {
         orderObj.content = $(this).val();
         if(keycode=='13') {
             e.preventDefault();
-
             pageNum=1;
             $("#searlist").html("");
-            getDataList();
+            if(loadend){
+                getDataList();
+            }
             $("#scrollload").addClass("none");
         }
     });
@@ -116,6 +117,7 @@ $(function () {
 
 //查询数据
 function getDataList() {
+    loadend = false;
     var vBiz = new FYBusiness("biz.ctlitem.itemlist.qry");
 
     var vOpr1 = vBiz.addCreateService("svc.ctlitem.itemlist.qry", false);
@@ -129,9 +131,9 @@ function getDataList() {
     vOpr1Data.setValue("AS_KEYWORD", orderObj.content);
     vOpr1Data.setValue("AN_PAGE_NUM", pageNum);
     vOpr1Data.setValue("AN_PAGE_SIZE", "20");
-
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
+    //console.log(JSON.stringify(ip));
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             var result = vOpr1.getResult(d, "AC_RESULT").rows || [];
@@ -217,7 +219,7 @@ function createPage(rows){
             '</div></div>' +
             '<div class="list_drap" data-code="'+temp.xtwpks+'">'+btnStr+'</div></div>';
     }
-
+    loadend = true;
     $("#searlist").append(htmlStr);
 
     if(rows.length ==20){

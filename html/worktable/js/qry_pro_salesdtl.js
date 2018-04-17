@@ -199,6 +199,12 @@ $(function () {
             });
             $("#"+windowType).attr("data-code",codeArr.join());
             $("#"+windowType).val(nameArr.join());
+            if(windowType == 'color'){
+                $('#color').val(nameArr.join())
+            }
+            if(windowType == 'color'){
+                $('#color').val(nameArr.join())
+            }
             if(windowType=="size"){
                 $("#"+windowType).attr("data-serial",serialArr.join());
             }
@@ -219,8 +225,8 @@ $(function () {
             onChange:function (p) {
                 var vue = p.value[0];
                 for(var m = 0; m<ckmcarr.length; m++){
-                    if(vue == ckmcarr[m].kcckmc){
-                        check_ckdm = ckdmarr[m].kcckdm;
+                    if(vue == ckmcarr[m]){
+                        check_ckdm = ckdmarr[m];
                     }
                 }
             }
@@ -653,9 +659,9 @@ function createWindow(type,selData) {
 
 function creatstoreNum() {
     var colorstr = wfy.empty($('#color').val()) ? '均色' : $('#color').val();
-    var colorcode = wfy.empty($('#color').attr('data-code')) ? '01':$('#color').attr('data-code');//默认均色 F
+    var colorcode = wfy.empty($('#color').attr('data-code')) ? '01':$('#color').attr('data-code');//默认均色 01
     var sizestr = wfy.empty($('#size').val()) ? '均码' : $('#size').val();
-    var sizecode = wfy.empty($('#size').attr('data-code')) ? 'F':$('#size').attr('data-code');//默认均码 01
+    var sizecode = wfy.empty($('#size').attr('data-code')) ? 'F':$('#size').attr('data-code');//默认均码 F
     var colorstrarr = colorstr.split(',');
     var colorcodearr = colorcode.split(',');
     var sizestrarr = sizestr.split(',');
