@@ -35,8 +35,9 @@ var menuListArr=[
     {menucode:"msa040_0300",pagecode:"qry_coutomer_consumption"},//会员消费统计
     {menucode:"msa040_0400",pagecode:"qry_costprofit"},//成本利润
     {menucode:"msa020_0700",pagecode:"exbressList"},//叫快递
+    {menucode:"msa020_1400",pagecode:"coupon"},//电子券验证
 ];
-var wxArr=['msa030_0900','msa030_0100','msa030_0200','msa020_0700','msa020_1300','msa040_0400','msa030_0800','msa030_1000','msa020_1200','msa020_1600','msa030_0600','msa030_1200','msa040_0100','msa020_1500','msa030_0400','msa030_0500','msa030_1100','msa040_0300','msa020_0900','msa040_0200','msa010_0400','msa030_0700','msa020_1800'];
+var wxArr=['msa020_1400','msa030_0900','msa030_0100','msa030_0200','msa020_0700','msa020_1300','msa040_0400','msa030_0800','msa030_1000','msa020_1200','msa020_1600','msa030_0600','msa030_1200','msa040_0100','msa020_1500','msa030_0400','msa030_0500','msa030_1100','msa040_0300','msa020_0900','msa040_0200','msa010_0400','msa030_0700','msa020_1800'];
 var canvasHeight = 0.35;
 var client = document.body.clientWidth;
 var clihei = document.body.clientHeight;
@@ -67,6 +68,7 @@ $(function () {
     getMenuList('01',checkMenu);
     getMenuList("02",menuCreate);
     minemenu();
+   
     //footer切换 worktable
     $('body').hammer().on('tap','.footer_div',function (event) {
         event.stopPropagation();
@@ -112,6 +114,7 @@ $(function () {
             var mddm = that.attr('data-wldm');
             var mdmc = that.html();
             localStorage.mddm=mddm;
+            localStorage.mdmc=mdmc;
             $('#storeName').html(wfy.cutstr(mdmc,4));
             wfy.closeWin();
             getHomeHeadMes(mddm);
@@ -393,7 +396,7 @@ var getMenuList = function (para,callback) {
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             var menuRows=vOpr1.getResult(d,"AC_MENULIST").rows;
-            //console.log(menuRows);
+            console.log(menuRows);
             var menu = [];
             for (var i = 0; i < menuRows.length; i++) {
             	if( wxArr.val_in_array(menuRows[i].xtckdm)){
@@ -528,9 +531,12 @@ function getShopName() {
             //AC_RESULT_CORR
             var result = vOpr1.getResult(d, "AC_RESULT_CORR").rows || [];//获取公司名
             storeArr = vOpr2.getResult(d, "AC_RESULT_SHOP").rows || [];//获取店铺名
+            console.error(result)
+            console.error(storeArr)
             $('#storeName').html(wfy.cutstr(storeArr[0].mdmc,4));
             if(storeArr.length == 1){
                 localStorage.mddm=storeArr[0].mddm;
+                localStorage.mdmc=storeArr[0].mdmc;
                 $('#storeName').html(wfy.cutstr(storeArr[0].mdmc,4));
                 $('#storeName').removeClass('daosji')
             }
@@ -542,7 +548,8 @@ function getShopName() {
             }
             localStorage.storeArrStr = temparr.join();
             getPassengerFlow(temparr.join());
-        } else {
+            }
+         else {
             // todo...[d.errorMessage]
             wfy.alert(d.errorMessage);
         }
