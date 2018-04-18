@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title></title>
+</head>
+<body>
+<header>
+    <div id="backBtn" class="back">&#xe697</div>
+    <span>电子券验证</span>
+</header>
+<div id="searlist" style="padding-top: 45px;">
+
+</div>
+
+<script type="text/javascript" src="../../public/frame/self.js"></script>
+<script>
+    var xtsyqx = '';//客户类型
+    var mddm,mdmc,comdm,commc;
+    $(function () {
+        getqx(function (res) {
+            xtsyqx = res[0].xtsyqx;// 1 是公司的 其他的是 门店的
+            comdm = res[0].xtwldm;
+            commc = res[0].xtwlmc;
+            if(xtsyqx == '1'){
+                mddm = comdm;
+                mdmc = commc;
+            }else {
+                mddm = localStorage.mddm;
+                mdmc = localStorage.mdmc;
+            }
+            console.error(comdm+'--'+commc)
+            console.error(mddm+'--'+mdmc)
+            $('#searlist').html('<iframe width="100%" height="500" frameborder = "0" id="childFrame" src="http://foals-wx-merchant.ebatech.cn/#/scan-coupons?companyCode='+comdm+'&companyName='+commc+'&storeCode='+mddm+'&storeName='+mdmc+'"></iframe>')
+
+        })
+        $('body').hammer().on('tap','#backBtn',function (event) {
+            event.stopPropagation();
+            wfy.pagegoto('../home/index');
+        })
+    })
+
+</script>
+</body>
+</html>
