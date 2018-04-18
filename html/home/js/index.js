@@ -36,8 +36,9 @@ var menuListArr=[
     {menucode:"msa040_0400",pagecode:"qry_costprofit"},//成本利润
     {menucode:"msa020_0700",pagecode:"exbressList"},//叫快递
     {menucode:"msa020_1400",pagecode:"coupon"},//电子券验证
+    {menucode:"msa010_0400_xj",pagecode:"couponlist"},//电子券记录
 ];
-var wxArr=['msa020_1400','msa030_0900','msa030_0100','msa030_0200','msa020_0700','msa020_1300','msa040_0400','msa030_0800','msa030_1000','msa020_1200','msa020_1600','msa030_0600','msa030_1200','msa040_0100','msa020_1500','msa030_0400','msa030_0500','msa030_1100','msa040_0300','msa020_0900','msa040_0200','msa010_0400','msa030_0700','msa020_1800'];
+var wxArr=['msa010_0400_xj','msa020_1400','msa030_0900','msa030_0100','msa030_0200','msa020_0700','msa020_1300','msa040_0400','msa030_0800','msa030_1000','msa020_1200','msa020_1600','msa030_0600','msa030_1200','msa040_0100','msa020_1500','msa030_0400','msa030_0500','msa030_1100','msa040_0300','msa020_0900','msa040_0200','msa010_0400','msa030_0700','msa020_1800'];
 var canvasHeight = 0.35;
 var client = document.body.clientWidth;
 var clihei = document.body.clientHeight;
