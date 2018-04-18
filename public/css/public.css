@@ -2,9 +2,7 @@
 
 /*存放一些 插件的css*/
 
-
 /*主题颜色 #01AAEF */
-
 
 /*关于字体*/
 
@@ -29,27 +27,15 @@
 
 /*}*/
 
-@font-face {
-    font-family: 'wfyfont';
-    /* project id 446051 */
-    src: url('//at.alicdn.com/t/font_446051_ip5o46ulwh2xogvi.eot');
-    src: url('//at.alicdn.com/t/font_446051_ip5o46ulwh2xogvi.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_446051_ip5o46ulwh2xogvi.woff') format('woff'), url('//at.alicdn.com/t/font_446051_ip5o46ulwh2xogvi.ttf') format('truetype'), url('//at.alicdn.com/t/font_446051_ip5o46ulwh2xogvi.svg#wfyfont') format('svg');
-}
 
-@font-face {
-    font-family: 'wfyfont';
-    /* project id 446051 */
-    src: url('../iconfont/iconfont.eot');
-    src: url('../iconfont/iconfont.eot?#iefix') format('embedded-opentype'), url('../iconfont/iconfont.woff') format('woff'), url('../iconfont/iconfont.ttf') format('truetype'), url('../iconfont/iconfont.svg#wfyfont') format('svg');
-}
 
 @font-face {
     font-family: 'wfyfont';  /* project id 446051 */
-    src: url('//at.alicdn.com/t/font_446051_khor65ee0y0hpvi.eot');
-    src: url('//at.alicdn.com/t/font_446051_khor65ee0y0hpvi.eot?#iefix') format('embedded-opentype'),
-    url('//at.alicdn.com/t/font_446051_khor65ee0y0hpvi.woff') format('woff'),
-    url('//at.alicdn.com/t/font_446051_khor65ee0y0hpvi.ttf') format('truetype'),
-    url('//at.alicdn.com/t/font_446051_khor65ee0y0hpvi.svg#wfyfont') format('svg');
+    src: url('//at.alicdn.com/t/font_446051_elavet4xp9cnmi.eot');
+    src: url('//at.alicdn.com/t/font_446051_elavet4xp9cnmi.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_446051_elavet4xp9cnmi.woff') format('woff'),
+    url('//at.alicdn.com/t/font_446051_elavet4xp9cnmi.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_446051_elavet4xp9cnmi.svg#wfyfont') format('svg');
 }
 
 section {
