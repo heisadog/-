@@ -150,11 +150,49 @@ $(function () {
         var czmc = $(this).parent('.footTable_dv').attr('data-czmc');
         localStorage.page = $(this).parent('.footTable_dv').attr('data-xtgndm');
         if(czmc){
-            if(url){
-                wfy.pagegoto('../worktable/'+url);
-            }else {
-                wfy.alert("功能正在开发，敬请期待");
+            switch (url){
+                case 'coupon':
+                    getqx(function (res) {
+                        //console.error(res)
+                        var mddm,mdmc,comdm,commc,xtkhlx;
+                        xtkhlx = res[0].xtkhlx;// 1 是公司的 其他的是 门店的
+                        comdm = res[0].xtwldm;
+                        commc = res[0].xtwlmc;
+                        if(xtkhlx == '1'){
+                            mddm = comdm;
+                            mdmc = commc;
+                        }else {
+                            mddm = localStorage.mddm;
+                            mdmc = localStorage.mdmc;
+                        }
+                        console.error(comdm+'--'+commc)
+                        console.error(mddm+'--'+mdmc)
+                        window.location.href='http://foals-wx-merchant.ebatech.cn/#/scan-coupons?companyCode='+comdm+'&companyName='+commc+'&storeCode='+mddm+'&storeName='+mdmc;
+                    })
+                    break;
+                case 'couponlist':
+                    getqx(function (res) {
+                        //console.error(res)
+                        var mddm,mdmc,comdm,commc,xtkhlx;
+                        xtkhlx = res[0].xtkhlx;// 1 是公司的 其他的是 门店的
+                        comdm = res[0].xtwldm;
+                        commc = res[0].xtwlmc;
+                        if(xtkhlx == '1'){
+                            window.location.href='http://foals-wx-merchant.ebatech.cn/#/verified-coupon-search?companyCode='+comdm;
+                        }else {
+                            mddm = localStorage.mddm;
+                            window.location.href='http://foals-wx-merchant.ebatech.cn/#/verified-coupon-search?companyCode='+comdm+'&storeCode='+mddm;
+                        }
+                    })
+                    break;
+                default:
+                    wfy.pagegoto('../worktable/'+url);
             }
+            // if(url){
+            //     wfy.pagegoto('../worktable/'+url);
+            // }else {
+            //     wfy.alert("功能正在开发，敬请期待");
+            // }
         }else {
             //加载所有的权限图标 ，区分当前页面是首页的还是业务
             if(localStorage.footerIndex == 0){
