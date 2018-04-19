@@ -535,6 +535,8 @@ function getShopName() {
             console.error(result)
             console.error(storeArr)
             $('#storeName').html(wfy.cutstr(storeArr[0].mdmc,4));
+            localStorage.mddm=storeArr[0].mddm;
+            localStorage.mdmc=storeArr[0].mdmc;
             if(storeArr.length == 1){
                 localStorage.mddm=storeArr[0].mddm;
                 localStorage.mdmc=storeArr[0].mdmc;
