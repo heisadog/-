@@ -1217,7 +1217,7 @@ function storageDel(flag,orderType) {
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
 
             if(flag){
-                storageSave();
+                storageSave(orderType);
             }else{
                 auditflag = true;
                 $("#oper_save").addClass("cabsdot_bosdt");
@@ -1315,6 +1315,7 @@ function storageDtlSave(orderType) {
 
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
+    console.log(JSON.stringify(ip))
     ip.invoke(function(d){
         if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
             auditflag = true;
