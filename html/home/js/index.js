@@ -167,7 +167,7 @@ $(function () {
                         }
                         console.error(comdm+'--'+commc)
                         console.error(mddm+'--'+mdmc)
-                        window.location.href='http://foals-wx-merchant.ebatech.cn/#/scan-coupons?companyCode='+comdm+'&companyName='+commc+'&storeCode='+mddm+'&storeName='+mdmc;
+                        window.location.href='https://foals-wx-merchant.imixpark.com/#/scan-coupons?companyCode='+comdm+'&companyName='+commc+'&storeCode='+mddm+'&storeName='+mdmc;
                     })
                     break;
                 case 'couponlist':
@@ -178,10 +178,10 @@ $(function () {
                         comdm = res[0].xtwldm;
                         commc = res[0].xtwlmc;
                         if(xtkhlx == '1'){
-                            window.location.href='http://foals-wx-merchant.ebatech.cn/#/verified-coupon-search?companyCode='+comdm;
+                            window.location.href='https://foals-wx-merchant.imixpark.com/#/verified-coupon-search?companyCode='+comdm;
                         }else {
                             mddm = localStorage.mddm;
-                            window.location.href='http://foals-wx-merchant.ebatech.cn/#/verified-coupon-search?companyCode='+comdm+'&storeCode='+mddm;
+                            window.location.href='https://foals-wx-merchant.imixpark.com/#/verified-coupon-search?companyCode='+comdm+'&storeCode='+mddm;
                         }
                     })
                     break;
