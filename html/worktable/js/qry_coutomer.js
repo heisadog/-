@@ -1,27 +1,7 @@
 
 var pageNum = 1, loading = false;
-
-/*window.uexOnload = function () {
-    uexWindow.setReportKey(0, 1); // 物理返回键接管
-    uexWindow.onKeyPressed = function (keyCode) {
-        if (keyCode === 0){
-            var back = $('#back').attr('data-back');
-            if(back == "home"){
-                wfy.goto(back);
-            }else {
-                $("#p1").removeClass("x_100");
-                $("#p2").addClass("x100");
-                $('#backs').attr('data-back','home');
-                $("#title").html('会员信息查询');
-                html1 ='';
-                html2 ='';
-                html3 ='';
-                html4 ='';
-            }
-        }
-    };
-}*/
-
+var loadend = false;
+var AS_KEYWORD= '';
 $(function () {
     $('#backs').tap(function () {
         wfy.pagegoto('../home/index');
@@ -44,11 +24,15 @@ $(function () {
     //监控 input 搜索事件
     $("#search").on('keypress',function(e) {
         var keycode = e.keyCode;
-        var searchName = $(this).val();
+        AS_KEYWORD = $(this).val();
         if(keycode=='13') {
             e.preventDefault();
             //请求搜索接口
-            getList(searchName);
+            pageNum = 1;
+            $("#list").html('');
+            if(loadend){
+                getList();
+            }
         }
     });
     /*-----------------------------------------去详情----------*/
@@ -59,7 +43,8 @@ $(function () {
         wfy.pagegoto('qry_coutomer_dtl')
     });
 });
-function getList(AS_KEYWORD) {
+function getList() {
+    loadend = false
     var vBiz = new FYBusiness("biz.crm.crminfo.list");
     var vOpr1 = vBiz.addCreateService("svc.crm.crminfo.list", false);
     var vOpr1Data = vOpr1.addCreateData();
@@ -69,7 +54,7 @@ function getList(AS_KEYWORD) {
     vOpr1Data.setValue("AS_CXCS", AS_KEYWORD);
     vOpr1Data.setValue("AS_KHHYKH","");
     vOpr1Data.setValue("AN_PSIZ", 20);
-    vOpr1Data.setValue("AN_PINDEX",1);
+    vOpr1Data.setValue("AN_PINDEX",pageNum);
     var ip = new InvokeProc();
     ip.addBusiness(vBiz);
     ip.invoke(function(d){
@@ -110,7 +95,35 @@ function getList(AS_KEYWORD) {
                                 '</div>'+
                             '</div>'
             }
-            $("#list").html(htmlStr);
+            loadend = true;
+            $("#list").append(htmlStr);
+            if(restult.length ==20){
+                $("#scrollload").removeClass("none");
+            }
+            if( pageNum > 1 && restult.length ==0){
+                $("#scrollload span").html("没有更多了...");
+                setTimeout(function () {
+                    $("#scrollload").addClass("none");
+                    $("#scrollload span").html("正在加载");
+                },1000);
+            }
+
+            $(".wfyContList").scroll(function () {
+                //loading 是根据 加载动画是否显示 判断
+                if($("#cont").Scroll() < 10){
+                    if(!$("#scrollload").hasClass("none")){
+                        loading = true;
+                    }
+                    setTimeout(function () {
+                        if(loading ){
+                            pageNum ++;
+                            getList();
+                            loading = false;
+                        }
+                    },1000);
+                }
+
+            });
         } else {
             // todo...[d.errorMessage]
             wfy.alert('没有查询到会员信息！' + (d.errorMessage || ''));
