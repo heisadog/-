@@ -327,6 +327,17 @@
         $("#paycoverBack").addClass("none");
         $(".pay_alert_box").addClass("y200");
     },
+    part1.openFream = function(b,s)
+    {
+        //升级版 之前都是单独配置
+        $("#" + b).removeClass("none");
+        $("#" + s).removeClass("y100");
+    },
+    part1.closeFream = function(b,s)
+    {
+        $("#" + b).addClass("none");
+        $("#" + s).addClass("y100");
+    },
 	part1.returnFloat = function(value){
 		if(value){
 			var value=Math.round(parseFloat(value)*100)/100;

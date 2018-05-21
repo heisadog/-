@@ -151,9 +151,9 @@ $(function () {
         localStorage.page = $(this).parent('.footTable_dv').attr('data-xtgndm');
         if(czmc){
             switch (url){
-                case 'coupon':
+                case 'coupon'://电子券验证
                     getqx(function (res) {
-                        //console.error(res)
+                        console.error(res)
                         var mddm,mdmc,comdm,commc,xtkhlx;
                         xtkhlx = res[0].xtkhlx;// 1 是公司的 其他的是 门店的
                         comdm = res[0].xtwldm;
@@ -161,16 +161,16 @@ $(function () {
                         if(xtkhlx == '1'){
                             mddm = comdm;
                             mdmc = commc;
+                            mddm = localStorage.reguid;
                         }else {
-                            mddm = localStorage.mddm;
                             mdmc = localStorage.mdmc;
                         }
                         console.error(comdm+'--'+commc)
                         console.error(mddm+'--'+mdmc)
-                        window.location.href='https://foals-wx-merchant.imixpark.com/#/scan-coupons?companyCode='+comdm+'&companyName='+commc+'&storeCode='+mddm+'&storeName='+mdmc;
+                        window.location.href='https://foals-wx-merchant.imixpark.com/#/scan-coupons?companyCode='+encodeURI(comdm)+'&companyName='+encodeURI(commc)+'&storeCode='+encodeURI(localStorage.reguid)+'&storeName='+encodeURI(mdmc);
                     })
                     break;
-                case 'couponlist':
+                case 'couponlist'://电子券核销记录
                     getqx(function (res) {
                         //console.error(res)
                         var mddm,mdmc,comdm,commc,xtkhlx;
@@ -178,10 +178,10 @@ $(function () {
                         comdm = res[0].xtwldm;
                         commc = res[0].xtwlmc;
                         if(xtkhlx == '1'){
-                            window.location.href='https://foals-wx-merchant.imixpark.com/#/verified-coupon-search?companyCode='+comdm;
+                            window.location.href='https://foals-wx-merchant.imixpark.com/#/verified-coupon-search?companyCode='+encodeURI(comdm);
                         }else {
-                            mddm = localStorage.mddm;
-                            window.location.href='https://foals-wx-merchant.imixpark.com/#/verified-coupon-search?companyCode='+comdm+'&storeCode='+mddm;
+                            mddm = localStorage.reguid;
+                            window.location.href='https://foals-wx-merchant.imixpark.com/#/verified-coupon-search?companyCode='+encodeURI(comdm)+'&storeCode='+encodeURI(mddm);
                         }
                     })
                     break;
@@ -269,7 +269,7 @@ $(function () {
         event.stopPropagation();
         var url = $(this).attr('data-url');
         if(url){
-            if(url=="accounts"||url=="setting"||url=="qry_bill"||url=="address"||url=="repairs"||url=="suggest"){
+            if(url=="accounts"||url=="setting"||url=="qry_bill"||url=="address"||url=="repairs"||url=="suggest" || url == 'tally'){
                 localStorage.shitpage = url;
                 wfy.pagegoto("../mine/"+url);
             }else if(url=="login"){

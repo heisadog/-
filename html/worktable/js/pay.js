@@ -175,14 +175,10 @@ $(function () {
                 if(je < 0){
                     je = je*(-1);
                 }
-                if(je != 0){
-                    pay_check_dm.push(dm);
-                    pay_check_mc.push(mc);
-                    pay_check_je.push(je);
-                    pay_check_je_total = Components.add(pay_check_je_total,je);
-                }
-                
-
+                pay_check_dm.push(dm);
+                pay_check_mc.push(mc);
+                pay_check_je.push(je);
+                pay_check_je_total = Components.add(pay_check_je_total,je);
             })
             if(cont.length == 0){
                 wfy.alert('请先选择商品');
@@ -221,7 +217,7 @@ $(function () {
                 if(ishykh){
                     var val_yf =  $('#pay_style li[data-type="fukuan"]').find('.billInput').val();
                     if(val_yf > kyed){
-                        wfy.alert("钱包金额大于用户可用额度！");
+                        wfy.alert("可用额度不足！");
                         return false;
                     }
                 }
@@ -246,6 +242,9 @@ $(function () {
             if((orderAmount - pay_check_je_total) != 0){
                 tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
                     '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
+            }
+            if(tipCont =='您选择的支付信息<br>'){
+                tipCont = '订单含有正负商品，总金额为0，请确认商品信息！'
             }
             wfy.confirm(tipCont,function () {
                 //如果用户取消 支付，再次点击的时候 生成预订单失败。需要验证预订单的存在
@@ -324,6 +323,7 @@ $(function () {
             return false;
         }
         //可能多个组合付款方式，先 做个支付信息的提示
+        var tipCont = '您选择的支付信息<br>';
         var pay_check_dm = [];
         var pay_check_mc = [];
         var pay_check_je = [];
@@ -335,38 +335,15 @@ $(function () {
             if(je < 0){
                 je = je*(-1);
             }
-            if(je != 0){
-                pay_check_dm.push(dm);
-                pay_check_mc.push(mc);
-                pay_check_je.push(je);
-                pay_check_je_total = Components.add(pay_check_je_total,je);
-            }
+            pay_check_dm.push(dm);
+            pay_check_mc.push(mc);
+            pay_check_je.push(je);
+            pay_check_je_total = Components.add(pay_check_je_total,je);
         })
-        var pay = [];
-        $('#pay_style li.poschecked').each(function () {
-            if(Number($(this).find('.billInput').val()) != 0){
-                var payobj = {};
-                payobj.payFee = $('#totalMoney').html();
-                payobj.payType = $(this).attr('data-typedm');//支付方式
-                payobj.payTypeMc = $(this).find('span').html();// 支付方式名称
-                payobj.kyed = kyed;//可用额度
-                payobj.payTypeFee = Number($(this).find('.billInput').val());
-                pay.push(payobj);
-            }
 
-        })
-        console.error(pay);
         //验证
-        //首先如果有选客户，验证客户的额度
-        if(ishykh){
-            var val_yf =  Number($('#pay_style li[data-type="fukuan"]').find('.billInput').val());
-            if(val_yf > kyed){
-                wfy.alert("钱包金额大于用户可用额度！");
-                return false;
-            }
-        }
         console.log(orderAmount)
-        if(orderAmount <=0){
+        if(orderAmount <= 0){
             orderAmount = orderAmount*(-1);
             var is_fa = false;
             $('#pay_style li:gt(1)').each(function () {
@@ -386,6 +363,14 @@ $(function () {
                 return false;
             }
         }else {
+            //首先如果有选客户，验证客户的额度
+            if(ishykh){
+                var val_yf =  Number($('#pay_style li[data-type="fukuan"]').find('.billInput').val());
+                if(val_yf > kyed){
+                    wfy.alert("可用额度不足！");
+                    return false;
+                }
+            }
             if(pay_check_je_total > orderAmount){
                 wfy.alert("输入的支付金额大于订单金额，请重新设置支付金额！");
                 return false;
@@ -395,7 +380,8 @@ $(function () {
                 return false;
             }
         }
-        var tipCont = '您选择的支付信息<br> ';
+
+
         for(var i = 0; i<pay_check_dm.length;i++){
             if(pay_check_je[i]){
                 tipCont += '<div style="width: 100%;height:36px;overflow: hidden">' +
@@ -408,6 +394,23 @@ $(function () {
             tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
                 '元,如果确认付款，相当于抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
         }
+        if(tipCont =='您选择的支付信息<br>'){
+            tipCont = '订单含有正负商品，总金额为0，请确认商品信息！'
+        }
+        var pay = [];
+        $('#pay_style li.poschecked').each(function () {
+            if(Number($(this).find('.billInput').val()) != 0){
+                var payobj = {};
+                payobj.payFee = $('#totalMoney').html();
+                payobj.payType = $(this).attr('data-typedm');//支付方式
+                payobj.payTypeMc = $(this).find('span').html().replace('<i class="hidden">大</i>','');// 支付方式名称
+                payobj.kyed = kyed;//可用额度
+                payobj.payTypeFee = Number($(this).find('.billInput').val());
+                pay.push(payobj);
+            }
+
+        })
+        console.error(pay);
         wfy.confirm(tipCont,function () {
             updaState(pay)
         },function () {
@@ -568,13 +571,17 @@ function updaState(pay) {
     var vOpr1 = vBiz.addCreateService("svc.pos.paymode.save", false);
     var vOpr1Data = [];
     for(var i =0; i<pay.length; i++){
+        var payTypeFee = Math.abs(Number(pay[i].payTypeFee));
+        if(Number($('#totalMoney').html()) < 0){
+            payTypeFee = payTypeFee*(-1);
+        }
         var o = {};
         o.AS_USERID = LoginName;
         o.AS_WLDM = DepartmentCode;
         o.AS_FUNC = "svc.pos.paymode.save";
         o.AS_KCCZHM =operNo; //操作号码
         o.AS_XSZFFS = pay[i].payType;//支付方式
-        o.AN_XSZFJE = Number(pay[i].payTypeFee) ;//支付金额
+        o.AN_XSZFJE = payTypeFee;//支付金额
         o.AN_XSDKJF = 0;
         o.AN_YDZFJE = 0;//原单支付金额 为0
         o.AN_YDDKJF = 0;

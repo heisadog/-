@@ -133,7 +133,7 @@
 <!--客户-->
 <div class="bill_bot_to_top y100 thd ts200" id="kehu">
     <div class="bill_slide_head">
-        <div class="b002 hidden">已选(<i>0</i>)</div>
+        <div class="bill_slide_head_ok" style="float: left" id="kehu_can_add">新增</div>
         <span>客 户</span>
         <div class="bill_slide_head_ok" id="kehu_can">取消</div>
     </div>
@@ -189,6 +189,32 @@
 
 <div class="iosalert none">
     <img src="" alt="" id="iosImg">
+</div>
+
+
+<!--弹窗新增 -->
+<div id="addcoverBack" class="pf cover none"></div>
+<div id="addwindow" class="selectBox thd y100  ts200" style="height:200px;" data-type="">
+    <div class="tencentpay_title" style="text-align: center;line-height: 55px"><span id="window_title" style="height: 30px;
+    line-height: 30px;
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 10px;">新增客户</span></div>
+    <div id="code_div" class="pr item nothing">
+        <span class="w110" id="field_code_title">姓名</span>
+        <input type="text" id="field_name" class="select" placeholder="请输入姓名"/>
+    </div>
+    <div id="name_div" class="pr item">
+        <span class="w110" id="field_name_title">手机号</span>
+        <input type="text" id="field_tel" class="select" placeholder="请输入手机号"/>
+    </div>
+
+    <div class="bgwhite thd ts200" style="height: 55px;text-align: center">
+        <div id="btn_sure" class="fl w50 main_color border foot_left" style="height: 50px;line-height: 50px">确认</div>
+        <div id="btn_cancel" class="fl w50 bl1 main_color border foot_right" style="height: 50px;line-height: 50px">取消</div>
+    </div>
 </div>
 <script type="text/javascript" src="../../public/frame/gbk.js"></script>
 <script type="text/javascript" src="js/storeSale.js"></script>

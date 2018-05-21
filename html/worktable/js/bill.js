@@ -98,6 +98,15 @@ $(function () {
             ischanege = false;
             $('#save').removeClass('cabsdot_bosdt');
             console.log(values);
+            //单据类操作 修改 添加默认的时分秒 。如果不是今天 则补充时间 00：00：00,是今天 就取当前时间！！
+            var nowTime = wfy.format('yyyy-MM-dd hh-mm-ss',new Date());
+            var checkTime = values[0]+'-'+values[1]+'-'+values[2];
+            if(checkTime != nowTime.slice(0,10)){
+                checkTime = checkTime+' 00-00-00';
+            }else {
+                checkTime = nowTime;
+            }
+            $('#createTime').attr('data-trueTime',checkTime)
         },
         parse: function(date) {
             return date.split(/\D/).filter(function(t) {
@@ -315,7 +324,7 @@ $(function () {
             title: "请输入编辑数量",
             onOK: function(text) {
                 num = parseInt(Number(text)) || 0;
-                if(pageName != 'msa030_0100' || pageName != 'msa030_0800' || pageName != 'msa030_0900'){//销售收银
+                if(pageName != 'msa030_0100' && pageName != 'msa030_0800' && pageName != 'msa030_0900'){//销售收银
                     if(num < 0){
                         wfy.alert('不允许输入负数');
                         return false;
@@ -610,7 +619,70 @@ $(function () {
         })
     })
 
+    //4.24 新增选择客户界面新增~~
+    $('body').hammer().on('tap','#kehu_can_add',function (event) {
+        event.stopPropagation();
+        $('#addwindow').css("bottom","200px");
+        wfy.openFream('addcoverBack',"addwindow");
+    })
+    //4.24 新增弹窗 取消按钮
+    $('body').hammer().on('tap', '#btn_cancel', function (event) {
+        event.stopPropagation();
+        $("#field_tel").val("");
+        $("#field_name").val("");
+        wfy.closeFream('addcoverBack',"addwindow");
+        $('#addwindow').css("bottom","-200px");
+    });
+    //4.24 新增弹窗 确定按钮
+    $('body').hammer().on('tap', '#btn_sure', function (event) {
+        event.stopPropagation();
+        var name = $("#field_name").val();
+        var tel = $("#field_tel").val();
+        if(name =='' || tel == ''){
+            wfy.alert('请输入姓名和手机号');
+            return false;
+        }
+        wfy.closeFream('addcoverBack',"addwindow");
+        $('#addwindow').css("bottom","-200px");
+        vipAdd(name,tel);
+    });
+
 })
+//会员新增
+var vipAdd = function (name,tel) {
+    var vBiz = new FYBusiness("biz.crm.crminfo.save");
+    var vOpr1 = vBiz.addCreateService("svc.crm.crminfo.save", false);
+    var vOpr1Data = vOpr1.addCreateData();
+    vOpr1Data.setValue("AS_USERID", LoginName);
+    vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+    vOpr1Data.setValue("AS_FUNC", "svc.crm.crminfo.save");
+    vOpr1Data.setValue("AS_KHHYKH", "");
+    vOpr1Data.setValue("AS_KHHYXM", name);
+    vOpr1Data.setValue("AS_KHHYSJ", tel);//手机
+    vOpr1Data.setValue("AS_KHHYXB", '');
+    vOpr1Data.setValue("AS_KHCSNY", '');
+    vOpr1Data.setValue("AS_KHSFZH", "");//身份证号
+    vOpr1Data.setValue("AN_KHXYED", '');//额度
+    vOpr1Data.setValue("AS_KHLXWX",'');
+    vOpr1Data.setValue("AS_KHLXDZ", '');
+    vOpr1Data.setValue("AS_KHHYBZ", '');
+    var ip = new InvokeProc();
+    ip.addBusiness(vBiz);
+    ip.invoke(function(d){
+        if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+            // todo...
+            wfy.alert("保存信息成功！",function () {
+                //查寻所有的会员客户
+
+                getKHList('');
+            });
+
+        } else {
+            // todo...[d.errorMessage]
+            wfy.alert("保存信息失败！"+d.errorMessage);
+        }
+    }) ;
+}
 //显示 data 的数据内容
 function showDataDtl() {
     console.log(data);
@@ -724,9 +796,10 @@ function getTotalNumAndMoney() {
         //totalMoney += (Number(cont[m].num))*(Number(cont[m].price));
         totalMoney = accAdd(totalMoney,accMul(Number(cont[m].num),Number(cont[m].price)));
     }
+    console.log(totalMoney)
     //新增 如果 有折扣 那么要重新 计算折扣后的价格
     //如果此时有折扣m 那么重新计算总价格
-    var zk = $('#createZK').val()/100;
+    var zk = $('#createZK').val()/100 || 1;
     totalMoney = accMul(totalMoney,zk);
     //end
 

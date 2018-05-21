@@ -51,6 +51,7 @@ $(function () {
         }
     })
     getPosStore(function (res) {
+        console.log(res)
         store_rest = res;
         if(store_rest.length == 0){
             wfy.alert('门店获取失败！页面信息不全~')
@@ -276,7 +277,7 @@ function getCommRequestBean() {
         var pay = {};
         pay.payFee = $('#totalMoney').html();
         pay.payType = $(this).attr('data-typedm');//支付方式
-        pay.payTypeMc = $(this).find('span').html();// 支付方式名称
+        pay.payTypeMc = $(this).find('span').html().replace('<i class="hidden">大</i>','');// 支付方式名称
         pay.kyed = kyed;//可用额度
         pay.payTypeFee = tonum < 0 ? (-Math.abs(Number($(this).find('.billInput').val()))) : (Math.abs(Number($(this).find('.billInput').val())));
         // if(pay.payTypeFee != 0){

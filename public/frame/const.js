@@ -7,7 +7,7 @@
 
  */
 var _wfy_host = "";
-var _wfy_url = 'http://xiaoju.theimixplus.com/';//202.98.38.50:18088
+var _wfy_url = 'http://202.98.38.52:18006/';//202.98.38.50:18088
 var _wfy_image_ip = ""; //"114.55.111.217"; //图片地址
 var _wfy_uni_url = _wfy_url+ "/FY_APP_SVR_WX/WFY_UNI_SERVICE.json";
 var _wfy_order_svr = _wfy_url+"/FY_APP_SVR_WX/FY_POS_SAVE.json";

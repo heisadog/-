@@ -145,11 +145,12 @@ function getqx(call) {
 	vOpr1Data.setValue("AS_FUNC", "svc.ctluser.qx.qry");
 	var ip = new InvokeProc();
 	ip.addBusiness(vBiz);
+	//console.log(JSON.stringify(ip));
 	ip.invoke(function(d){
 		if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
 			// todo...svc.ctluser.qx.qry AC_USERINFO
 			var res = vOpr1.getResult(d, "AC_USERINFO").rows;
-			console.error(res);
+			//console.error(res);
 			if(typeof call === 'function'){
 				call(res);
 			}

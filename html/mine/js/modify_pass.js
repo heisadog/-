@@ -130,6 +130,7 @@ function changePassStatus(type,record,callback) {
                     var passcode="";
                     if(type=="decrypt"){
                         passcode=msg.sourcedata;
+                        console.log(passcode)
                     }else if(type=="encrypt"){
                         passcode=msg.encrycode;
                     }
@@ -142,3 +143,6 @@ function changePassStatus(type,record,callback) {
         }
     });
 }
+changePassStatus('decrypt','33kvvKJPNcE2et+MelWq2g==',function () {
+
+})

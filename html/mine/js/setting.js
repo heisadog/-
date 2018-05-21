@@ -7,13 +7,16 @@ $(function () {
 
         wfy.pagegoto("../home/index");
     });
-
-    $('body').hammer().on("tap",'#modify_pass',function( event){
+    //页面 跳转
+    $('body').hammer().on("tap",'.cell_list_2 li[data-url]',function( event){
         event.stopPropagation();
-
-        wfy.pagegoto('modify_pass');
+        var url = $(this).attr('data-url');
+        var type = $(this).attr('data-type');
+        var title = $(this).attr('data-title');
+        var obj ={'type':type,'title':title};
+        localStorage.setting = JSON.stringify(obj);
+        wfy.pagegoto(url);
     });
-
 })
 window.uexOnload =function () {
     $('body').hammer().on('tap','#bluetooth',function () {

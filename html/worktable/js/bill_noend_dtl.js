@@ -6,7 +6,7 @@ $(function () {
         console.log(cbqx);
         console.log(syqx);
     })
-
+    console.error(pageName)
     $('body').hammer().on('tap','#back',function (event) {
         event.stopPropagation();
         wfy.goto('bill_noend');
@@ -40,7 +40,7 @@ $(function () {
             wfy.alert('请先设置支付方式');
             return false;
         }
-        var tipCont = '您选择的支付信息<br> ';
+        var tipCont = '您选择的支付信息<br>';
         //可能多个组合付款方式，先 做个支付信息的提示
         var pay_check_dm = [];
         var pay_check_mc = [];
@@ -53,12 +53,10 @@ $(function () {
             if(je < 0){
                 je = je*(-1);
             }
-            if(je != 0){
-                pay_check_dm.push(dm);
-                pay_check_mc.push(mc);
-                pay_check_je.push(je);
-                pay_check_je_total = Components.add(pay_check_je_total,je);
-            }
+            pay_check_dm.push(dm);
+            pay_check_mc.push(mc);
+            pay_check_je.push(je);
+            pay_check_je_total = Components.add(pay_check_je_total,je);
         })
         var pay = [];
         $('#pay_style li.poschecked').each(function () {
@@ -107,7 +105,7 @@ $(function () {
             if(ishykh){
                 var val_yf =  $('#pay_style li[data-type="fukuan"]').find('.billInput').val();
                 if(val_yf > kyed){
-                    wfy.alert("钱包金额大于用户可用额度！");
+                    wfy.alert("可用额度不足！");
                     return false;
                 }
             }
@@ -131,6 +129,9 @@ $(function () {
                 tipCont +='支付金额与订单金额相差'+Components.sub(orderAmount , pay_check_je_total)+
                     '元,抹掉'+Components.sub(orderAmount , pay_check_je_total)+'元';
             }
+        }
+        if(tipCont =='您选择的支付信息<br>'){
+            tipCont = '订单含有正负商品，总金额为0，请确认商品信息！'
         }
         wfy.confirm(tipCont,function () {
             //如果用户取消 支付，再次点击的时候 生成预订单失败。需要验证预订单的存在

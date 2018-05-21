@@ -340,7 +340,7 @@ $(function () {
     //操作人员
     $("#createAdmin").val(localStorage.czry);
     //日期 默认当天
-    $("#createTime").val(wfy.formatDate(new Date()));
+    $("#createTime").val(wfy.format('yyyy-MM-dd',new Date())).attr('data-trueTime',wfy.format('yyyy-MM-dd hh-mm-ss',new Date()));
     //保存
     $('body').hammer().on("tap",'#save',function (event) {
         event.stopPropagation();
@@ -491,7 +491,7 @@ function save_ruku() {
     vOpr1Data.setValue("AS_KCPDHM", head.orderid);//单号
     vOpr1Data.setValue("AS_KCCZLX", head.czdm);//操作类型
     vOpr1Data.setValue("AS_KCCKDM", head.ckdm);//仓库代码 ---对应  仓/店
-    vOpr1Data.setValue("AS_KCCZRQ", $('#createTime').val());//操作日期
+    vOpr1Data.setValue("AS_KCCZRQ", $('#createTime').attr('data-trueTime'));//操作日期
     vOpr1Data.setValue("AS_XTWLDM", (head.wldm ||""));//往来单位 ---对应厂商
     vOpr1Data.setValue("AS_KCDFCK", '');//对方仓库
     vOpr1Data.setValue("AS_KCYSPD", '');//原始单号
@@ -513,7 +513,7 @@ function save_ruku() {
         obj.AS_XTWPDM = dtl.AS_XTWPDM[i];//商品编码--------------------------------sku
         obj.AS_KCCKDM = head.ckdm;//仓库代码
         obj.AS_KCDFCK = '';//对方仓库
-        obj.AS_KCCZRQ = $('#createTime').val();
+        obj.AS_KCCZRQ = $('#createTime').attr('data-trueTime');
         obj.AS_XTWLDM = head.wldm;//往来单位
         obj.AN_KCXSDJ = Number(dtl.AN_KCXSDJ[i]);//销售单价-------------------
         obj.AN_KCCZSL = Number(dtl.AN_KCCZSL[i]);//操作数量-----------------
@@ -555,7 +555,7 @@ function saveHead() {
     vOpr1Data.setValue("AS_KCPDHM", head.orderid);//单号
     vOpr1Data.setValue("AS_KCCZLX", head.czdm);//操作类型
     vOpr1Data.setValue("AS_KCCKDM", head.ckdm);//仓库代码 ---对应  仓/店
-    vOpr1Data.setValue("AS_KCCZRQ", $('#createTime').val());//操作日期
+    vOpr1Data.setValue("AS_KCCZRQ", $('#createTime').attr('data-trueTime'));//操作日期
     vOpr1Data.setValue("AS_XTWLDM", (head.wldm ||""));//往来单位 ---对应厂商
     vOpr1Data.setValue("AS_KCDFCK", '');//对方仓库
     vOpr1Data.setValue("AS_KCYSPD", '');//原始单号
@@ -610,7 +610,7 @@ function saveDtl() {
         obj.AS_XTWPDM = dtl.AS_XTWPDM[i];//商品编码--------------------------------sku
         obj.AS_KCCKDM = head.ckdm;//仓库代码
         obj.AS_KCDFCK = '';//对方仓库
-        obj.AS_KCCZRQ = $('#createTime').val();
+        obj.AS_KCCZRQ = $('#createTime').attr('data-trueTime');
         obj.AS_XTWLDM = head.wldm;//往来单位
         obj.AN_KCXSDJ = Number(dtl.AN_KCXSDJ[i]);//销售单价-------------------
         obj.AN_KCCZSL = Number(dtl.AN_KCCZSL[i]);//操作数量-----------------
@@ -716,7 +716,7 @@ function saveYaoDingDan() {
     vOpr1Data.setValue("AS_XSYHDH", head.orderid);
     vOpr1Data.setValue("AS_KCCKDM", head.ckdm);// 对应订货仓库
     vOpr1Data.setValue("AS_XTWLDM", head.wldm); // 对应 订货客户
-    vOpr1Data.setValue("AS_XSXQRQ",  $('#createTime').val());
+    vOpr1Data.setValue("AS_XSXQRQ",  $('#createTime').attr('data-trueTime'));
     vOpr1Data.setValue("AS_YHLX", "1");//要货类型 固定
     vOpr1Data.setValue("AN_DJBL", "0");//定金比例 写个0
     vOpr1Data.setValue("AS_YHBZ", $('#createBZ').val() == '---' ? '': $('#createBZ').val());// 备注
@@ -734,7 +734,7 @@ function saveYaoDingDan() {
         obj.AS_WPDM = dtl.AS_WPDM[i];//商品编码--------------------------------sku
         obj.AN_YHSL = Number(dtl.AN_YHSL[i]);//操作数量-----------------
         obj.AS_XTWLDM = head.wldm;//往来单位
-        obj.AS_XSXQRQ = $('#createTime').val();
+        obj.AS_XSXQRQ = $('#createTime').attr('data-trueTime');
         obj.AS_MXBZ = $('#createBZ').val() ;//备注
         obj.AS_YHLX = '1';//要货单据类型
         obj.AS_JLDW = '';//计量单位
